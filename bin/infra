@@ -1,0 +1,427 @@
+#!/usr/bin/env bash
+
+set -e
+
+# Color support
+
+function disable_color() {
+    IS_TTY=false
+    txtrst=
+    txtbld=
+    bldred=
+    bldgrn=
+    bldylw=
+    bldblu=
+    bldmag=
+    bldcyn=
+}
+
+IS_TTY=false
+if [ -t 1 ]; then
+    if command -v tput >/dev/null; then
+        IS_TTY=true
+    fi
+fi
+if [ "$IS_TTY" = "true" ]; then
+    txtrst=$(tput sgr0 || echo '\e[0m')              # Reset
+    txtbld=$(tput bold || echo '\e[1m')              # Bold
+    bldred=${txtbld}$(tput setaf 1 || echo '\e[31m') # Red
+    bldgrn=${txtbld}$(tput setaf 2 || echo '\e[32m') # Green
+    bldylw=${txtbld}$(tput setaf 3 || echo '\e[33m') # Yellow
+    bldblu=${txtbld}$(tput setaf 4 || echo '\e[34m') # Blue
+    bldmag=${txtbld}$(tput setaf 5 || echo '\e[35m') # Magenta
+    bldcyn=${txtbld}$(tput setaf 8 || echo '\e[38m') # Cyan
+else
+    disable_color
+fi
+
+# Logging
+
+# Print the given message in cyan, but only when --verbose was passed
+function debug() {
+    if [ ! -z "$VERBOSE" ]; then
+        printf '%s%s%s\n' "$bldcyn" "$1" "$txtrst"
+    fi
+}
+
+# Print the given message in blue
+function info() {
+    printf '%s%s%s\n' "$bldblu" "$1" "$txtrst"
+}
+
+# Print the given message in magenta
+function action() {
+    printf '%s%s%s\n' "$bldmag" "$1" "$txtrst"
+}
+
+# Print the given message in yellow
+function warn() {
+    printf '%s%s%s\n' "$bldylw" "$1" "$txtrst"
+}
+
+# Like warn, but expects the message via redirect
+function warnb() {
+    printf '%s' "$bldylw"
+    while read -r data; do
+        printf '%s\n' "$data"
+    done
+    printf '%s\n' "$txtrst"
+}
+
+# Print the given message in red
+function error() {
+    printf '%s%s%s\n' "$bldred" "$1" "$txtrst"
+}
+
+# Like error, but expects the message via redirect
+function errorb() {
+    printf '%s' "$bldred"
+    while read -r data; do
+        printf '%s\n' "$data"
+    done
+    printf '%s\n' "$txtrst"
+    exit 1
+}
+
+# Print the given message in green
+function success() {
+    printf '%s%s%s\n' "$bldgrn" "$1" "$txtrst"
+}
+
+
+# Print help if requested
+function help() {
+    cat << EOF
+POA Infrastructure Management Tool
+
+Usage: 
+
+       ./infra [global options] <task> [task args]
+
+This script will bootstrap required AWS resources, then generate infrastructure via Terraform.
+
+Tasks:
+
+    help              Show help
+    provision         Run the provisioner to generate or modify POA infrastructure
+    destroy           Tear down any provisioned resources and local state
+
+Global Options:
+
+    -v | --verbose    This will print out verbose execution information for debugging
+    -h | --help       Print this help message
+    --dry-run         Perform as many actions as possible without performing side-effects
+    --no-color        Turn off color
+EOF
+    exit 2
+}
+
+
+# Verify tools
+function check_prereqs() {
+    if ! which jq >/dev/null; then
+        warnb << EOF
+This script requires that the 'jq' utility has been installed and can be found in $PATH
+
+On macOS, with Homebrew, this is as simple as 'brew install jq'.
+
+For installs on other platforms, see https://stedolan.github.io/jq/download/
+EOF
+        exit 2
+    fi
+
+    if ! which aws >/dev/null; then
+        warnb << EOF
+This script requires that the AWS CLI tool has been installed and can be found in $PATH
+
+On macOS, with Homebrew, this is as simple as 'brew install awscli'.
+
+For installs on other platforms, see https://docs.aws.amazon.com/cli/latest/userguide/installing.html
+EOF
+        exit 2
+    fi
+
+    if ! which terraform >/dev/null; then
+        warnb << EOF
+  This script requires that the Terraform CLI be installed and available in PATH!
+
+On macOS, with Homebrew, this is as simple as 'brew install terraform'.
+
+For other platforms, see https://www.terraform.io/intro/getting-started/install.html
+EOF
+        exit 2
+    fi
+}
+
+# Tear down all provisioned infra
+function destroy() {
+    terraform destroy -var-file=backend.tfvars -var-file=main.tfvars base
+    rm -f ./PREFIX
+    rm -f ./backend.tfvars
+    rm -f ./main.tfvars
+    success "All generated infrastructure successfully removed!"
+}
+
+# Provision infrastructure
+function provision() {
+    # If INFRA_PREFIX has not been set yet, request it from user
+    if [ -z "$INFRA_PREFIX" ]; then
+        DEFAULT_INFRA_PREFIX=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 8 | head -n 1)
+
+        warnb << EOF
+# Infrastructure Prefix
+
+In order to ensure that provisioned resources are unique, this script uses a 
+unique prefix for all resource names and ids.
+
+By default, a random 8 character alphanumeric string is generated for you, but 
+if you wish to provide your own, now is your chance. This value will be stored 
+in './PREFIX' so that you only need provide it once, but make sure you source 
+control the file.
+EOF
+
+        read -r -p "What prefix should be used? (default is $DEFAULT_INFRA_PREFIX): "
+        INFRA_PREFIX="$REPLY"
+        if [ -z "$INFRA_PREFIX" ]; then
+            INFRA_PREFIX="$DEFAULT_INFRA_PREFIX"
+        fi
+        if [ "$DRY_RUN" == "false" ]; then
+            echo "$INFRA_PREFIX" > ./PREFIX
+        fi
+    fi
+
+    # EC2 key pairs
+    if [ -z "$KEY_PAIR" ]; then
+        read -r -p "Please provide the name of the key pair to use with EC2 hosts: "
+        KEY_PAIR="$REPLY"
+        if [ -z "$KEY_PAIR" ]; then
+            error "You must provide a valid key pair name!"
+            exit 2
+        fi
+    fi
+
+    if [ -z "$SECRET_KEY_BASE" ]; then
+        SECRET_KEY_BASE="$(openssl rand -base64 32)"
+    fi
+
+    if ! aws ec2 describe-key-pairs --key-names="$KEY_PAIR" 2>/dev/null; then
+        if [ "$DRY_RUN" == "true" ]; then
+            action "DRY RUN: Would have created an EC2 key pair"
+        else
+            info "The key pair '$KEY_PAIR' does not exist, creating..."
+            if ! output=$(aws ec2 create-key-pair --key-name="$KEY_PAIR"); then
+                error "$output\\nFailed to generate key pair!"
+            fi
+            echo "$output" | jq '.KeyMaterial' --raw-output > "$KEY_PAIR.privkey"
+            success "Created keypair successfully! Private key has been saved to ./$KEY_PAIR.privkey"
+        fi
+    fi
+
+    EXTRA_VARS=""
+    if [ -f ./user.tfvars ]; then
+        EXTRA_VARS="-var-file=user.tfvars"
+    fi
+
+    # Save variables used by Terraform modules
+    if [ ! -f ./backend.tfvars ]; then
+        # shellcheck disable=SC2154
+        region="$TF_VAR_region"
+        if [ -z "$region" ]; then
+            # Try to pull region from local config
+            if [ -f "$HOME/.aws/config" ]; then
+                region=$(grep 'region' ~/.aws/config | sed -e 's/region = //')
+            fi
+        fi
+        if [ -z "$region" ]; then
+            # If unset still, use default of us-east-2
+            region='us-east-2'
+        fi
+        # Backend config only!
+        {
+            echo "region = \"$region\""
+            echo "bucket = \"$INFRA_PREFIX-poa-terraform-state\""
+            echo "dynamodb_table = \"$INFRA_PREFIX-poa-terraform-locks\""
+            echo "key = \"terraform.tfstate\""
+        } > ./backend.tfvars
+        # Other configuration needs to go in main.tfvars or init will break
+        {
+            echo "region = \"$region\""
+            echo "bucket = \"poa-terraform-state\""
+            echo "dynamodb_table = \"poa-terraform-locks\""
+            echo "key_name = \"$KEY_PAIR\""
+            echo "prefix = \"$INFRA_PREFIX\""
+            echo "secret_key_base = \"$SECRET_KEY_BASE\""
+        } > ./main.tfvars
+    fi
+
+    workspace="$(terraform workspace show)"
+
+    if [ ! "$workspace" == "main" ]; then
+
+        if [ "$workspace" == "default" ]; then
+            # Setup base workspace
+            if workspaces=$(terraform workspace list); then
+                if ! echo "$workspaces" | grep "base$" >/dev/null; then
+                    terraform workspace new base setup
+                fi
+            else
+                exit 2
+            fi
+
+            # We first switch to the base workspace using the setup directory as the initial config
+            terraform workspace select base setup
+            # Init the base workspace using the setup directory
+            terraform init -backend-config=backend.tfvars setup
+            # Generate the plan for the S3 backend resources
+            terraform plan $EXTRA_VARS -var-file=main.tfvars -out plans/setup.planfile setup
+            if [ "$DRY_RUN" == "true" ]; then
+                action "DRY RUN: Would have executed Terraform plan for S3 backend"
+            else
+                # Apply the plan to provision the S3 backend resources
+                terraform apply plans/setup.planfile
+            fi
+        fi
+
+        if [ "$DRY_RUN" == "true" ]; then
+            action "DRY RUN: Would have migrated Terraform state to S3 backend"
+        else
+            # Now initialize the base workspace using the S3 backend
+            # This has the effect of migrating the local state to S3
+            #init_env=$(sed -r -e 's/^([^\s]*) = /TF_VAR_\1=/' backend.tfvars)
+            #for ev in $init_env; do
+                #export $ev
+            #done
+            terraform init -backend-config=backend.tfvars base
+        fi
+
+        # Setup main workspace
+        if ! terraform workspace list | grep "main$" >/dev/null; then
+            terraform workspace new main main
+        fi
+
+        # Switch to the main workspace which contains the rest of our infra
+        terraform workspace select main main
+    fi
+
+    if [ "$DRY_RUN" == "true" ]; then
+        action "DRY RUN: Would have initialized Terraform state for remaining infrastructure"
+        action "DRY RUN: Would have generated Terraform plan for remaining infrastructure"
+        action "DRY RUN: Would have executed Terraform plan for remaining infrastructure"
+    else
+        # Initialize main workspace using S3 backend
+        terraform init -backend-config=backend.tfvars main
+        # Generate the plan for the remaining infra
+        terraform plan $EXTRA_VARS -var-file=main.tfvars -out plans/main.planfile main
+        # Apply the plan to provision the remaining infra
+        terraform apply plans/main.planfile
+
+        success "Infrastructure has been successfully provisioned!"
+    fi
+}
+
+# Print all resource ARNs tagged with prefix=INFRA_PREFIX
+function resources() {
+    if [ -z "$INFRA_PREFIX" ]; then
+        error "No prefix set, unable to locate tagged resources"
+        exit 1
+    fi
+    # Yes, stagging, blame Amazon
+    aws resourcegroupstaggingapi get-resources \
+        --no-paginate \
+        --tag-filters="Key=prefix,Values=$INFRA_PREFIX" | \
+    jq '.ResourceTagMappingList[].ResourceARN' --raw-output
+}
+
+# Provide test data for validation
+function precheck() {
+     # Save variables used by Terraform modules
+    if [ ! -f ./ignore.tfvars ]; then
+        {
+            echo "bucket = \"poa-terraform-state\""
+            echo "dynamodb_table = \"poa-terraform-locks\""
+            echo "key = \"terraform.tfstate\""
+            echo "key_name = \"poa\""
+            echo "prefix = \"prefix\""
+        } > ./ignore.tfvars
+    fi
+}
+
+# Parse options for this script
+VERBOSE=false
+HELP=false
+DRY_RUN=false
+
+COMMAND=
+while [ "$1" != "" ]; do
+    param=$(echo "$1" | sed -re 's/^([^=]*)=/\1/')
+    #val=$(echo "$1" | sed -e 's/^[^=]*=//g')
+    case $param in
+        -h | --help)
+            HELP=true
+            ;;
+        -v | --verbose)
+            VERBOSE=true
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            ;;
+        --no-color)
+            disable_color
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            COMMAND="$param"
+            shift
+            break
+            ;;
+    esac
+    shift
+done
+
+# Turn on debug mode if --verbose was set
+if [ "$VERBOSE" == "true" ]; then
+    set -x
+fi
+
+# Set working directory to the project root
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+# If cached prefix is in PREFIX file, then use it
+if [ -f ./PREFIX ]; then
+    INFRA_PREFIX=$(cat ./PREFIX)
+fi
+
+# Override command if --help or -h was passed
+if [ "$HELP" == "true" ]; then
+    # If we ever want to show help for a specific command we'll need this
+    # HELP_COMMAND="$COMMAND"
+    COMMAND=help
+fi
+
+check_prereqs
+
+case $COMMAND in
+    help)
+        help
+        ;;
+    provision)
+        provision
+        ;;
+    destroy)
+        destroy
+        ;;
+    resources)
+        resources
+        ;;
+    precheck)
+        precheck
+        ;;
+    *)
+        error "Unknown task '$COMMAND'. Try 'help' to see valid tasks"
+        exit 1
+esac                
+
+exit 0

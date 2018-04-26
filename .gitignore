@@ -1,0 +1,16 @@
+.DS_Store
+
+# Testing
+/ignore.tfvars
+
+# Terraform State
+/.terraform
+/terraform.tfstate.d
+
+# Sensitive information
+/*.privkey
+/*.tfvars
+
+# Stack-specific information
+/PREFIX
+/plans/*.planfile
