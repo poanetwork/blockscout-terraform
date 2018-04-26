@@ -14,10 +14,6 @@ resource "aws_db_instance" "default" {
 
   depends_on = ["aws_security_group.database"]
 
-  lifecycle {
-    prevent_destroy = true
-  }
-
   tags {
     prefix = "${var.prefix}"
     origin = "terraform"
