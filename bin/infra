@@ -153,12 +153,47 @@ EOF
     fi
 }
 
-# Tear down all provisioned infra
-function destroy() {
-    terraform destroy -var-file=backend.tfvars -var-file=main.tfvars base
+function destroy_bucket() {
+    bucket="$(cat backend.tfvars | grep bucket | sed -e 's/bucket = //' -e 's/"//g')"
+    read -r -p "Are you super sure you want to delete the Terraform state bucket and all versions? (y/n) "
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 2
+    fi
+    # Delete all versions and delete markers first
+    log "Disabling bucket versioning for S3 bucket '$bucket'.."
+    aws s3api put-bucket-versioning --bucket="$bucket" --versioning-configuration="Status=Disabled"
+    log "Deleting old versions of S3 bucket '$bucket'.."
+    aws s3api list-object-versions --bucket="$bucket" |\
+        jq '.Versions[], .DeleteMarkers[] | "\"\(.Key)\" \"\(.VersionId)\""' --raw-output |\
+        awk -v bucket="$bucket" '{
+          print "aws s3api delete-object", \
+              "--bucket=\"" bucket "\"", \
+              "--key=\"" $1 "\"", \
+              "--version-id=\"" $2 "\"" \
+          | "/bin/sh >/dev/null"
+          print "Deleted version " $2 "of " $1 " successfully"
+        }'
+    # Finally, delete the bucket and all its contents
+    aws s3 rb --force "s3://$bucket"
+}
+
+function destroy_dynamo_table() {
+    table="$(cat backend.tfvars | grep dynamodb_table | sed -e 's/dynamodb_table = //' -e 's/"//g')"
+    aws dynamodb delete-table --table-name="$table"
+}
+
+function destroy_generated_files() {
     rm -f ./PREFIX
     rm -f ./backend.tfvars
     rm -f ./main.tfvars
+}
+
+# Tear down all provisioned infra
+function destroy() {
+    terraform destroy $EXTRA_VARS -var-file=backend.tfvars -var-file=main.tfvars main
+    destroy_bucket
+    destroy_dynamo_table
+    destroy_generated_files
     success "All generated infrastructure successfully removed!"
 }
 
@@ -215,11 +250,6 @@ EOF
             echo "$output" | jq '.KeyMaterial' --raw-output > "$KEY_PAIR.privkey"
             success "Created keypair successfully! Private key has been saved to ./$KEY_PAIR.privkey"
         fi
-    fi
-
-    EXTRA_VARS=""
-    if [ -f ./user.tfvars ]; then
-        EXTRA_VARS="-var-file=user.tfvars"
     fi
 
     # Save variables used by Terraform modules
@@ -402,6 +432,11 @@ if [ "$HELP" == "true" ]; then
 fi
 
 check_prereqs
+
+EXTRA_VARS=""
+if [ -f ./user.tfvars ]; then
+    EXTRA_VARS="-var-file=user.tfvars"
+fi
 
 case $COMMAND in
     help)
