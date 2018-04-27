@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "config-policy" {
 
     resources = [
       "arn:aws:ssm:*:*:parameter/${var.prefix}/*",
-      "arn:aws:ssm:*:*:parameter/${var.prefix}/*/*"
+      "arn:aws:ssm:*:*:parameter/${var.prefix}/*/*",
     ]
   }
 
