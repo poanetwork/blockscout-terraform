@@ -155,7 +155,7 @@ EOF
 }
 
 function destroy_bucket() {
-    bucket="$(cat backend.tfvars | grep bucket | sed -e 's/bucket = //' -e 's/"//g')"
+    bucket="$(grep 'bucket' backend.tfvars | sed -e 's/bucket = //' -e 's/"//g')"
     read -r -p "Are you super sure you want to delete the Terraform state bucket and all versions? (y/n) "
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         exit 2
@@ -166,20 +166,20 @@ function destroy_bucket() {
     log "Deleting old versions of S3 bucket '$bucket'.."
     aws s3api list-object-versions --bucket="$bucket" |\
         jq '.Versions[], .DeleteMarkers[] | "\"\(.Key)\" \"\(.VersionId)\""' --raw-output |\
-        awk -v bucket="$bucket" '{
-          print "aws s3api delete-object", \
-              "--bucket=\"" bucket "\"", \
-              "--key=\"" $1 "\"", \
-              "--version-id=\"" $2 "\"" \
-          | "/bin/sh >/dev/null"
-          print "Deleted version " $2 "of " $1 " successfully"
-        }'
+        awk -v bucket="$bucket" '{'\
+        ' print "aws s3api delete-object", '\
+        '     "--bucket=\"" bucket "\"", '\
+        '     "--key=\"" $1 "\"", '\
+        '     "--version-id=\"" $2 "\"" '\
+        ' | "/bin/sh >/dev/null"; '\
+        ' print "Deleted version " $2 "of " $1 " successfully"; '\
+        '}'
     # Finally, delete the bucket and all its contents
     aws s3 rb --force "s3://$bucket"
 }
 
 function destroy_dynamo_table() {
-    table="$(cat backend.tfvars | grep dynamodb_table | sed -e 's/dynamodb_table = //' -e 's/"//g')"
+    table="$(grep 'dynamodb_table' backend.tfvars | sed -e 's/dynamodb_table = //' -e 's/"//g')"
     aws dynamodb delete-table --table-name="$table"
 }
 
@@ -191,6 +191,7 @@ function destroy_generated_files() {
 
 # Tear down all provisioned infra
 function destroy() {
+    #shellcheck disable=SC2086
     terraform destroy $EXTRA_VARS -var-file=backend.tfvars -var-file=main.tfvars main
     destroy_bucket
     destroy_dynamo_table
@@ -309,6 +310,7 @@ EOF
             # Init the base workspace using the setup directory
             terraform init -backend-config=backend.tfvars setup
             # Generate the plan for the S3 backend resources
+            # shellcheck disable=SC2086
             terraform plan $EXTRA_VARS -var-file=main.tfvars -out plans/setup.planfile setup
             if [ "$DRY_RUN" == "true" ]; then
                 action "DRY RUN: Would have executed Terraform plan for S3 backend"
@@ -343,6 +345,7 @@ EOF
         # Initialize main workspace using S3 backend
         terraform init -backend-config=backend.tfvars main
         # Generate the plan for the remaining infra
+        # shellcheck disable=SC2086
         terraform plan $EXTRA_VARS -var-file=main.tfvars -out plans/main.planfile main
         # Apply the plan to provision the remaining infra
         terraform apply plans/main.planfile
