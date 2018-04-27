@@ -318,10 +318,6 @@ EOF
         else
             # Now initialize the base workspace using the S3 backend
             # This has the effect of migrating the local state to S3
-            #init_env=$(sed -r -e 's/^([^\s]*) = /TF_VAR_\1=/' backend.tfvars)
-            #for ev in $init_env; do
-                #export $ev
-            #done
             terraform init -backend-config=backend.tfvars base
         fi
 
