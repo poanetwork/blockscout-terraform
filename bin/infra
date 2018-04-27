@@ -161,19 +161,20 @@ function destroy_bucket() {
         exit 2
     fi
     # Delete all versions and delete markers first
-    log "Disabling bucket versioning for S3 bucket '$bucket'.."
-    aws s3api put-bucket-versioning --bucket="$bucket" --versioning-configuration="Status=Disabled"
-    log "Deleting old versions of S3 bucket '$bucket'.."
+    info "Disabling bucket versioning for S3 bucket '$bucket'.."
+    aws s3api put-bucket-versioning --bucket="$bucket" --versioning-configuration="Status=Suspended"
+    info "Deleting old versions of S3 bucket '$bucket'.."
+    # shellcheck disable=SC1004
     aws s3api list-object-versions --bucket="$bucket" |\
         jq '.Versions[], .DeleteMarkers[] | "\"\(.Key)\" \"\(.VersionId)\""' --raw-output |\
-        awk -v bucket="$bucket" '{'\
-        ' print "aws s3api delete-object", '\
-        '     "--bucket=\"" bucket "\"", '\
-        '     "--key=\"" $1 "\"", '\
-        '     "--version-id=\"" $2 "\"" '\
-        ' | "/bin/sh >/dev/null"; '\
-        ' print "Deleted version " $2 "of " $1 " successfully"; '\
-        '}'
+        awk -v bucket="$bucket" '{ \
+          print "aws s3api delete-object", \
+              "--bucket=\"" bucket "\"", \
+              "--key=\"" $1 "\"", \
+              "--version-id=\"" $2 "\"" \
+          | "/bin/sh >/dev/null"; \
+          print "Deleted version " $2 "of " $1 " successfully"; \
+         }'
     # Finally, delete the bucket and all its contents
     aws s3 rb --force "s3://$bucket"
 }
@@ -191,7 +192,7 @@ function destroy_generated_files() {
 
 # Tear down all provisioned infra
 function destroy() {
-    #shellcheck disable=SC2086
+    # shellcheck disable=SC2086
     terraform destroy $EXTRA_VARS -var-file=backend.tfvars -var-file=main.tfvars main
     destroy_bucket
     destroy_dynamo_table
