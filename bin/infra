@@ -260,7 +260,12 @@ EOF
         if [ -z "$region" ]; then
             # Try to pull region from local config
             if [ -f "$HOME/.aws/config" ]; then
-                region=$(grep 'region' ~/.aws/config | sed -e 's/region = //')
+                if [ "$AWS_PROFILE" == "default" ]; then
+                    region=$(awk '/\[default\]/{a=1;next}; /\[/{a=0}a' ~/.aws/config | grep 'region' | sed -e 's/region = //')
+                else
+                    #shellcheck disable=SC1117
+                    region=$(awk "/\[profile $AWS_PROFILE\]/{a=1;next}; /\[/{a=0}a" ~/.aws/config | grep 'region' | sed -e 's/region = //')
+                fi
             fi
         fi
         if [ -z "$region" ]; then
@@ -378,10 +383,13 @@ VERBOSE=false
 HELP=false
 DRY_RUN=false
 
+# Environment variables for Terraform
+AWS_PROFILE="${AWS_PROFILE:-default}"
+
 COMMAND=
 while [ "$1" != "" ]; do
     param=$(echo "$1" | sed -re 's/^([^=]*)=/\1/')
-    #val=$(echo "$1" | sed -e 's/^[^=]*=//g')
+    val=$(echo "$1" | sed -re 's/^([^=]*)=//')
     case $param in
         -h | --help)
             HELP=true
@@ -394,6 +402,9 @@ while [ "$1" != "" ]; do
             ;;
         --no-color)
             disable_color
+            ;;
+        --profile)
+            AWS_PROFILE="$val"
             ;;
         --)
             shift
@@ -415,6 +426,11 @@ fi
 
 # Set working directory to the project root
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
+
+# Export AWS_PROFILE if a non-default profile was chosen
+if [ ! "$AWS_PROFILE" == "default" ]; then
+    export AWS_PROFILE
+fi
 
 # If cached prefix is in PREFIX file, then use it
 if [ -f ./PREFIX ]; then
