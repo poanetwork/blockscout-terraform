@@ -71,6 +71,7 @@ function warnb() {
 # Print the given message in red
 function error() {
     printf '%s%s%s\n' "$bldred" "$1" "$txtrst"
+    exit 1
 }
 
 # Like error, but expects the message via redirect
