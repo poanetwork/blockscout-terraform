@@ -106,6 +106,7 @@ Tasks:
     help              Show help
     provision         Run the provisioner to generate or modify POA infrastructure
     destroy           Tear down any provisioned resources and local state
+    resources         List ARNs of any generated resources (* see docs for caveats)
 
 Global Options:
 
@@ -113,10 +114,11 @@ Global Options:
     -h | --help       Print this help message
     --dry-run         Perform as many actions as possible without performing side-effects
     --no-color        Turn off color
+    --skip-approval   Automatically accept any prompts for confirmation
+    --profile=<name>  Use a specific AWS profile rather than the default
 EOF
     exit 2
 }
-
 
 # Verify tools
 function check_prereqs() {
@@ -154,6 +156,17 @@ EOF
     fi
 }
 
+# Load a value which is present in one of the Terraform config
+# files in the current directory, with precedence such that user-provided
+# .tfvars are loaded after main.tfvars, allowing one to override those values
+function get_config() {
+    EXTRA_VARS="$(find . -name '*.tfvars' -and \! \( -name 'main.tfvars' -or -name 'backend.tfvars' \))"
+    cat main.tfvars $EXTRA_VARS | \
+        grep -E "^$1 " | \
+        tail -n 1 | \
+        sed -r -e 's/^[^=]*= //' -e 's/"//g'
+}
+
 function destroy_bucket() {
     bucket="$(grep 'bucket' backend.tfvars | sed -e 's/bucket = //' -e 's/"//g')"
     read -r -p "Are you super sure you want to delete the Terraform state bucket and all versions? (y/n) "
@@ -185,7 +198,6 @@ function destroy_dynamo_table() {
 }
 
 function destroy_generated_files() {
-    rm -f ./PREFIX
     rm -f ./backend.tfvars
     rm -f ./main.tfvars
 }
@@ -193,10 +205,27 @@ function destroy_generated_files() {
 # Tear down all provisioned infra
 function destroy() {
     # shellcheck disable=SC2086
-    terraform destroy $EXTRA_VARS -var-file=backend.tfvars -var-file=main.tfvars main
-    destroy_bucket
-    destroy_dynamo_table
-    destroy_generated_files
+    terraform plan -destroy -var-file=main.tfvars -out plans/destroy.planfile main
+    read -r -p "Are you sure you want to run this plan? (y/n) "
+    if [[ $REPLY =~ ^[yY]$ ]]; then
+        terraform apply plans/destroy.planfile
+        rm -f plans/destroy.planfile
+    else
+        exit 0
+    fi
+    read -r -p "Do you wish to destroy the Terraform state? (y/n) "
+    if [[ $REPLY =~ ^[yY]$ ]]; then
+        destroy_bucket
+        destroy_dynamo_table
+        rm -rf terraform.tfstate.d
+        rm -rf .terraform
+    else
+        exit 0
+    fi
+    read -r -p "Do you want to delete the generated config files? (y/n) "
+    if [[ $REPLY =~ ^[yY]$ ]]; then
+        destroy_generated_files
+    fi
     success "All generated infrastructure successfully removed!"
 }
 
@@ -214,7 +243,7 @@ unique prefix for all resource names and ids.
 
 By default, a random 8 character alphanumeric string is generated for you, but 
 if you wish to provide your own, now is your chance. This value will be stored 
-in './PREFIX' so that you only need provide it once, but make sure you source 
+in 'main.tfvars' so that you only need provide it once, but make sure you source 
 control the file.
 EOF
 
@@ -223,23 +252,28 @@ EOF
         if [ -z "$INFRA_PREFIX" ]; then
             INFRA_PREFIX="$DEFAULT_INFRA_PREFIX"
         fi
-        if [ "$DRY_RUN" == "false" ]; then
-            echo "$INFRA_PREFIX" > ./PREFIX
-        fi
+    fi
+
+    if ! echo "$INFRA_PREFIX" | grep -E '^[a-z0-9]{3,24}$'; then
+        errorb << EOF
+The prefix '$INFRA_PREFIX' is invalid!
+
+It must consist only of the lowercase characters a-z and digits 0-9,
+and must be between 3 and 24 characters long.
+EOF
     fi
 
     # EC2 key pairs
     if [ -z "$KEY_PAIR" ]; then
-        read -r -p "Please provide the name of the key pair to use with EC2 hosts: "
-        KEY_PAIR="$REPLY"
+        KEY_PAIR="$(get_config 'key_name')"
         if [ -z "$KEY_PAIR" ]; then
-            error "You must provide a valid key pair name!"
-            exit 2
+            read -r -p "Please provide the name of the key pair to use with EC2 hosts: "
+            KEY_PAIR="$REPLY"
+            if [ -z "$KEY_PAIR" ]; then
+                error "You must provide a valid key pair name!"
+                exit 2
+            fi
         fi
-    fi
-
-    if [ -z "$SECRET_KEY_BASE" ]; then
-        SECRET_KEY_BASE="$(openssl rand -base64 32)"
     fi
 
     if ! aws ec2 describe-key-pairs --key-names="$KEY_PAIR" 2>/dev/null; then
@@ -252,6 +286,13 @@ EOF
             fi
             echo "$output" | jq '.KeyMaterial' --raw-output > "$KEY_PAIR.privkey"
             success "Created keypair successfully! Private key has been saved to ./$KEY_PAIR.privkey"
+        fi
+    fi
+
+    if [ -z "$SECRET_KEY_BASE" ]; then
+        SECRET_KEY_BASE="$(get_config 'secret_key_base')"
+        if [ -z "$SECRET_KEY_BASE" ]; then
+            SECRET_KEY_BASE="$(openssl rand -base64 32)"
         fi
     fi
 
@@ -271,8 +312,12 @@ EOF
             fi
         fi
         if [ -z "$region" ]; then
-            # If unset still, use default of us-east-2
-            region='us-east-2'
+            read -r -p "What region should infrastructure be created in (us-east-2): "
+            if [ -z "$REPLY" ]; then
+                region='us-east-2'
+            else
+                region="$REPLY"
+            fi
         fi
         # Backend config only!
         {
@@ -292,67 +337,67 @@ EOF
         } > ./main.tfvars
     fi
 
+    # No Terraform state yet, so this is a fresh run
+    if [ ! -d .terraform ]; then
+        terraform workspace new base setup
+        terraform workspace select base setup
+        # shellcheck disable=SC2086
+        terraform init -backend-config=backend.tfvars -var-file=main.tfvars setup
+        # shellcheck disable=SC2086
+        terraform plan -var-file=main.tfvars -out plans/setup.planfile setup
+
+        if [ "$DRY_RUN" == "false" ]; then
+            # No need to show the plan, it has already been displayed
+            SKIP_SETUP_PLAN="true"
+        fi
+    fi
+
     workspace="$(terraform workspace show)"
 
-    if [ ! "$workspace" == "main" ]; then
-
-        if [ "$workspace" == "default" ]; then
-            # Setup base workspace
-            if workspaces=$(terraform workspace list); then
-                if ! echo "$workspaces" | grep "base$" >/dev/null; then
-                    terraform workspace new base setup
-                fi
-            else
-                exit 2
-            fi
-
-            # We first switch to the base workspace using the setup directory as the initial config
-            terraform workspace select base setup
-            # Init the base workspace using the setup directory
-            terraform init -backend-config=backend.tfvars setup
-            # Generate the plan for the S3 backend resources
+    # Setup hasn't completed yet, perhaps due to a dry run
+    if [ -f plans/setup.planfile ]; then
+        if [ -z "$SKIP_SETUP_PLAN" ]; then
+            # Regenerate setup plan if not fresh
             # shellcheck disable=SC2086
-            terraform plan $EXTRA_VARS -var-file=main.tfvars -out plans/setup.planfile setup
-            if [ "$DRY_RUN" == "true" ]; then
-                action "DRY RUN: Would have executed Terraform plan for S3 backend"
-            else
-                # Apply the plan to provision the S3 backend resources
-                terraform apply plans/setup.planfile
-            fi
+            terraform plan -var-file=main.tfvars -out plans/setup.planfile setup
         fi
-
+        # Wait for user approval if we're going to proceed
+        if [ "$SKIP_APPROVAL" == "false" ]; then
+            read -r -p "Take a moment to review the generated plan, and press ENTER to continue"
+        fi
         if [ "$DRY_RUN" == "true" ]; then
-            action "DRY RUN: Would have migrated Terraform state to S3 backend"
-        else
-            # Now initialize the base workspace using the S3 backend
-            # This has the effect of migrating the local state to S3
-            terraform init -backend-config=backend.tfvars base
+            action "DRY RUN: Would have executed Terraform plan for S3 backend as just shown"
+            warn "Unable to dry run further steps until S3 backend has been created!"
+            exit 0
         fi
+        terraform apply plans/setup.planfile
+        rm plans/setup.planfile
+        # Migrate state to S3
+        # shellcheck disable=SC2086
+        terraform init -force-copy -backend-config=backend.tfvars -var-file=main.tfvars base
+    fi
 
-        # Setup main workspace
-        if ! terraform workspace list | grep "main$" >/dev/null; then
-            terraform workspace new main main
-        fi
-
-        # Switch to the main workspace which contains the rest of our infra
+    if [ "$workspace" == "base" ]; then
+        # Switch to main workspace
+        terraform workspace new main main
         terraform workspace select main main
     fi
-
-    if [ "$DRY_RUN" == "true" ]; then
-        action "DRY RUN: Would have initialized Terraform state for remaining infrastructure"
-        action "DRY RUN: Would have generated Terraform plan for remaining infrastructure"
-        action "DRY RUN: Would have executed Terraform plan for remaining infrastructure"
-    else
-        # Initialize main workspace using S3 backend
-        terraform init -backend-config=backend.tfvars main
-        # Generate the plan for the remaining infra
-        # shellcheck disable=SC2086
-        terraform plan $EXTRA_VARS -var-file=main.tfvars -out plans/main.planfile main
-        # Apply the plan to provision the remaining infra
-        terraform apply plans/main.planfile
-
-        success "Infrastructure has been successfully provisioned!"
+    # shellcheck disable=SC2086
+    terraform init -backend-config=backend.tfvars -var-file=main.tfvars main
+    # Generate the plan for the remaining infra
+    # shellcheck disable=SC2086
+    terraform plan -var-file=main.tfvars -out plans/main.planfile main
+    if [ "$SKIP_APPROVAL" == "false" ]; then
+        read -r -p "Take a moment to review the generated plan, and press ENTER to continue"
     fi
+    if [ "$DRY_RUN" == "true" ]; then
+        action "DRY RUN: Would have executed the Terraform plan just shown"
+    fi
+
+    # Apply the plan to provision the remaining infra
+    terraform apply plans/main.planfile
+    rm plans/main.planfile
+    success "Infrastructure has been successfully provisioned!"
 }
 
 # Print all resource ARNs tagged with prefix=INFRA_PREFIX
@@ -410,6 +455,9 @@ while [ "$1" != "" ]; do
         --profile)
             AWS_PROFILE="$val"
             ;;
+        --skip-approval)
+            SKIP_APPROVAL="true"
+            ;;
         --)
             shift
             break
@@ -437,8 +485,8 @@ if [ ! "$AWS_PROFILE" == "default" ]; then
 fi
 
 # If cached prefix is in PREFIX file, then use it
-if [ -f ./PREFIX ]; then
-    INFRA_PREFIX=$(cat ./PREFIX)
+if [ -z "$INFRA_PREFIX" ] && [ -f main.tfvars ]; then
+    INFRA_PREFIX="$(get_config 'prefix')"
 fi
 
 # Override command if --help or -h was passed
@@ -449,11 +497,6 @@ if [ "$HELP" == "true" ]; then
 fi
 
 check_prereqs
-
-EXTRA_VARS=""
-if [ -f ./user.tfvars ]; then
-    EXTRA_VARS="-var-file=user.tfvars"
-fi
 
 case $COMMAND in
     help)
@@ -470,6 +513,10 @@ case $COMMAND in
         ;;
     precheck)
         precheck
+        ;;
+    destroy_setup)
+        destroy_bucket
+        destroy_dynamo_table
         ;;
     *)
         error "Unknown task '$COMMAND'. Try 'help' to see valid tasks"

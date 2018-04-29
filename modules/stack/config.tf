@@ -1,12 +1,12 @@
 resource "aws_ssm_parameter" "new_relic_app_name" {
-  count = "${length(var.chains)}"
+  count = "${var.new_relic_app_name == "" ? 0 : length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/new_relic_app_name"
   value = "${var.new_relic_app_name}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "new_relic_license_key" {
-  count = "${length(var.chains)}"
+  count = "${var.new_relic_license_key == "" ? 0 : length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/new_relic_license_key"
   value = "${var.new_relic_license_key}"
   type  = "String"

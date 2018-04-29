@@ -69,9 +69,22 @@ scaling yet. This is something that may come in the future.
 
 **IMPORTANT**: This repository's `.gitignore` prevents the storage of several files generated during provisioning, but it is important
 that you keep them around in your own fork, so that subsequent runs of the `infra` script are using the same configuration and state.
-These files are `PREFIX`, `backend.tfvars`, `main.tfvars`, the contents of `plans`, and the Terraform state directories. If you generated
-a private key for EC2 (the default), then you will also have a `*.privkey` file in your project root, you need to store this securely out of
+These files are `backend.tfvars`, `main.tfvars`, and the Terraform state directories. If you generated
+a private key for EC2 (the default), then you will also have a `*.privkey** file in your project root, you need to store this securely out of
 band once created, but does not need to be in the repository.
+
+## Migration Prompt
+
+The installer will prompt during its initial run to ask if you want to migrate
+the Terraform state to S3, this is a necessary step, and is only prompted due to
+a bug in the Terraform CLI, in a future release, this shouldn't occur, but in
+the meantime, you will need to answer yes to this prompt.
+
+## Configuring Installer
+
+The `infra` script generates config files for storing the values provided for
+future runs. You can provide overrides to this configuration in
+`terraform.tfvars` or any file with the `.tfvars` extension.
 
 ## Defining Chains/Adding Chains
 
