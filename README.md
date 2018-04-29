@@ -12,6 +12,13 @@ For other platforms, or if you don't have Homebrew installed, please see the fol
 - [awscli](https://docs.aws.amazon.com/cli/latest/userguide/installing.html)
 - [terraform](https://www.terraform.io/intro/getting-started/install.html)
 
+You will also need the following information for the installer:
+
+- A unique prefix to use for provisioned resources
+- A password to use for the RDS database
+- The name of a IAM key pair to use for EC2 instances, if you provide a name which
+  already exists it will be used, otherwise it will be generated for you.
+
 ## AWS
 
 You will need to set up a new AWS account, and then login to that account using the AWS CLI (via `aws configure`).
