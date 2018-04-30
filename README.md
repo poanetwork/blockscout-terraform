@@ -1,5 +1,9 @@
 # Usage
 
+## TODO
+
+- Mention necessity of cleaning up destroyed resources before running
+
 ## Prerequisites
 
 The bootstrap script included in this project expects the AWS CLI, jq, and Terraform to be installed and on the PATH.
@@ -15,7 +19,7 @@ For other platforms, or if you don't have Homebrew installed, please see the fol
 You will also need the following information for the installer:
 
 - A unique prefix to use for provisioned resources (5 alphanumeric chars or less)
-- A password to use for the RDS database
+- A password to use for the RDS database (at least 8 characters long)
 - The name of a IAM key pair to use for EC2 instances, if you provide a name which
   already exists it will be used, otherwise it will be generated for you.
 
