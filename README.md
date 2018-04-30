@@ -1,9 +1,5 @@
 # Usage
 
-## TODO
-
-- Mention necessity of cleaning up destroyed resources before running
-
 ## Prerequisites
 
 The bootstrap script included in this project expects the AWS CLI, jq, and Terraform to be installed and on the PATH.
@@ -25,11 +21,11 @@ You will also need the following information for the installer:
 
 ## AWS
 
-You will need to set up a new AWS account, and then either login to that account
-using the AWS CLI (via `aws configure`),
-or create a user account that you will use for provisioning, and login to that
-account. The account used requires full access to all AWS services, as a wide
-variety of services are used, a mostly complete list is as follows:
+You will need to set up a new AWS account (or subaccount), and then either login
+to that account using the AWS CLI (via `aws configure`) or create a user account 
+that you will use for provisioning, and login to that account. The account used 
+requires full access to all AWS services, as a wide variety of services are used, 
+a mostly complete list is as follows:
 
 - VPCs and associated networking resources (subnets, routing tables, etc.)
 - Security Groups
@@ -127,6 +123,24 @@ Config is stored in the Systems Manager Parameter Store, each chain has its own 
 you will need to go and terminate the instances for that chain so that they are reprovisioned with the new configuration.
 
 You will need to make sure to import the changes into the Terraform state though, or you run the risk of getting out of sync.
+
+## Destroying Provisioned Infrastructure
+
+You can use `bin/infra destroy` to remove any generated infrastructure. It is
+important to note though that if you run this script on partially generated
+infrastructure, or if an error occurs during the destroy process, that you may
+need to manually check for, and remove, any resources that were not able to be
+deleted for you. You can use the `bin/infra resources` command to list all ARNs
+that are tagged with the unique prefix you supplied to the installer, but not
+all AWS resources support tags, and so will not be listed. Here's a list of such
+resources I am aware of:
+
+- Route53 hosted zone and records
+- ElastiCache/RDS subnet groups
+- CodeDeploy applications
+
+If the `destroy` command succeeds, then everything has been removed, and you do
+not have to worry about leftover resources hanging around.
 
 ## Common Errors and Questions
 
