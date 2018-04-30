@@ -119,3 +119,27 @@ Config is stored in the Systems Manager Parameter Store, each chain has its own 
 you will need to go and terminate the instances for that chain so that they are reprovisioned with the new configuration.
 
 You will need to make sure to import the changes into the Terraform state though, or you run the risk of getting out of sync.
+
+## Common Errors and Questions
+
+### Error Applying Plan (diffs didn't match)
+
+If you see something like the following:
+
+```
+Error: Error applying plan:
+
+1 error(s) occurred:
+
+* module.stack.aws_autoscaling_group.explorer: aws_autoscaling_group.explorer: diffs didn't match during apply. This is a bug with Terraform and should be reported as a GitHub Issue.
+
+Please include the following information in your report:
+
+    Terraform Version: 0.11.7
+    Resource ID: aws_autoscaling_group.explorer
+    Mismatch reason: attribute mismatch: availability_zones.1252502072
+```
+
+This is due to a bug in Terraform, however the fix is to just rerun `bin/infra
+provision` again, and Terraform will pick up where it left off. This does not
+always happen, but this is the current workaround if you see it.
