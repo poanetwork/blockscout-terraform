@@ -25,8 +25,11 @@ You will also need the following information for the installer:
 
 ## AWS
 
-You will need to set up a new AWS account, and then login to that account using the AWS CLI (via `aws configure`).
-It is critical that this account have full permissions to the following AWS resources/services:
+You will need to set up a new AWS account, and then either login to that account
+using the AWS CLI (via `aws configure`),
+or create a user account that you will use for provisioning, and login to that
+account. The account used requires full access to all AWS services, as a wide
+variety of services are used, a mostly complete list is as follows:
 
 - VPCs and associated networking resources (subnets, routing tables, etc.)
 - Security Groups
@@ -36,9 +39,14 @@ It is critical that this account have full permissions to the following AWS reso
 - DynamoDB
 - Route53
 - RDS
+- ElastiCache
+- CodeDeploy
 
-These are required to provision the various AWS resources used by this project. If you are lacking permissions,
-Terraform will fail when applying its plan, and you will have to make sure those permissions are provided.
+Given the large number of services involved, and the unpredictability of which
+specific API calls will be needed during provisioning, it is recommended that
+you provide a user account with full access. You do not need to keep this user
+around (or enabled) except during the initial provisioning, and any subsequent
+runs to update the infrastructure. How you choose to handle this user is up to you.
 
 ## Usage
 
