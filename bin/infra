@@ -233,7 +233,7 @@ function destroy() {
 function provision() {
     # If INFRA_PREFIX has not been set yet, request it from user
     if [ -z "$INFRA_PREFIX" ]; then
-        DEFAULT_INFRA_PREFIX=$(tr -dc 'a-z0-9' < /dev/urandom | fold -w 8 | head -n 1)
+        DEFAULT_INFRA_PREFIX=$(tr -dc 'a-z0-9' < /dev/urandom | fold -w 5 | head -n 1)
 
         warnb << EOF
 # Infrastructure Prefix
@@ -254,12 +254,12 @@ EOF
         fi
     fi
 
-    if ! echo "$INFRA_PREFIX" | grep -E '^[a-z0-9]{3,24}$'; then
+    if ! echo "$INFRA_PREFIX" | grep -E '^[a-z0-9]{3,5}$'; then
         errorb << EOF
 The prefix '$INFRA_PREFIX' is invalid!
 
 It must consist only of the lowercase characters a-z and digits 0-9,
-and must be between 3 and 24 characters long.
+and must be between 3 and 5 characters long.
 EOF
     fi
 

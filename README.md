@@ -14,7 +14,7 @@ For other platforms, or if you don't have Homebrew installed, please see the fol
 
 You will also need the following information for the installer:
 
-- A unique prefix to use for provisioned resources
+- A unique prefix to use for provisioned resources (5 alphanumeric chars or less)
 - A password to use for the RDS database
 - The name of a IAM key pair to use for EC2 instances, if you provide a name which
   already exists it will be used, otherwise it will be generated for you.
