@@ -55,6 +55,33 @@ CHAIN="$(jq '.Tags[] | select(.Key == "chain") | .Value' tags.json --raw-output)
 log "Setting up application environment.."
 
 mkdir -p /opt/app
+chown -R ec2-user /opt/app
+
+log "Creating explorer systemd service.."
+
+cat <<EOF > /lib/systemd/system/explorer.service
+[Unit]
+Description=POA Explorer
+After=network.target
+
+[Service]
+Type=simple
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=explorer
+User=ec2-user
+WorkingDirectory=/opt/app
+ExecStart=/opt/elixir/bin/mix phx.server
+EnvironmentFile=/etc/environment
+KillMode=process
+TimeoutStopSec=60
+Restart=on-failure
+RestartSec=5
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target
+EOF
 
 log "Installing Erlang.."
 
@@ -127,10 +154,6 @@ old_env="$(cat /etc/environment)"
 } > /etc/environment
 
 log "Parameters have been written to /etc/environment successfully!"
-
-log "Setting permissions on /opt/app"
-
-chown -R ec2-user /opt/app
 
 log "Creating pgsql database for $CHAIN"
 
