@@ -72,6 +72,7 @@ SyslogIdentifier=explorer
 User=ec2-user
 WorkingDirectory=/opt/app
 ExecStart=/opt/elixir/bin/mix phx.server
+Environment="MIX_ENV=prod"
 EnvironmentFile=/etc/environment
 KillMode=process
 TimeoutStopSec=60
