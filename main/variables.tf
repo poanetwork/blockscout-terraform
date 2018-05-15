@@ -18,11 +18,6 @@ variable "db_subnet_cidr" {
   default     = "10.0.1.0/16"
 }
 
-variable "redis_subnet_cidr" {
-  description = "The CIDR block for the redis subnet"
-  default     = "10.0.128.0/24"
-}
-
 variable "dns_zone_name" {
   description = "The internal DNS name"
   default     = "poa.internal"

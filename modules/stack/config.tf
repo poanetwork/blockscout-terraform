@@ -12,18 +12,6 @@ resource "aws_ssm_parameter" "new_relic_license_key" {
   type  = "String"
 }
 
-locals {
-  redis_host = "${aws_elasticache_cluster.default.cache_nodes.0.address}"
-  redis_port = "${aws_elasticache_cluster.default.cache_nodes.0.port}"
-}
-
-resource "aws_ssm_parameter" "redis_url" {
-  count = "${length(var.chains)}"
-  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/redis_url"
-  value = "redis://${local.redis_host}:${local.redis_host}/${var.prefix}"
-  type  = "String"
-}
-
 resource "aws_ssm_parameter" "pool_size" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/pool_size"

@@ -4,7 +4,6 @@ variable "key_name" {}
 variable "vpc_cidr" {}
 variable "public_subnet_cidr" {}
 variable "db_subnet_cidr" {}
-variable "redis_subnet_cidr" {}
 variable "dns_zone_name" {}
 variable "instance_type" {}
 

@@ -67,7 +67,6 @@ resource "aws_autoscaling_group" "explorer" {
   depends_on = [
     "aws_ssm_parameter.new_relic_app_name",
     "aws_ssm_parameter.new_relic_license_key",
-    "aws_ssm_parameter.redis_url",
     "aws_ssm_parameter.pool_size",
     "aws_ssm_parameter.ecto_use_ssl",
     "aws_ssm_parameter.exq_blocks_concurrency",

@@ -20,7 +20,6 @@ module "stack" {
   public_subnet_cidr = "${var.public_subnet_cidr}"
   instance_type      = "${var.instance_type}"
   db_subnet_cidr     = "${var.db_subnet_cidr}"
-  redis_subnet_cidr  = "${var.redis_subnet_cidr}"
   dns_zone_name      = "${var.dns_zone_name}"
 
   db_id             = "${var.db_id}"
