@@ -160,8 +160,9 @@ EOF
 # files in the current directory, with precedence such that user-provided
 # .tfvars are loaded after main.tfvars, allowing one to override those values
 function get_config() {
-    EXTRA_VARS="$(find . -name '*.tfvars' -and \! \( -name 'main.tfvars' -or -name 'backend.tfvars' \))"
-    cat main.tfvars $EXTRA_VARS | \
+    EXTRA_VARS="$(find . -name '*.tfvars' -and \! \( -name 'backend.tfvars' \))"
+    # shellcheck disable=SC2086 disable=2002
+    cat $EXTRA_VARS | \
         grep -E "^$1 " | \
         tail -n 1 | \
         sed -r -e 's/^[^=]*= //' -e 's/"//g'
@@ -297,7 +298,7 @@ EOF
     fi
 
     # Save variables used by Terraform modules
-    if [ ! -f ./backend.tfvars ]; then
+    if [ ! -f ./backend.tfvars ] && [ ! -f ./main.tfvars ]; then
         # shellcheck disable=SC2154
         region="$TF_VAR_region"
         if [ -z "$region" ]; then
@@ -342,9 +343,9 @@ EOF
         terraform workspace new base setup
         terraform workspace select base setup
         # shellcheck disable=SC2086
-        terraform init -backend-config=backend.tfvars -var-file=main.tfvars setup
+        terraform init -backend-config=backend.tfvars setup
         # shellcheck disable=SC2086
-        terraform plan -var-file=main.tfvars -out plans/setup.planfile setup
+        terraform plan -out plans/setup.planfile setup
 
         if [ "$DRY_RUN" == "false" ]; then
             # No need to show the plan, it has already been displayed
@@ -359,7 +360,7 @@ EOF
         if [ -z "$SKIP_SETUP_PLAN" ]; then
             # Regenerate setup plan if not fresh
             # shellcheck disable=SC2086
-            terraform plan -var-file=main.tfvars -out plans/setup.planfile setup
+            terraform plan -out plans/setup.planfile setup
         fi
         # Wait for user approval if we're going to proceed
         if [ "$SKIP_APPROVAL" == "false" ]; then
@@ -374,7 +375,7 @@ EOF
         rm plans/setup.planfile
         # Migrate state to S3
         # shellcheck disable=SC2086
-        terraform init -force-copy -backend-config=backend.tfvars -var-file=main.tfvars base
+        terraform init -force-copy -backend-config=backend.tfvars base
     fi
 
     if [ "$workspace" == "base" ]; then
@@ -485,8 +486,10 @@ if [ ! "$AWS_PROFILE" == "default" ]; then
 fi
 
 # If cached prefix is in PREFIX file, then use it
-if [ -z "$INFRA_PREFIX" ] && [ -f main.tfvars ]; then
-    INFRA_PREFIX="$(get_config 'prefix')"
+if [ -z "$INFRA_PREFIX" ]; then
+    if ls ./*.tfvars >/dev/null; then
+        INFRA_PREFIX="$(get_config 'prefix')"
+    fi
 fi
 
 # Override command if --help or -h was passed
