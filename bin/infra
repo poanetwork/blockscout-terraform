@@ -233,7 +233,7 @@ function destroy() {
 function provision() {
     # If INFRA_PREFIX has not been set yet, request it from user
     if [ -z "$INFRA_PREFIX" ]; then
-        DEFAULT_INFRA_PREFIX=$(tr -dc 'a-z0-9' < /dev/urandom | fold -w 5 | head -n 1)
+        DEFAULT_INFRA_PREFIX=$(tr -dc 'a-z0-9' < /dev/urandom | fold -w 8 | head -n 1)
 
         warnb << EOF
 # Infrastructure Prefix
