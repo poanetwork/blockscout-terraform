@@ -19,6 +19,9 @@ You will also need the following information for the installer:
 - The name of a IAM key pair to use for EC2 instances, if you provide a name which
   already exists it will be used, otherwise it will be generated for you.
 
+NOTE: script `bin/infra` relies on clean `~/.aws/config`. If you modified it manually 
+and have commented strings, some errors are possible.
+
 ## AWS
 
 You will need to set up a new AWS account (or subaccount), and then either login
