@@ -85,10 +85,10 @@ variable "secret_key_base" {
 
 variable "new_relic_app_name" {
   description = "The name of the application in New Relic"
-  default = ""
+  default     = ""
 }
 
 variable "new_relic_license_key" {
   description = "The license key for talking to New Relic"
-  default = ""
+  default     = ""
 }
