@@ -104,7 +104,7 @@ future runs. You can provide overrides to this configuration in
 ## Defining Chains/Adding Chains
 
 The default of this repo is to build infra for the `sokol` chain, but you may not want that, or want a different set, so you need to
-create/edit `user.tfvars` and add the following configuration:
+create/edit `terraform.tfvars` or `user.auto.tfvars` and add the following configuration:
 
 ```terraform
 chains = {
