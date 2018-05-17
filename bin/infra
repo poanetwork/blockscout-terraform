@@ -241,7 +241,7 @@ function provision() {
 In order to ensure that provisioned resources are unique, this script uses a 
 unique prefix for all resource names and ids.
 
-By default, a random 8 character alphanumeric string is generated for you, but 
+By default, a random 5 character alphanumeric string is generated for you, but 
 if you wish to provide your own, now is your chance. This value will be stored 
 in 'main.tfvars' so that you only need provide it once, but make sure you source 
 control the file.
