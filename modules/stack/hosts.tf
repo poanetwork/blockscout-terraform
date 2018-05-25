@@ -3,7 +3,7 @@ data "aws_ami" "explorer" {
 
   filter {
     name   = "name"
-    values = ["amzn-ami-*-x86_64-gp2"]
+    values = ["amzn2-ami-*-x86_64-gp2"]
   }
 
   filter {
