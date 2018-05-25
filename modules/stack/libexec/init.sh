@@ -13,13 +13,14 @@ function log() {
     printf '%s [init.sh] %s\n' "$ts" "$1" | tee -a "$LOG"
 }
 
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -P /tmp
+
+yum install -y /tmp/epel-release-latest-7.noarch.rpm
+
 yum update -y
 
 yum upgrade -y --enablerepo=epel >"$LOG"
 
-if ! which wget >/dev/null; then
-    yum install -y wget >"$LOG"
-fi
 if ! which unzip >/dev/null; then
     yum install -y unzip >"$LOG"
 fi
