@@ -73,17 +73,11 @@ data "aws_iam_policy_document" "codedeploy-policy" {
     effect = "Allow"
 
     actions = [
-      "autoscaling:CompleteLifecycleAction",
-      "autoscaling:DeleteLifecycleHook",
-      "autoscaling:DescribeAutoScalingGroups",
-      "autoscaling:DescribeLifecycleHooks",
-      "autoscaling:PutLifecycleHook",
-      "autoscaling:RecordLifecycleActionHeartbeat",
+      "autoscaling:*",
       "codedeploy:*",
+      "tag:*",
       "ec2:DescribeInstances",
       "ec2:DescribeInstanceStatus",
-      "tag:GetTags",
-      "tag:GetResources",
       "sns:Publish",
     ]
 
