@@ -13,6 +13,31 @@ function log() {
     printf '%s [init.sh] %s\n' "$ts" "$1" | tee -a "$LOG"
 }
 
+parameters_json="{}"
+function fetch_ssm_with_token() {
+    sleep 1
+    if [ -z "$1" ]; then
+        log "(fetch_ssm_with_token) Calling ssm without token"
+        parameters_json_tmp=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN" --profile infra-staging)
+    else
+        log "(fetch_ssm_with_token) Calling ssm with token"
+        parameters_json_tmp=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN" --next-token "$1" --profile infra-staging)
+    fi
+
+    next_ssm_token=$(echo "$parameters_json_tmp" | jq '.NextToken' --raw-output)
+    log "(fetch_ssm_with_token) next_ssm_token: $next_ssm_token"
+
+    parameters_json=$(echo "$parameters_json" "$parameters_json_tmp" | jq -s '.[1].Parameters as $p1 | .[0] | (.Parameters += $p1)')
+    log "(fetch_ssm_with_token) parameters_json: $parameters_json"
+
+    if [ -z "$next_ssm_token" ] || [ "$next_ssm_token" == "null" ]; then
+        log "(fetch_ssm_with_token) Done, returning"
+    else
+        log "(fetch_ssm_with_token) Calling next iteration"
+        fetch_ssm_with_token "$next_ssm_token"
+    fi
+}
+
 wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -P /tmp
 
 yum install -y /tmp/epel-release-latest-7.noarch.rpm
@@ -122,7 +147,8 @@ unzip Precompiled.zip -d /opt/elixir >"$LOG"
 log "Elixir installed successfully!"
 
 log "Fetching configuration from Parameter Store..."
-parameters_json=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN")
+#parameters_json=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN")
+fetch_ssm_with_token
 params=$(echo "$parameters_json" | jq '.Parameters[].Name' --raw-output)
 log "$(printf 'Found the following parameters:\n\n%s\n' "$params")"
 
