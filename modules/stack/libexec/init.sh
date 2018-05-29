@@ -18,10 +18,10 @@ function fetch_ssm_with_token() {
     sleep 1
     if [ -z "$1" ]; then
         log "(fetch_ssm_with_token) Calling ssm without token"
-        parameters_json_tmp=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN" --profile infra-staging)
+        parameters_json_tmp=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN")
     else
         log "(fetch_ssm_with_token) Calling ssm with token"
-        parameters_json_tmp=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN" --next-token "$1" --profile infra-staging)
+        parameters_json_tmp=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN" --next-token "$1")
     fi
 
     next_ssm_token=$(echo "$parameters_json_tmp" | jq '.NextToken' --raw-output)
