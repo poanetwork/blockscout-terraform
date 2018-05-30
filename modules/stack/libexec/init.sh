@@ -15,7 +15,6 @@ function log() {
 
 parameters_json="{}"
 function fetch_ssm_with_token() {
-    sleep 1
     if [ -z "$1" ]; then
         log "(fetch_ssm_with_token) Calling ssm without token"
         parameters_json_tmp=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN")
