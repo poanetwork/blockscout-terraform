@@ -112,7 +112,7 @@ EOF
 log "Installing Erlang.."
 
 wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_20.3-1~centos~7_amd64.rpm
-yum install -y unixODBC-devel >"$LOG"
+yum install -y wxGTK-devel unixODBC-devel >"$LOG"
 rpm -Uvh esl-erlang_20.3-1~centos~7_amd64.rpm >"$LOG"
 
 log "Installing Elixir to /opt/elixir.."
