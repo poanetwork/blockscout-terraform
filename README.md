@@ -101,6 +101,17 @@ The `infra` script generates config files for storing the values provided for
 future runs. You can provide overrides to this configuration in
 `terraform.tfvars` or any file with the `.tfvars` extension.
 
+An example `terraform.tfvars` configuration file looks like:
+
+```
+region = "us-east-1"
+bucket = "poa-terraform-state"
+dynamodb_table = "poa-terraform-lock"
+key_name = "sokol-test"
+prefix = "sokol"
+db_password = "qwerty12345"
+```
+
 ## Defining Chains/Adding Chains
 
 The default of this repo is to build infra for the `sokol` chain, but you may not want that, or want a different set, so you need to
@@ -165,3 +176,22 @@ Please include the following information in your report:
 This is due to a bug in Terraform, however the fix is to just rerun `bin/infra
 provision` again, and Terraform will pick up where it left off. This does not
 always happen, but this is the current workaround if you see it.
+
+### Error inspecting states in the "s3" backend
+
+If you see the following:
+
+```
+Error inspecting states in the "s3" backend:
+    NoSuchBucket: The specified bucket does not exist
+    status code: 404, request id: xxxxxxxx, host id: xxxxxxxx
+
+Prior to changing backends, Terraform inspects the source and destination
+states to determine what kind of migration steps need to be taken, if any.
+Terraform failed to load the states. The data in both the source and the
+destination remain unmodified. Please resolve the above error and try again.
+```
+
+This is due to mismatched variables in `terraform.tfvars` and `main.tfvars` files. Update the `terraform.tfvars` file to match the `main.tfvars` file. Delete the `.terraform` and `terraform.dfstate.d` folders, run `bin/infra destroy_setup`, and restart provision by running `bin/infra provision`.
+
+
