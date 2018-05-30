@@ -111,33 +111,9 @@ EOF
 
 log "Installing Erlang.."
 
-wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm >"$LOG"
-rpm -Uvh erlang-solutions-1.0-1.noarch.rpm >"$LOG"
-yum install -y \
-    erlang-erts \
-    erlang-kernel \
-    erlang-stdlib \
-    erlang-compiler \
-    erlang-asn1 \
-    erlang-crypto \
-    erlang-debugger \
-    erlang-dialyzer \
-    erlang-edoc \
-    erlang-erl_interface \
-    erlang-eunit \
-    erlang-hipe \
-    erlang-inets \
-    erlang-mnesia \
-    erlang-os_mon \
-    erlang-parsetools \
-    erlang-public_key \
-    erlang-runtime_tools \
-    erlang-sasl \
-    erlang-ssh \
-    erlang-ssl \
-    erlang-syntax_tools \
-    erlang-tools \
-    >"$LOG"
+wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_20.3-1~centos~7_amd64.rpm
+yum install -y unixODBC-devel >"$LOG"
+rpm -Uvh esl-erlang_20.3-1~centos~7_amd64.rpm >"$LOG"
 
 log "Installing Elixir to /opt/elixir.."
 mkdir -p /opt/elixir
