@@ -78,7 +78,16 @@ data "aws_iam_policy_document" "codedeploy-policy" {
       "tag:*",
       "ec2:DescribeInstances",
       "ec2:DescribeInstanceStatus",
+      "ec2messages:AcknowledgeMessage",
+      "ec2messages:DeleteMessage",
+      "ec2messages:FailMessage",
+      "ec2messages:GetEndpoint",
+      "ec2messages:GetMessages",
+      "ec2messages:SendReply",
       "sns:Publish",
+      "ssm:UpdateInstanceInformation",
+      "ssm:ListInstanceAssociations",
+      "ssm:ListAssociations"
     ]
 
     resources = ["*"]
