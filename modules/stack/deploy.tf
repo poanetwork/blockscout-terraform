@@ -40,7 +40,7 @@ resource "aws_codedeploy_deployment_group" "explorer" {
     }
 
     terminate_blue_instances_on_deployment_success {
-      action = "TERMINATE"
+      action                           = "TERMINATE"
       termination_wait_time_in_minutes = 15
     }
   }
