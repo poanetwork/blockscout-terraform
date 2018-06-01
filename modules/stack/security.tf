@@ -22,6 +22,15 @@ data "aws_iam_policy_document" "deployer-assume-role-policy" {
   }
 }
 
+data "aws_iam_policy_document" "config-policy" {
+  statement {
+    effect  = "Allow"
+    actions = ["ec2:DescribeTags"]
+
+    resources = ["*"]
+  }
+}
+
 data "aws_iam_policy_document" "codedeploy-policy" {
   statement {
     effect = "Allow"
@@ -84,6 +93,12 @@ resource "aws_iam_instance_profile" "explorer" {
   name = "${var.prefix}-explorer-profile"
   role = "${aws_iam_role.role.name}"
   path = "/${var.prefix}/"
+}
+
+resource "aws_iam_role_policy" "config" {
+  name   = "${var.prefix}-config-policy"
+  role   = "${aws_iam_role.role.id}"
+  policy = "${data.aws_iam_policy_document.config-policy.json}"
 }
 
 resource "aws_iam_role" "role" {
