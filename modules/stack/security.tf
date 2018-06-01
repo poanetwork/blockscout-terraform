@@ -22,52 +22,6 @@ data "aws_iam_policy_document" "deployer-assume-role-policy" {
   }
 }
 
-data "aws_iam_policy_document" "config-policy" {
-  statement {
-    effect  = "Allow"
-    actions = ["ssm:DescribeParameters"]
-
-    resources = ["*"]
-  }
-
-  statement {
-    effect  = "Allow"
-    actions = ["ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath"]
-
-    resources = [
-      "arn:aws:ssm:*:*:parameter/${var.prefix}/*",
-      "arn:aws:ssm:*:*:parameter/${var.prefix}/*/*",
-    ]
-  }
-
-  statement {
-    effect  = "Allow"
-    actions = ["ec2:DescribeTags"]
-
-    resources = ["*"]
-  }
-
-  statement {
-    effect  = "Allow"
-    actions = ["s3:*"]
-
-    resources = [
-      "arn:aws:s3:::aws-codedeploy-us-east-1/*",
-      "arn:aws:s3:::aws-codedeploy-us-east-2/*",
-      "arn:aws:s3:::aws-codedeploy-us-west-1/*",
-      "arn:aws:s3:::aws-codedeploy-us-west-2/*",
-      "arn:aws:s3:::aws-codedeploy-ap-northeast-1/*",
-      "arn:aws:s3:::aws-codedeploy-ap-northeast-2/*",
-      "arn:aws:s3:::aws-codedeploy-ap-south-1/*",
-      "arn:aws:s3:::aws-codedeploy-ap-southeast-1/*",
-      "arn:aws:s3:::aws-codedeploy-ap-southeast-2/*",
-      "arn:aws:s3:::aws-codedeploy-eu-central-1/*",
-      "arn:aws:s3:::aws-codedeploy-eu-west-1/*",
-      "arn:aws:s3:::aws-codedeploy-sa-east-1/*",
-    ]
-  }
-}
-
 data "aws_iam_policy_document" "codedeploy-policy" {
   statement {
     effect = "Allow"
@@ -78,16 +32,7 @@ data "aws_iam_policy_document" "codedeploy-policy" {
       "tag:*",
       "ec2:DescribeInstances",
       "ec2:DescribeInstanceStatus",
-      "ec2messages:AcknowledgeMessage",
-      "ec2messages:DeleteMessage",
-      "ec2messages:FailMessage",
-      "ec2messages:GetEndpoint",
-      "ec2messages:GetMessages",
-      "ec2messages:SendReply",
       "sns:Publish",
-      "ssm:UpdateInstanceInformation",
-      "ssm:ListInstanceAssociations",
-      "ssm:ListAssociations"
     ]
 
     resources = ["*"]
@@ -117,16 +62,28 @@ data "aws_iam_policy_document" "codedeploy-policy" {
   }
 }
 
+data "aws_iam_policy" "AmazonEC2RoleForAWSCodeDeploy" {
+  arn = "arn:aws:iam::aws:policy/AmazonEC2RoleForAWSCodeDeploy"
+}
+
+data "aws_iam_policy" "AmazonEC2RoleForSSM" {
+  arn = "arn:aws:iam::aws:policy/AmazonEC2RoleForSSM"
+}
+
+resource "aws_iam_role_policy_attachment" "ec2-codedeploy-policy-attachment" {
+  role       = "${aws_iam_role.role.name}"
+  policy_arn = "${data.aws_iam_policy.AmazonEC2RoleForAWSCodeDeploy.arn}"
+}
+
+resource "aws_iam_role_policy_attachment" "ec2-ssm-policy-attachment" {
+  role       = "${aws_iam_role.role.name}"
+  policy_arn = "${data.aws_iam_policy.AmazonEC2RoleForSSM.arn}"
+}
+
 resource "aws_iam_instance_profile" "explorer" {
   name = "${var.prefix}-explorer-profile"
   role = "${aws_iam_role.role.name}"
   path = "/${var.prefix}/"
-}
-
-resource "aws_iam_role_policy" "config" {
-  name   = "${var.prefix}-config-policy"
-  role   = "${aws_iam_role.role.id}"
-  policy = "${data.aws_iam_policy_document.config-policy.json}"
 }
 
 resource "aws_iam_role" "role" {
