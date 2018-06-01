@@ -85,7 +85,7 @@ resource "aws_ssm_parameter" "secret_key_base" {
 resource "aws_ssm_parameter" "port" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/port"
-  value = "80"
+  value = "4000"
   type  = "String"
 }
 

@@ -35,7 +35,7 @@ resource "aws_elb" "explorer" {
   }
 
   listener {
-    instance_port     = 80
+    instance_port     = 4000
     instance_protocol = "http"
     lb_port           = 80
     lb_protocol       = "http"
