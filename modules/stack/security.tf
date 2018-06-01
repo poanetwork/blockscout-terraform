@@ -29,6 +29,16 @@ data "aws_iam_policy_document" "config-policy" {
 
     resources = ["*"]
   }
+
+  statement {
+    effect  = "Allow"
+    actions = ["ssm:GetParameter", "ssm:GetParameters", "ssm:GetParametersByPath"]
+
+    resources = [
+      "arn:aws:ssm:*:*:parameter/${var.prefix}/*",
+      "arn:aws:ssm:*:*:parameter/${var.prefix}/*/*",
+    ]
+  }
 }
 
 data "aws_iam_policy_document" "codedeploy-policy" {
