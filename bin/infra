@@ -161,11 +161,13 @@ EOF
 # .tfvars are loaded after main.tfvars, allowing one to override those values
 function get_config() {
     EXTRA_VARS="$(find . -name '*.tfvars' -and \! \( -name 'backend.tfvars' \))"
-    # shellcheck disable=SC2086 disable=2002
-    cat $EXTRA_VARS | \
-        grep -E "^$1 " | \
-        tail -n 1 | \
-        sed -r -e 's/^[^=]*= //' -e 's/"//g'
+    if [ ! -z "$EXTRA_VARS" ]; then
+        # shellcheck disable=SC2086 disable=2002
+        cat $EXTRA_VARS | \
+            grep -E "^$1 " | \
+            tail -n 1 | \
+            sed -r -e 's/^[^=]*= //' -e 's/"//g'
+    fi
 }
 
 function destroy_bucket() {
@@ -320,18 +322,26 @@ EOF
                 region="$REPLY"
             fi
         fi
+        bucket="$(get_config 'bucket')"
+        if [ -z "$bucket" ]; then
+            bucket="poa-terraform-state"
+        fi
+        dynamo_table="$(get_config 'dynamodb_table')"
+        if [ -z "$dynamo_table" ]; then
+            dynamo_table="poa-terraform-locks"
+        fi
         # Backend config only!
         {
             echo "region = \"$region\""
-            echo "bucket = \"$INFRA_PREFIX-poa-terraform-state\""
-            echo "dynamodb_table = \"$INFRA_PREFIX-poa-terraform-locks\""
+            echo "bucket = \"${INFRA_PREFIX}-$bucket\""
+            echo "dynamodb_table = \"${INFRA_PREFIX}-$dynamo_table\""
             echo "key = \"terraform.tfstate\""
         } > ./backend.tfvars
         # Other configuration needs to go in main.tfvars or init will break
         {
             echo "region = \"$region\""
-            echo "bucket = \"poa-terraform-state\""
-            echo "dynamodb_table = \"poa-terraform-locks\""
+            echo "bucket = \"$bucket\""
+            echo "dynamodb_table = \"$dynamo_table\""
             echo "key_name = \"$KEY_PAIR\""
             echo "prefix = \"$INFRA_PREFIX\""
             echo "secret_key_base = \"$SECRET_KEY_BASE\""
