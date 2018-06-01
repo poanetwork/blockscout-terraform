@@ -63,11 +63,11 @@ data "aws_iam_policy_document" "codedeploy-policy" {
 }
 
 data "aws_iam_policy" "AmazonEC2RoleForAWSCodeDeploy" {
-  arn = "arn:aws:iam::aws:policy/AmazonEC2RoleForAWSCodeDeploy"
+  arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleForAWSCodeDeploy"
 }
 
 data "aws_iam_policy" "AmazonEC2RoleForSSM" {
-  arn = "arn:aws:iam::aws:policy/AmazonEC2RoleForSSM"
+  arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleForSSM"
 }
 
 resource "aws_iam_role_policy_attachment" "ec2-codedeploy-policy-attachment" {
