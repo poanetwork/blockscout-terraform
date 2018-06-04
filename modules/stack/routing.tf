@@ -31,7 +31,7 @@ resource "aws_elb" "explorer" {
     unhealthy_threshold = 2
     timeout             = 3
     interval            = 30
-    target              = "HTTP:80/"
+    target              = "HTTP:4000/"
   }
 
   listener {
