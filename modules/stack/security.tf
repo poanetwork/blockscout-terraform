@@ -152,6 +152,13 @@ resource "aws_security_group" "elb" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  
+  ingress {
+    from_port = 4000
+    to_port = 4000
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   # HTTPS from anywhere
   ingress {
@@ -185,6 +192,13 @@ resource "aws_security_group" "app" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
+    cidr_blocks = ["${var.vpc_cidr}"]
+  }
+  
+  ingress {
+    from_port = 4000
+    to_port = 4000
+    protocol = "tcp"
     cidr_blocks = ["${var.vpc_cidr}"]
   }
 
