@@ -124,6 +124,15 @@ resource "aws_iam_role_policy" "deployer" {
   policy = "${data.aws_iam_policy_document.codedeploy-policy.json}"
 }
 
+data "aws_iam_policy" "AWSCodeDeployRole" {
+  arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+}
+
+resource "aws_iam_role_policy_attachment" "codedeploy-policy-attachment" {
+  role       = "${aws_iam_role.deployer.name}"
+  policy_arn = "${data.aws_iam_policy.AWSCodeDeployRole.arn}"
+}
+
 resource "aws_iam_role" "deployer" {
   name               = "${var.prefix}-deployer-role"
   description        = "The IAM role given to the CodeDeploy service"
