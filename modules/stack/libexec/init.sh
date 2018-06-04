@@ -158,6 +158,10 @@ old_env="$(cat /etc/environment)"
     echo "DYNO=\"$HOSTNAME\""
     echo "HOSTNAME=\"$HOSTNAME\""
     echo "DATABASE_URL=\"$DATABASE_URL/$DB_NAME\""
+    echo "LANG=en_US.UTF-8"
+    echo "LANGUAGE=en_US"
+    echo "LC_ALL=en_US.UTF-8"
+    echo "LC_CTYPE=en_US.UTF-8"
 } > /etc/environment
 
 log "Parameters have been written to /etc/environment successfully!"
