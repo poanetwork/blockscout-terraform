@@ -66,7 +66,7 @@ variable "db_password" {
 
 variable "db_storage" {
   description = "The database storage size in GB"
-  default     = "20"
+  default     = "100"
 }
 
 variable "db_storage_type" {
