@@ -4,7 +4,7 @@
 
 The bootstrap script included in this project expects the AWS CLI, jq, and Terraform to be installed and on the PATH.
 
-On macOS, with Homebrew installed, just run: `brew install awscli jq terraform`
+On macOS, with Homebrew installed, just run: `brew install --with-default-names awscli gnu-sed jq terraform`
 
 For other platforms, or if you don't have Homebrew installed, please see the following links:
 
@@ -22,9 +22,9 @@ You will also need the following information for the installer:
 ## AWS
 
 You will need to set up a new AWS account (or subaccount), and then either login
-to that account using the AWS CLI (via `aws configure`) or create a user account 
-that you will use for provisioning, and login to that account. The account used 
-requires full access to all AWS services, as a wide variety of services are used, 
+to that account using the AWS CLI (via `aws configure`) or create a user account
+that you will use for provisioning, and login to that account. The account used
+requires full access to all AWS services, as a wide variety of services are used,
 a mostly complete list is as follows:
 
 - VPCs and associated networking resources (subnets, routing tables, etc.)

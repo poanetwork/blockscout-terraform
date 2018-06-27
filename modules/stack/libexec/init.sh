@@ -184,6 +184,10 @@ if [ "$(has_db)" != "1" ]; then
         -c "CREATE DATABASE $DB_NAME;" >"$LOG"
 fi
 
+log "Installing gcc for NIF compilation during code deploy"
+
+yum install -y --enablerepo=epel gcc  >"$LOG"
+
 log "Application environment is ready!"
 
 log "Starting CodeDeploy agent.."
