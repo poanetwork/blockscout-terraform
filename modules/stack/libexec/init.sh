@@ -59,6 +59,10 @@ if ! which git >/dev/null; then
     log "Installing git.."
     yum install -y --enablerepo=epel git >"$LOG"
 fi
+if ! which libtool >/dev/null; then
+    log "Installing libtool.."
+    yum install -y libtool >"$LOG"
+fi
 
 log "Determining region this instance is in.."
 REGION="$(curl -s $DYNDATA_URL/instance-identity/document | jq -r '.region')"
