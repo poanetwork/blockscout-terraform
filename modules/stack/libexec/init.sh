@@ -63,6 +63,11 @@ if ! which libtool >/dev/null; then
     log "Installing libtool.."
     yum install -y libtool >"$LOG"
 fi
+if ! which node >/dev/null; then
+    log "Installing nodejs.."
+    yum --enablerepo=epel install -y nodejs >"$LOG"
+fi
+
 
 log "Determining region this instance is in.."
 REGION="$(curl -s $DYNDATA_URL/instance-identity/document | jq -r '.region')"
