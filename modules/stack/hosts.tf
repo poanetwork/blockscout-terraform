@@ -103,16 +103,18 @@ resource "aws_autoscaling_group" "explorer" {
 
 # TODO: These autoscaling policies are not currently wired up to any triggers
 resource "aws_autoscaling_policy" "explorer-up" {
-  name                   = "${var.prefix}-explorer-autoscaling-policy-up"
-  autoscaling_group_name = "${aws_autoscaling_group.explorer.name}"
+  count                  = "${length(var.chains)}"
+  name                   = "${var.prefix}-explorer-autoscaling-policy-up${count.index}"
+  autoscaling_group_name = "${element(aws_autoscaling_group.explorer.*.name, count.index)}"
   adjustment_type        = "ChangeInCapacity"
   scaling_adjustment     = 1
   cooldown               = 300
 }
 
 resource "aws_autoscaling_policy" "explorer-down" {
-  name                   = "${var.prefix}-explorer-autoscaling-policy-down"
-  autoscaling_group_name = "${aws_autoscaling_group.explorer.name}"
+  count                  = "${length(var.chains)}"
+  name                   = "${var.prefix}-explorer-autoscaling-policy-down${count.index}"
+  autoscaling_group_name = "${element(aws_autoscaling_group.explorer.*.name, count.index)}"
   adjustment_type        = "ChangeInCapacity"
   scaling_adjustment     = -1
   cooldown               = 300
