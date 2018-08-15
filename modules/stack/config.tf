@@ -116,3 +116,11 @@ resource "aws_ssm_parameter" "db_port" {
   value = "${aws_db_instance.default.port}"
   type  = "String"
 }
+
+resource "aws_ssm_parameter" "http_host" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/http_host"
+  value = "${var.prefix}-explorer-${element(keys(var.chains),count.index)}-elb.amazonaws.com"
+  type  = "String"
+}
+
