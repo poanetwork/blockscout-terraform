@@ -15,39 +15,16 @@ resource "aws_route" "internet_access" {
   gateway_id             = "${aws_internet_gateway.default.id}"
 }
 
-# The ELB for the app server
-resource "aws_elb" "explorer" {
-  count = "${length(var.chains)}"
-  name  = "${var.prefix}-explorer-${element(keys(var.chains),count.index)}-elb"
+# The ALB for the app server
+resource "aws_lb" "explorer" {
+  count              = "${length(var.chains)}"
+  name               = "${var.prefix}-explorer-${element(keys(var.chains),count.index)}-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = ["${aws_security_group.alb.id}"]
+  subnets            = ["${aws_subnet.default.id}", "${aws_subnet.alb.id}"]
 
-  subnets                     = ["${aws_subnet.default.id}"]
-  security_groups             = ["${aws_security_group.elb.id}"]
-  cross_zone_load_balancing   = true
-  connection_draining         = true
-  connection_draining_timeout = 400
-
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 15
-    interval            = 30
-    target              = "HTTP:4000/en/blocks"
-  }
-
-  listener {
-    instance_port     = 4000
-    instance_protocol = "http"
-    lb_port           = 80
-    lb_protocol       = "http"
-  }
-
-  #listener {
-  #  instance_port      = 443
-  #  instance_protocol  = "http"
-  #  lb_port            = 443
-  #  lb_protocol        = "https"
-  #  ssl_certificate_id = "arn:aws:iam::ID:server-certificate/NAME"
-  #}
+  enable_deletion_protection = false
 
   tags {
     prefix = "${var.prefix}"
@@ -55,10 +32,40 @@ resource "aws_elb" "explorer" {
   }
 }
 
-resource "aws_lb_cookie_stickiness_policy" "explorer" {
-  count                    = "${length(var.chains)}"
-  name                     = "${var.prefix}-explorer-${element(keys(var.chains),count.index)}-stickiness-policy"
-  load_balancer            = "${aws_elb.explorer.*.id[count.index]}"
-  lb_port                  = 80
-  cookie_expiration_period = 600
+# The Target Group for the ALB
+resource "aws_lb_target_group" "explorer" {
+  count    = "${length(var.chains)}"
+  name     = "${var.prefix}-explorer-${element(keys(var.chains),count.index)}-alb-target"
+  port     = 4000  
+  protocol = "HTTP"  
+  vpc_id   = "${aws_vpc.vpc.id}"   
+  tags {
+    prefix = "${var.prefix}"
+    origin = "terraform"
+  }   
+  stickiness {    
+    type            = "lb_cookie"
+    cookie_duration = 600    
+    enabled         = true  
+  }   
+  health_check {    
+    healthy_threshold   = 2    
+    unhealthy_threshold = 2    
+    timeout             = 15    
+    interval            = 30    
+    path                = "/en/blocks"    
+    port                = 4000  
+  }
+}
+
+# The Listener for the ALB
+resource "aws_alb_listener" "alb_listener" {  
+  load_balancer_arn = "${aws_lb.explorer.arn}"  
+  port              = 80  
+  protocol          = "HTTP"
+  
+  default_action {    
+    target_group_arn = "${aws_lb_target_group.explorer.arn}"
+    type             = "forward"  
+  }
 }

@@ -13,6 +13,21 @@ resource "aws_subnet" "default" {
   }
 }
 
+## ALB subnet
+resource "aws_subnet" "alb" {
+  vpc_id                  = "${aws_vpc.vpc.id}"
+  cidr_block              = "${var.public_subnet_cidr}"
+  cidr_block              = "${cidrsubnet(var.db_subnet_cidr, 5, 1)}"
+  availability_zone       = "${data.aws_availability_zones.available.names[1]}"
+  map_public_ip_on_launch = true
+
+  tags {
+    name   = "${var.prefix}-default-subnet"
+    prefix = "${var.prefix}"
+    origin = "terraform"
+  }
+}
+
 ## Database subnet
 resource "aws_subnet" "database" {
   count                   = "${length(data.aws_availability_zones.available.names)}"

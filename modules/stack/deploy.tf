@@ -24,8 +24,8 @@ resource "aws_codedeploy_deployment_group" "explorer" {
   }
 
   load_balancer_info {
-    elb_info {
-      name = "${var.prefix}-explorer-${element(keys(var.chains),count.index)}-elb"
+    target_group_info {
+      name = "${aws_lb_target_group.explorer.*.name[count.index]}"
     }
   }
 
