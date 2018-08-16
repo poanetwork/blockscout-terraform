@@ -68,9 +68,9 @@ The infra created, at a high level, is as follows:
 - A VPC containing all of the resources provisioned
 - A public subnet for the app servers, and a private subnet for the database (and Redis for now)
 - An internet gateway to provide internet access for the VPC
-- An ELB which exposes the app server HTTP endpoints to the world
+- An ALB which exposes the app server HTTP endpoints to the world
 - A security group to lock down ingress to the app servers to 80/443 + SSH
-- A security group to allow the ELB to talk to the app servers
+- A security group to allow the ALB to talk to the app servers
 - A security group to allow the app servers access to the database
 - An internal DNS zone
 - A DNS record for the database

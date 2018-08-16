@@ -139,10 +139,10 @@ resource "aws_iam_role" "deployer" {
   assume_role_policy = "${data.aws_iam_policy_document.deployer-assume-role-policy.json}"
 }
 
-# A security group for the ELB so it is accessible via the web
-resource "aws_security_group" "elb" {
-  name        = "${var.prefix}-poa-elb"
-  description = "A security group for the app server ELB, so it is accessible via the web"
+# A security group for the ALB so it is accessible via the web
+resource "aws_security_group" "alb" {
+  name        = "${var.prefix}-poa-alb"
+  description = "A security group for the app server ALB, so it is accessible via the web"
   vpc_id      = "${aws_vpc.vpc.id}"
 
   # HTTP from anywhere

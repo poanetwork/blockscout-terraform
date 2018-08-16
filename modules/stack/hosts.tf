@@ -51,7 +51,7 @@ resource "aws_autoscaling_group" "explorer" {
   launch_configuration = "${aws_launch_configuration.explorer.name}"
   vpc_zone_identifier  = ["${aws_subnet.default.id}"]
   availability_zones   = ["${data.aws_availability_zones.available.names}"]
-  load_balancers       = ["${aws_elb.explorer.*.name[count.index]}"]
+  target_group_arns    = ["${aws_lb_target_group.explorer.*.arn[count.index]}"]
 
   # Health checks are performed by CodeDeploy hooks
   health_check_type = "EC2"
