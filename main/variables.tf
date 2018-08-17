@@ -92,3 +92,14 @@ variable "new_relic_license_key" {
   description = "The license key for talking to New Relic"
   default     = ""
 }
+
+# SSL Certificate configuration
+variable "alb_ssl_policy" {
+  description = "The SSL Policy for the Application Load Balancer"
+  default     = ""
+}
+
+variable "alb_certificate_arn" {
+  description = "The Certificate ARN for the Applicationn Load Balancer Policy"
+  default     = ""
+}
