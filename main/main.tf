@@ -33,4 +33,7 @@ module "stack" {
   secret_key_base       = "${var.secret_key_base}"
   new_relic_app_name    = "${var.new_relic_app_name}"
   new_relic_license_key = "${var.new_relic_license_key}"
+
+  alb_ssl_policy      = "${var.alb_ssl_policy}"
+  alb_certificate_arn = "${var.alb_certificate_arn}"
 }

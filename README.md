@@ -68,7 +68,7 @@ The infra created, at a high level, is as follows:
 - A VPC containing all of the resources provisioned
 - A public subnet for the app servers, and a private subnet for the database (and Redis for now)
 - An internet gateway to provide internet access for the VPC
-- An ALB which exposes the app server HTTP endpoints to the world
+- An ALB which exposes the app server HTTPS endpoints to the world
 - A security group to lock down ingress to the app servers to 80/443 + SSH
 - A security group to allow the ALB to talk to the app servers
 - A security group to allow the app servers access to the database
@@ -110,7 +110,18 @@ dynamodb_table = "poa-terraform-lock"
 key_name = "sokol-test"
 prefix = "sokol"
 db_password = "qwerty12345"
+db_instance_class = "db.m4.xlarge"
+db_storage = "120"
+alb_ssl_policy = "ELBSecurityPolicy-2016-08"
+alb_certificate_arn = "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
 ```
+
+- The region should be left at `us-east-1` as some of the other regions fail for different reasons.
+- The `bucket` and `dynamodb_table` can be edited but should have an identical prefix.
+- The `key_name` should start with the `prefix` and can only contain 5 characters and must start with a letter.
+- The `db_password` can be a changed to any alphanumeric value.
+- The `db_instance_class` and `db_storage` are not required but are defaulted to `db.m4.large` and `100`GB respectively.
+- The `alb_ssl_policy` and `alb_certificate_arn` are required in order to force SSL usage.
 
 ## Defining Chains/Adding Chains
 

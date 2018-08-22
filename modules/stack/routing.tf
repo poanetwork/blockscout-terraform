@@ -61,8 +61,10 @@ resource "aws_lb_target_group" "explorer" {
 # The Listener for the ALB
 resource "aws_alb_listener" "alb_listener" {  
   load_balancer_arn = "${aws_lb.explorer.arn}"  
-  port              = 80  
-  protocol          = "HTTP"
+  port              = 443  
+  protocol          = "HTTPS"
+  ssl_policy        = "${var.alb_ssl_policy}"
+  certificate_arn   = "${var.alb_certificate_arn}"
   
   default_action {    
     target_group_arn = "${aws_lb_target_group.explorer.arn}"

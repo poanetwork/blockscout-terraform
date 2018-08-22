@@ -26,3 +26,5 @@ variable "db_instance_class" {}
 variable "new_relic_app_name" {}
 variable "new_relic_license_key" {}
 variable "secret_key_base" {}
+variable "alb_ssl_policy" {}
+variable "alb_certificate_arn" {}

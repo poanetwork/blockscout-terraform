@@ -116,3 +116,15 @@ resource "aws_ssm_parameter" "db_port" {
   value = "${aws_db_instance.default.port}"
   type  = "String"
 }
+resource "aws_ssm_parameter" "alb_ssl_policy" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/alb_ssl_policy"
+  value = "${var.alb_ssl_policy}"
+  type  = "String"
+}
+resource "aws_ssm_parameter" "alb_certificate_arn" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/alb_certificate_arn"
+  value = "${var.alb_certificate_arn}"
+  type  = "String"
+}
