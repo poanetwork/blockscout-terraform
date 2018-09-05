@@ -30,6 +30,10 @@ resource "aws_launch_configuration" "explorer" {
 
   user_data = "${file("${path.module}/libexec/init.sh")}"
 
+  root_block_device {
+    volume_size = "${var.root_block_size}"
+  }
+
   lifecycle {
     create_before_destroy = true
   }

@@ -6,6 +6,7 @@ variable "public_subnet_cidr" {}
 variable "db_subnet_cidr" {}
 variable "dns_zone_name" {}
 variable "instance_type" {}
+variable "root_block_size" {}
 
 variable "chains" {
   default = {}

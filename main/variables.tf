@@ -28,6 +28,11 @@ variable "instance_type" {
   default     = "m5.xlarge"
 }
 
+variable "root_block_size" {
+  description = "The EC2 instance root block size in GB"
+  default     = 8
+}
+
 variable "chains" {
   description = "A map of chain names to urls"
 

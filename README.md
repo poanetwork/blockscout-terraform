@@ -114,6 +114,7 @@ db_instance_class = "db.m4.xlarge"
 db_storage = "120"
 alb_ssl_policy = "ELBSecurityPolicy-2016-08"
 alb_certificate_arn = "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
+root_block_size = 120
 ```
 
 - The region should be left at `us-east-1` as some of the other regions fail for different reasons.
