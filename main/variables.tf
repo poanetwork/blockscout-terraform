@@ -48,6 +48,58 @@ variable "chain_trace_endpoints" {
     "sokol" = "https://sokol-trace.poa.network"
   }
 }
+variable "chain_ws_endpoints" {
+  description = "A map of chain names to websocket urls"
+
+  default = {
+    "sokol" = "wss://sokol-ws.poa.network/ws"
+  }
+}
+
+variable "chain_logo" {
+  description = "A map of chain names to logo urls"
+
+  default = {
+    "sokol" = "/images/sokol_logo.svg"
+  }
+}
+
+variable "chain_css_file" {
+  description = "A map of chain names to the css file"
+
+  default = {
+    "sokol" = "sokol_variables"
+  }
+}
+
+variable "chain_check_origin" {
+  description = "A map of chain names to the check_origin configuration"
+  default = "['//*.blockscout.com']"
+}
+
+variable "chain_coin" {
+  description = "A map of chain names to the coin name"
+
+  default = {
+    "sokol" = "POA"
+  }
+}
+
+variable "chain_network" {
+  description = "A map of chain names to the network name"
+
+  default = {
+    "sokol" = "POA Network"
+  }
+}
+
+variable "chain_subnetwork" {
+  description = "A map of chain names to the subnetwork name"
+
+  default = {
+    "sokol" = "Sokol Testnet"
+  }
+}
 
 # RDS/Database configuration
 variable "db_id" {

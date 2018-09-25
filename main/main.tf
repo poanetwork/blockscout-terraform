@@ -15,6 +15,13 @@ module "stack" {
   key_name              = "${var.key_name}"
   chains                = "${var.chains}"
   chain_trace_endpoints = "${var.chain_trace_endpoints}"
+  chain_ws_endpoints    = "${var.chain_ws_endpoints}"
+  chain_logo            = "${var.chain_logo}"
+  chain_css_file        = "${var.chain_css_file}"
+  chain_check_origin    = "${var.chain_check_origin}"
+  chain_coin            = "${var.chain_coin}"
+  chain_network         = "${var.chain_network}"
+  chain_subnetwork      = "${var.chain_subnetwork}"
 
   vpc_cidr           = "${var.vpc_cidr}"
   public_subnet_cidr = "${var.public_subnet_cidr}"

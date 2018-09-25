@@ -39,6 +39,54 @@ resource "aws_ssm_parameter" "trace_url" {
   value = "${element(values(var.chain_trace_endpoints), count.index)}"
   type  = "String"
 }
+resource "aws_ssm_parameter" "ws_url" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chain_ws_endpoints),count.index)}/ws_url"
+  value = "${element(values(var.chain_ws_endpoints), count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "logo" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chain_logo),count.index)}/logo"
+  value = "${element(values(var.chain_logo), count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "css_file" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chain_css_file),count.index)}/css_file"
+  value = "${element(values(var.chain_css_file), count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "check_origin" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/check_origin"
+  value = "${var.chain_check_origin}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "coin" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chain_coin),count.index)}/coin"
+  value = "${element(values(var.chain_coin), count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "network" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chain_network),count.index)}/network"
+  value = "${element(values(var.chain_network), count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "subnetwork" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chain_subnetwork),count.index)}/subnetwork"
+  value = "${element(values(var.chain_subnetwork), count.index)}"
+  type  = "String"
+}
 
 resource "aws_ssm_parameter" "exq_blocks_concurrency" {
   count = "${length(var.chains)}"

@@ -15,6 +15,25 @@ variable "chains" {
 variable "chain_trace_endpoints" {
   default = {}
 }
+variable "chain_ws_endpoints" {
+  default = {}
+}
+variable "chain_logo" {
+  default = {}
+}
+variable "chain_css_file" {
+  default = {}
+}
+variable "chain_check_origin" {}
+variable "chain_coin" {
+  default = {}
+}
+variable "chain_network" {
+  default = {}
+}
+variable "chain_subnetwork" {
+  default = {}
+}
 
 variable "db_id" {}
 variable "db_name" {}
