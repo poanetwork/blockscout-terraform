@@ -101,6 +101,22 @@ variable "chain_subnetwork" {
   }
 }
 
+variable "chain_network_icon" {
+  description = "A map of chain names to the network iconn"
+
+  default = {
+    "sokol" = "%{\"POA Core\" => \"https://blockscout.com/poa/core\", \"POA Sokol\" => \"https://blockscout.com/poa/sokol\"}"
+  }
+}
+
+variable "chain_network_navigation" {
+  description = "A map of chain names to the network navigation"
+
+  default = {
+    "sokol" = "_test_network_icon.html"
+  }
+}
+
 # RDS/Database configuration
 variable "db_id" {
   description = "The identifier for the RDS database"

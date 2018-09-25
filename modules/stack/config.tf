@@ -88,6 +88,20 @@ resource "aws_ssm_parameter" "subnetwork" {
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "network_icon" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chain_network_icon),count.index)}/network_icon"
+  value = "${element(values(var.chain_network_icon), count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "network_navigation" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chain_network_navigation),count.index)}/network_navigation"
+  value = "${element(values(var.chain_network_navigation), count.index)}"
+  type  = "String"
+}
+
 resource "aws_ssm_parameter" "exq_blocks_concurrency" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/exq_blocks_concurrency"
