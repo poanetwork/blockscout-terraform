@@ -34,6 +34,12 @@ variable "chain_network" {
 variable "chain_subnetwork" {
   default = {}
 }
+variable "chain_network_icon" {
+  default = {}
+}
+variable "chain_network_navigation" {
+  default = {}
+}
 
 variable "db_id" {}
 variable "db_name" {}
