@@ -101,15 +101,24 @@ variable "chain_subnetwork" {
   }
 }
 
-variable "chain_network_icon" {
-  description = "A map of chain names to the network iconn"
+variable "chain_network_path" {
+  description = "A map of chain names to the network name"
 
   default = {
-    "sokol" = "%{\"POA Core\" => \"https://blockscout.com/poa/core\", \"POA Sokol\" => \"https://blockscout.com/poa/sokol\"}"
+    "sokol" = "poa"
   }
 }
 
-variable "chain_network_navigation" {
+variable "chain_subnetwork_path" {
+  description = "A map of chain names to the subnetwork name"
+
+  default = {
+    "sokol" = "sokol"
+  }
+}
+
+
+variable "chain_network_icon" {
   description = "A map of chain names to the network navigation"
 
   default = {
