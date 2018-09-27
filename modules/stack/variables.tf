@@ -9,8 +9,9 @@ variable "instance_type" {}
 variable "root_block_size" {}
 
 variable "chain_jsonrpc_variant" {}
-variable "chain" {}
-variable "chain_ethereum_url" {}
+variable "chains" {
+  default = {}
+}
 variable "chain_trace_endpoint" {}
 variable "chain_ws_endpoint" {}
 variable "chain_logo" {}

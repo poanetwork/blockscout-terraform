@@ -33,19 +33,16 @@ variable "root_block_size" {
   default     = 8
 }
 
-variable "chain" {
+variable "chains" {
   description = "A map of chain names to urls"
-  default = "sokol"
+  default = {
+    "sokol" = "https://sokol.poa.network"
+  }
 }
 
 variable "chain_jsonrpc_variant" {
   description = "The chain JSON RPC variant"
   default = "parity"
-}
-
-variable "chain_ethereum_url" {
-  description = "The base RPC endpoint for the chain"
-  default = "https://sokol.poa.network"
 }
 
 variable "chain_trace_endpoint" {

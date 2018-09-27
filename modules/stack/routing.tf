@@ -17,7 +17,8 @@ resource "aws_route" "internet_access" {
 
 # The ALB for the app server
 resource "aws_lb" "explorer" {
-  name               = "${var.prefix}-explorer-${var.chain}-alb"
+  count              = "${length(var.chains)}"	  
+  name               = "${var.prefix}-explorer-${element(keys(var.chains),count.index)}-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = ["${aws_security_group.alb.id}"]
@@ -33,7 +34,8 @@ resource "aws_lb" "explorer" {
 
 # The Target Group for the ALB
 resource "aws_lb_target_group" "explorer" {
-  name     = "${var.prefix}-explorer-${var.chain}-alb-target"
+  count    = "${length(var.chains)}"
+  name     = "${var.prefix}-explorer-${element(keys(var.chains),count.index)}-alb-target"
   port     = 4000  
   protocol = "HTTP"  
   vpc_id   = "${aws_vpc.vpc.id}"   

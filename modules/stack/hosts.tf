@@ -40,17 +40,17 @@ resource "aws_launch_configuration" "explorer" {
 }
 
 resource "aws_placement_group" "explorer" {
-  count    = 1
+  count    = "${length(var.chains)}"
   name     = "${var.prefix}-explorer-placement-group${count.index}"
   strategy = "cluster"
 }
 
 resource "aws_autoscaling_group" "explorer" {
-  count                = 1
+  count                = "${length(var.chains)}"
   name                 = "${aws_launch_configuration.explorer.name}-asg${count.index}"
-  max_size             = 4
-  min_size             = 1
-  desired_capacity     = 1
+  max_size             = "${length(var.chains) * 4}"
+  min_size             = "${length(var.chains)}"
+  desired_capacity     = "${length(var.chains)}"
   placement_group      = "${aws_placement_group.explorer.*.id[count.index]}"
   launch_configuration = "${aws_launch_configuration.explorer.name}"
   vpc_zone_identifier  = ["${aws_subnet.default.id}"]
@@ -100,14 +100,14 @@ resource "aws_autoscaling_group" "explorer" {
 
   tag {
     key                 = "chain"
-    value               = "${var.chain}"
+    value               = "${element(keys(var.chains),count.index)}"
     propagate_at_launch = true
   }
 }
 
 # TODO: These autoscaling policies are not currently wired up to any triggers
 resource "aws_autoscaling_policy" "explorer-up" {
-  count                  = 1
+  count                  = "${length(var.chains)}"
   name                   = "${var.prefix}-explorer-autoscaling-policy-up${count.index}"
   autoscaling_group_name = "${element(aws_autoscaling_group.explorer.*.name, count.index)}"
   adjustment_type        = "ChangeInCapacity"
@@ -116,7 +116,7 @@ resource "aws_autoscaling_policy" "explorer-up" {
 }
 
 resource "aws_autoscaling_policy" "explorer-down" {
-  count                  = 1
+  count                  = "${length(var.chains)}"
   name                   = "${var.prefix}-explorer-autoscaling-policy-down${count.index}"
   autoscaling_group_name = "${element(aws_autoscaling_group.explorer.*.name, count.index)}"
   adjustment_type        = "ChangeInCapacity"
