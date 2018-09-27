@@ -20,7 +20,7 @@ output "codedeploy_bucket_path" {
 
 output "explorer_urls" {
   description = "A map of each chain to the DNS name of its corresponding Explorer instance"
-  value       = "${zipmap(keys(var.chains), aws_lb.explorer.*.dns_name)}"
+  value       = "${aws_lb.explorer.*.dns_name}"
 }
 
 output "db_instance_address" {

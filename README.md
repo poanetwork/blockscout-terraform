@@ -126,15 +126,22 @@ root_block_size = 120
 
 ## Defining Chains/Adding Chains
 
-The default of this repo is to build infra for the `sokol` chain, but you may not want that, or want a different set, so you need to create/edit `terraform.tfvars` or `user.auto.tfvars` and add the following configuration:
+The default of this repo is to build infra for the `sokol` chain, but you may not want that, or want a different set, so you need to create/edit `terraform.tfvars` and add the following configuration:
 
 ```terraform
-chains = {
-    "mychain" = "url/to/endpoint"
-}
-chain_trace_endpoints = {
-    "mychain" = "url/to/debug/endpoint/or/the/main/chain/endpoint"
-}
+chain_jsonrpc_variant = "parity"
+chain = "sokol"
+chain_ethereum_url = "https://sokol.poa.network"
+chain_trace_endpoint = "https://sokol-trace.poa.network"
+chain_ws_endpoint = "wss://sokol-ws.poa.network/ws"
+chain_logo = "/images/sokol_logo.svg"
+chain_check_origin = "[\"blockscout.com\"]"
+chain_coin "POA"
+chain_network "POA Network"
+chain_subnetwork = "Sokol Testnet"
+chain_network_path = "poa"
+chain_subnetwork_path = "sokol"
+chain_network_icon = "_test_network_icon.html"
 ```
 
 This will ensure that those chains are used when provisioning the infrastructure.

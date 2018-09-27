@@ -12,7 +12,7 @@ resource "aws_codedeploy_app" "explorer" {
 }
 
 resource "aws_codedeploy_deployment_group" "explorer" {
-  count                 = "${length(var.chains)}"
+  count                 = 1
   app_name              = "${aws_codedeploy_app.explorer.name}"
   deployment_group_name = "${var.prefix}-explorer-dg${count.index}"
   service_role_arn      = "${aws_iam_role.deployer.arn}"

@@ -33,97 +33,69 @@ variable "root_block_size" {
   default     = 8
 }
 
-variable "chains" {
+variable "chain" {
   description = "A map of chain names to urls"
-
-  default = {
-    "sokol" = "https://sokol-trace.poa.network"
-  }
+  default = "sokol"
 }
 
-variable "chain_trace_endpoints" {
-  description = "A map of chain names to trace urls"
-
-  default = {
-    "sokol" = "https://sokol-trace.poa.network"
-  }
+variable "chain_jsonrpc_variant" {
+  description = "The chain JSON RPC variant"
+  default = "parity"
 }
-variable "chain_ws_endpoints" {
-  description = "A map of chain names to websocket urls"
 
-  default = {
-    "sokol" = "wss://sokol-ws.poa.network/ws"
-  }
+variable "chain_ethereum_url" {
+  description = "The base RPC endpoint for the chain"
+  default = "https://sokol.poa.network"
+}
+
+variable "chain_trace_endpoint" {
+  description = "A RPC tracing RPC endpoint"
+  default = "https://sokol-trace.poa.network"
+}
+
+variable "chain_ws_endpoint" {
+  description = "A Websocket RPC Endpoint for the chain"
+  default = "wss://sokol-ws.poa.network/ws"
 }
 
 variable "chain_logo" {
-  description = "A map of chain names to logo urls"
-
-  default = {
-    "sokol" = "/images/sokol_logo.svg"
-  }
-}
-
-variable "chain_css_file" {
-  description = "A map of chain names to the css file"
-
-  default = {
-    "sokol" = "sokol_variables"
-  }
+  description = "The logo url for the chain"
+  default = "/images/sokol_logo.svg"
 }
 
 variable "chain_check_origin" {
-  description = "A map of chain names to the check_origin configuration"
-  default = "['//*.blockscout.com']"
+  description = "The chain names to the check_origin configuration"
+  default = "false"
 }
 
 variable "chain_coin" {
-  description = "A map of chain names to the coin name"
-
-  default = {
-    "sokol" = "POA"
-  }
+  description = "The coin symbol"
+  default = "POA"
 }
 
 variable "chain_network" {
-  description = "A map of chain names to the network name"
-
-  default = {
-    "sokol" = "POA Network"
-  }
+  description = "The network name"
+  default = "POA Network"
 }
 
 variable "chain_subnetwork" {
-  description = "A map of chain names to the subnetwork name"
-
-  default = {
-    "sokol" = "Sokol Testnet"
-  }
+  description = "The subnetwork name"
+  default = "Sokol Testnet"
 }
 
 variable "chain_network_path" {
-  description = "A map of chain names to the network name"
-
-  default = {
-    "sokol" = "poa"
-  }
+  description = "The network name path"
+  default = "poa"
 }
 
 variable "chain_subnetwork_path" {
-  description = "A map of chain names to the subnetwork name"
-
-  default = {
-    "sokol" = "sokol"
-  }
+  description = "The subnetwork name path"
+  default = "sokol"
 }
 
-
 variable "chain_network_icon" {
-  description = "A map of chain names to the network navigation"
-
-  default = {
-    "sokol" = "_test_network_icon.html"
-  }
+  description = "The network navigation icon"
+  default = "_test_network_icon.html"
 }
 
 # RDS/Database configuration
