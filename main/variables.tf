@@ -82,12 +82,7 @@ variable "chain_subnetwork" {
 
 variable "chain_network_path" {
   description = "The network name path"
-  default = "poa"
-}
-
-variable "chain_subnetwork_path" {
-  description = "The subnetwork name path"
-  default = "sokol"
+  default = "/poa/sokol"
 }
 
 variable "chain_network_icon" {

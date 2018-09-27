@@ -137,8 +137,7 @@ chain_check_origin = "[\"blockscout.com\"]"
 chain_coin "POA"
 chain_network "POA Network"
 chain_subnetwork = "Sokol Testnet"
-chain_network_path = "poa"
-chain_subnetwork_path = "sokol"
+chain_network_path = "/poa/sokol"
 chain_network_icon = "_test_network_icon.html"
 ```
 

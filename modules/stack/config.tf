@@ -94,13 +94,6 @@ resource "aws_ssm_parameter" "network_path" {
   type  = "String"
 }
 
-resource "aws_ssm_parameter" "subnetwork_path" {
-  count = "${length(var.chains)}"
-  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/subnetwork_path"
-  value = "${var.chain_subnetwork_path}"
-  type  = "String"
-}
-
 resource "aws_ssm_parameter" "network_icon" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/network_icon"

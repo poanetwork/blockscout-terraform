@@ -20,7 +20,6 @@ variable "chain_coin" {}
 variable "chain_network" {}
 variable "chain_subnetwork" {}
 variable "chain_network_path" {}
-variable "chain_subnetwork_path" {}
 variable "chain_network_icon" {}
 
 variable "db_id" {}
