@@ -130,8 +130,6 @@ The default of this repo is to build infra for the `sokol` chain, but you may no
 
 ```terraform
 chain_jsonrpc_variant = "parity"
-chain = "sokol"
-chain_ethereum_url = "https://sokol.poa.network"
 chain_trace_endpoint = "https://sokol-trace.poa.network"
 chain_ws_endpoint = "wss://sokol-ws.poa.network/ws"
 chain_logo = "/images/sokol_logo.svg"
