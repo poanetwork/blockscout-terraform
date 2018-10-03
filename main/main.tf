@@ -18,7 +18,6 @@ module "stack" {
   chain_trace_endpoint     = "${var.chain_trace_endpoint}"
   chain_ws_endpoint        = "${var.chain_ws_endpoint}"
   chain_logo               = "${var.chain_logo}"
-  chain_check_origin       = "${var.chain_check_origin}"
   chain_coin               = "${var.chain_coin}"
   chain_network            = "${var.chain_network}"
   chain_subnetwork         = "${var.chain_subnetwork}"

@@ -8,19 +8,36 @@ variable "dns_zone_name" {}
 variable "instance_type" {}
 variable "root_block_size" {}
 
-variable "chain_jsonrpc_variant" {}
+variable "chain_jsonrpc_variant" {
+  default = {}
+}
 variable "chains" {
   default = {}
 }
-variable "chain_trace_endpoint" {}
-variable "chain_ws_endpoint" {}
-variable "chain_logo" {}
-variable "chain_check_origin" {}
-variable "chain_coin" {}
-variable "chain_network" {}
-variable "chain_subnetwork" {}
-variable "chain_network_path" {}
-variable "chain_network_icon" {}
+variable "chain_trace_endpoint" {
+  default = {}
+}
+variable "chain_ws_endpoint" {
+  default = {}
+}
+variable "chain_logo" {
+  default = {}
+}
+variable "chain_coin" {
+  default = {}
+}
+variable "chain_network" {
+  default = {}
+}
+variable "chain_subnetwork" {
+  default = {}
+}
+variable "chain_network_path" {
+  default = {}
+}
+variable "chain_network_icon" {
+  default = {}
+}
 
 variable "db_id" {}
 variable "db_name" {}
