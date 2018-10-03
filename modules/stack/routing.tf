@@ -53,7 +53,7 @@ resource "aws_lb_target_group" "explorer" {
     unhealthy_threshold = 2    
     timeout             = 15    
     interval            = 30    
-    path                = "${var.chain_network_path}/blocks"    
+    path                = "/blocks"    
     port                = 4000  
   }
 }
