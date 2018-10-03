@@ -123,10 +123,11 @@ root_block_size = 120
 - The `db_password` can be a changed to any alphanumeric value.
 - The `db_instance_class` and `db_storage` are not required but are defaulted to `db.m4.large` and `100`GB respectively.
 - The `alb_ssl_policy` and `alb_certificate_arn` are required in order to force SSL usage.
+- The `root_block_size` is the amount of storage on your EC2 instance. This value can be adjusted by how frequently logs are rotated. Logs are located in `/opt/app/logs` of your EC2 instance.
 
 ## Database Storage Required
 
-The configuration variable `db_storage` can be used to define the amount of storage allocated to your RDS instance. The chart below shows an estimated amount of storage that is required to index the entire chain. 
+The configuration variable `db_storage` can be used to define the amount of storage allocated to your RDS instance. The chart below shows an estimated amount of storage that is required to index individual chains. The `db_storage` can only be adjusted 1 time in a 24 hour period on AWS.
 
 | Chain | Storage (GiB) |
 | --- | --- |
