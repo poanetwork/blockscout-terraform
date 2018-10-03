@@ -124,6 +124,19 @@ root_block_size = 120
 - The `db_instance_class` and `db_storage` are not required but are defaulted to `db.m4.large` and `100`GB respectively.
 - The `alb_ssl_policy` and `alb_certificate_arn` are required in order to force SSL usage.
 
+## Database Storage Required
+
+The configuration variable `db_storage` can be used to define the amount of storage allocated to your RDS instance. The chart below shows an estimated amount of storage that is required to index the entire chain. 
+
+| Chain | Storage (GiB) |
+| --- | --- |
+| POA Core | 200 |
+| POA Sokol | 400 |
+| Ethereum Classic | 1000 |
+| Ethereum Mainnet | 4000 |
+| Kovan Testnet | 800 |
+| Ropsten Testnet | 1500 |
+
 ## Defining Chains/Adding Chains
 
 The default of this repo is to build infra for the `sokol` chain, but you may not want that, or want a different set, so you need to create/edit `terraform.tfvars` and add the following configuration:
