@@ -8,11 +8,34 @@ variable "dns_zone_name" {}
 variable "instance_type" {}
 variable "root_block_size" {}
 
+variable "chain_jsonrpc_variant" {
+  default = {}
+}
 variable "chains" {
   default = {}
 }
-
-variable "chain_trace_endpoints" {
+variable "chain_trace_endpoint" {
+  default = {}
+}
+variable "chain_ws_endpoint" {
+  default = {}
+}
+variable "chain_logo" {
+  default = {}
+}
+variable "chain_coin" {
+  default = {}
+}
+variable "chain_network" {
+  default = {}
+}
+variable "chain_subnetwork" {
+  default = {}
+}
+variable "chain_network_path" {
+  default = {}
+}
+variable "chain_network_icon" {
   default = {}
 }
 

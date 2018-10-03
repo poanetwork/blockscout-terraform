@@ -26,6 +26,12 @@ resource "aws_ssm_parameter" "ecto_use_ssl" {
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "ethereum_jsonrpc_variant" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_jsonrpc_variant"
+  value = "${element(values(var.chain_jsonrpc_variant),count.index)}"
+  type  = "String"
+}
 resource "aws_ssm_parameter" "ethereum_url" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_url"
@@ -35,8 +41,56 @@ resource "aws_ssm_parameter" "ethereum_url" {
 
 resource "aws_ssm_parameter" "trace_url" {
   count = "${length(var.chains)}"
-  name  = "/${var.prefix}/${element(keys(var.chain_trace_endpoints),count.index)}/trace_url"
-  value = "${element(values(var.chain_trace_endpoints), count.index)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/trace_url"
+  value = "${element(values(var.chain_trace_endpoint),count.index)}"
+  type  = "String"
+}
+resource "aws_ssm_parameter" "ws_url" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ws_url"
+  value = "${element(values(var.chain_ws_endpoint),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "logo" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/logo"
+  value = "${element(values(var.chain_logo),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "coin" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/coin"
+  value = "${element(values(var.chain_coin),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "network" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/network"
+  value = "${element(values(var.chain_network),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "subnetwork" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/subnetwork"
+  value = "${element(values(var.chain_subnetwork),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "network_path" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/network_path"
+  value = "${element(values(var.chain_network_path),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "network_icon" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/network_icon"
+  value = "${element(values(var.chain_network_icon),count.index)}"
   type  = "String"
 }
 

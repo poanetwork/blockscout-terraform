@@ -123,18 +123,55 @@ root_block_size = 120
 - The `db_password` can be a changed to any alphanumeric value.
 - The `db_instance_class` and `db_storage` are not required but are defaulted to `db.m4.large` and `100`GB respectively.
 - The `alb_ssl_policy` and `alb_certificate_arn` are required in order to force SSL usage.
+- The `root_block_size` is the amount of storage on your EC2 instance. This value can be adjusted by how frequently logs are rotated. Logs are located in `/opt/app/logs` of your EC2 instance.
+
+## Database Storage Required
+
+The configuration variable `db_storage` can be used to define the amount of storage allocated to your RDS instance. The chart below shows an estimated amount of storage that is required to index individual chains. The `db_storage` can only be adjusted 1 time in a 24 hour period on AWS.
+
+| Chain | Storage (GiB) |
+| --- | --- |
+| POA Core | 200 |
+| POA Sokol | 400 |
+| Ethereum Classic | 1000 |
+| Ethereum Mainnet | 4000 |
+| Kovan Testnet | 800 |
+| Ropsten Testnet | 1500 |
 
 ## Defining Chains/Adding Chains
 
-The default of this repo is to build infra for the `sokol` chain, but you may not want that, or want a different set, so you need to
-create/edit `terraform.tfvars` or `user.auto.tfvars` and add the following configuration:
+The default of this repo is to build infra for the `sokol` chain, but you may not want that, or want a different set, so you need to create/edit `terraform.tfvars` and add the following configuration:
 
 ```terraform
 chains = {
     "mychain" = "url/to/endpoint"
 }
-chain_trace_endpoints = {
+chain_trace_endpoint = {
     "mychain" = "url/to/debug/endpoint/or/the/main/chain/endpoint"
+}
+chain_ws_endpoint = {
+    "mychain" = "url/to/websocket/endpoint"
+}
+chain_jsonrpc_variant = {
+    "mychain" = "parity"
+}
+chain_logo = {
+    "mychain" = "url/to/logo"
+}
+chain_coin = {
+    "mychain" = "coin"
+}
+chain_network = {
+    "mychain" = "network name"
+}
+chain_subnetwork = {
+    "mychain" = "subnetwork name"
+}
+chain_network_path = {
+    "mychain" = path/to/root"
+}
+chain_network_icon = {
+    "mychain" = "_test_network_icon.html"
 }
 ```
 

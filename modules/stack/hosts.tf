@@ -86,6 +86,8 @@ resource "aws_autoscaling_group" "explorer" {
     "aws_ssm_parameter.db_port",
     "aws_ssm_parameter.ethereum_url",
     "aws_ssm_parameter.trace_url",
+    "aws_ssm_parameter.ws_url",
+    "aws_ssm_parameter.network_path",
   ]
 
   lifecycle {

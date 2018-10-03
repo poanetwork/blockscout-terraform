@@ -35,17 +35,71 @@ variable "root_block_size" {
 
 variable "chains" {
   description = "A map of chain names to urls"
-
   default = {
     "sokol" = "https://sokol-trace.poa.network"
   }
 }
 
-variable "chain_trace_endpoints" {
-  description = "A map of chain names to trace urls"
-
+variable "chain_trace_endpoint" {
+  description = "A map of chain names to RPC tracing endpoint"
   default = {
     "sokol" = "https://sokol-trace.poa.network"
+  }
+}
+
+variable "chain_ws_endpoint" {
+  description = "A map of chain names to Websocket RPC Endpoint"
+  default = {
+    "sokol" = "wss://sokol-ws.poa.network/ws"
+  }
+}
+
+variable "chain_jsonrpc_variant" {
+  description = "A map of chain names to JSON RPC variant"
+  default = {
+    "sokol" = "parity"
+  }
+}
+
+variable "chain_logo" {
+  description = "A map of chain names to logo url"
+  default = {
+    "sokol" = "/images/sokol_logo.svg"
+  }
+}
+
+variable "chain_coin" {
+  description = "A map of chain name to coin symbol"
+  default = {
+    "sokol" = "POA"
+  }
+}
+
+variable "chain_network" {
+  description = "A map of chain names to network name"
+  default = {
+    "sokol" = "POA Network"
+  }
+}
+
+variable "chain_subnetwork" {
+  description = "A map of chain names to subnetwork name"
+  default = {
+    "sokol" = "Sokol Testnet"
+  }
+}
+
+variable "chain_network_path" {
+  description = "A map of chain names to network name path"
+  default = {
+    "sokol" = "/poa/sokol"
+  }
+}
+
+variable "chain_network_icon" {
+  description = "A map of chain names to network navigation icon"
+  default = {
+    "sokol" = "_test_network_icon.html"
   }
 }
 

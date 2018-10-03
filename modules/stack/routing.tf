@@ -66,8 +66,8 @@ resource "aws_alb_listener" "alb_listener" {
   ssl_policy        = "${var.alb_ssl_policy}"
   certificate_arn   = "${var.alb_certificate_arn}"
   
-  default_action {    
-    target_group_arn = "${aws_lb_target_group.explorer.arn}"
-    type             = "forward"  
+  default_action {
+    type             = "forward"
+    target_group_arn = "${aws_lb_target_group.explorer.arn}" 
   }
 }
