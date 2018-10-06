@@ -124,9 +124,9 @@ EOF
 
 log "Installing Erlang.."
 
-wget https://packages.erlang-solutions.com/erlang/esl-erlang/FLAVOUR_1_general/esl-erlang_21.0-1~centos~7_amd64.rpm
+wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_21.0.5-1~centos~7_amd64.rpm
 yum install -y wxGTK-devel unixODBC-devel >"$LOG"
-rpm -Uvh esl-erlang_21.0-1~centos~7_amd64.rpm >"$LOG"
+yum install -y esl-erlang_21.0.5-1~centos~7_amd64.rpm >"$LOG"
 
 log "Installing Elixir to /opt/elixir.."
 mkdir -p /opt/elixir
