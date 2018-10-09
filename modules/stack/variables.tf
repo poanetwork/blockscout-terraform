@@ -38,6 +38,7 @@ variable "chain_network_path" {
 variable "chain_network_icon" {
   default = {}
 }
+variable "user_data_s3_bucket" {}
 
 variable "db_id" {}
 variable "db_name" {}

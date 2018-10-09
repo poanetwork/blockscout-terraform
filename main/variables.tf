@@ -103,6 +103,10 @@ variable "chain_network_icon" {
   }
 }
 
+variable "user_data_s3_bucket" {
+  description = "the s3 bucket name for the user data dump"
+}
+
 # RDS/Database configuration
 variable "db_id" {
   description = "The identifier for the RDS database"
