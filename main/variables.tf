@@ -107,6 +107,13 @@ variable "user_data_s3_bucket" {
   description = "the s3 bucket name for the user data dump"
 }
 
+variable "chain_enable_scheduler" {
+  description = "A map of chain names to \"true\" or empty string to enable/disable scheduler"
+  default = {
+    "sokol" = "false"
+  }
+}
+
 # RDS/Database configuration
 variable "db_id" {
   description = "The identifier for the RDS database"

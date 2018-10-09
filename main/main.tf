@@ -24,6 +24,7 @@ module "stack" {
   chain_network_path       = "${var.chain_network_path}"
   chain_network_icon       = "${var.chain_network_icon}"
   user_data_s3_bucket      = "${var.user_data_s3_bucket}"
+  chain_enable_scheduler   = "${var.chain_enable_scheduler}"
 
   vpc_cidr           = "${var.vpc_cidr}"
   public_subnet_cidr = "${var.public_subnet_cidr}"

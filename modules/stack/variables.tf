@@ -40,6 +40,10 @@ variable "chain_network_icon" {
 }
 variable "user_data_s3_bucket" {}
 
+variable "chain_enable_scheduler" {
+  default = {}
+}
+
 variable "db_id" {}
 variable "db_name" {}
 variable "db_username" {}

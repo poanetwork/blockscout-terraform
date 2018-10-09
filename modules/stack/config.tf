@@ -101,6 +101,13 @@ resource "aws_ssm_parameter" "s3_bucket" {
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "enable_scheduler" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/enable_scheduler"
+  value = "${element(values(var.chain_enable_scheduler),count.index)}"
+  type  = "String"
+}
+
 resource "aws_ssm_parameter" "exq_blocks_concurrency" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/exq_blocks_concurrency"
