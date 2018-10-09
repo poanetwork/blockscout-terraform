@@ -12,6 +12,8 @@ hooks:
   ApplicationStart:
     - location: bin/migrate.sh
       timeout: 300
+    - location: bin/restore_dump.sh
+      timeout: 300
     - location: bin/start.sh
       timeout: 3600
   ValidateService:
