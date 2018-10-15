@@ -44,6 +44,8 @@ you provide a user account with full access. You do not need to keep this user
 around (or enabled) except during the initial provisioning, and any subsequent
 runs to update the infrastructure. How you choose to handle this user is up to you.
 
+
+You will also need to create a S3 bucket for the user data dump beforehand
 ## Usage
 
 Once the prerequisites are out of the way, you are ready to spin up your new infrastructure!
@@ -109,6 +111,7 @@ bucket = "poa-terraform-state"
 dynamodb_table = "poa-terraform-lock"
 key_name = "sokol-test"
 prefix = "sokol"
+user_data_s3_bucket = "sokol-user-data"
 db_password = "qwerty12345"
 db_instance_class = "db.m4.xlarge"
 db_storage = "120"
@@ -120,6 +123,7 @@ root_block_size = 120
 - The region should be left at `us-east-1` as some of the other regions fail for different reasons.
 - The `bucket` and `dynamodb_table` can be edited but should have an identical prefix.
 - The `key_name` should start with the `prefix` and can only contain 5 characters and must start with a letter.
+- The `user_data_s3_bucket` needs to be the name of the S3 bucket you want to store and retrieve user data dumps
 - The `db_password` can be a changed to any alphanumeric value.
 - The `db_instance_class` and `db_storage` are not required but are defaulted to `db.m4.large` and `100`GB respectively.
 - The `alb_ssl_policy` and `alb_certificate_arn` are required in order to force SSL usage.
@@ -172,6 +176,10 @@ chain_network_path = {
 }
 chain_network_icon = {
     "mychain" = "_test_network_icon.html"
+}
+
+chain_enable_scheduler = {
+    "mychain" = "true or false"
 }
 ```
 
