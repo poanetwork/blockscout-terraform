@@ -162,3 +162,8 @@ variable "alb_certificate_arn" {
   description = "The Certificate ARN for the Applicationn Load Balancer Policy"
   default     = ""
 }
+
+variable "use_ssl" {
+  description = "Enable SSL"
+  default = "true"
+}
