@@ -15,7 +15,7 @@ resource "aws_ssm_parameter" "new_relic_license_key" {
 resource "aws_ssm_parameter" "pool_size" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/pool_size"
-  value = "10"
+  value = "${var.pool_size}"
   type  = "String"
 }
 

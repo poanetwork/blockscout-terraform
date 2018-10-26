@@ -28,6 +28,7 @@ module "stack" {
   public_subnet_cidr = "${var.public_subnet_cidr}"
   instance_type      = "${var.instance_type}"
   root_block_size    = "${var.root_block_size}"
+  pool_size          = "${var.pool_size}"
   db_subnet_cidr     = "${var.db_subnet_cidr}"
   dns_zone_name      = "${var.dns_zone_name}"
 
