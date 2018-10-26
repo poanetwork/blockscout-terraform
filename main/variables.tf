@@ -155,10 +155,15 @@ variable "new_relic_license_key" {
 # SSL Certificate configuration
 variable "alb_ssl_policy" {
   description = "The SSL Policy for the Application Load Balancer"
-  default     = ""
+  default     = "ELBSecurityPolicy-2016-08"
 }
 
 variable "alb_certificate_arn" {
   description = "The Certificate ARN for the Applicationn Load Balancer Policy"
-  default     = ""
+  default     = "arn:aws:acm:us-east-1:008312654217:certificate/ce6ec2cb-eba4-4b02-af1d-e77ce8813497"
+}
+
+variable "use_ssl" {
+  description = "Enable SSL"
+  default = "true"
 }

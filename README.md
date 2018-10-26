@@ -23,7 +23,8 @@ You will also need the following information for the installer:
 
 You will need to set up a new AWS account (or subaccount), and then either login
 to that account using the AWS CLI (via `aws configure`) or create a user account
-that you will use for provisioning, and login to that account. The account used
+that you will use for provisioning, and login to that account. Set output format 
+to `json` for the AWS CLI. The account used
 requires full access to all AWS services, as a wide variety of services are used,
 a mostly complete list is as follows:
 
@@ -122,6 +123,7 @@ root_block_size = 120
 - The `key_name` should start with the `prefix` and can only contain 5 characters and must start with a letter.
 - The `db_password` can be a changed to any alphanumeric value.
 - The `db_instance_class` and `db_storage` are not required but are defaulted to `db.m4.large` and `100`GB respectively.
+- If you don't plan to use SSL, set variable `use_ssl = "false"`
 - The `alb_ssl_policy` and `alb_certificate_arn` are required in order to force SSL usage.
 - The `root_block_size` is the amount of storage on your EC2 instance. This value can be adjusted by how frequently logs are rotated. Logs are located in `/opt/app/logs` of your EC2 instance.
 

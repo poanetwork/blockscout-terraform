@@ -295,7 +295,7 @@ EOF
     if [ -z "$SECRET_KEY_BASE" ]; then
         SECRET_KEY_BASE="$(get_config 'secret_key_base')"
         if [ -z "$SECRET_KEY_BASE" ]; then
-            SECRET_KEY_BASE="$(openssl rand -base64 64)"
+            SECRET_KEY_BASE="$(openssl rand -base64 64 | tr -d '\n')"
         fi
     fi
 

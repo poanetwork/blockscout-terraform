@@ -45,4 +45,5 @@ module "stack" {
 
   alb_ssl_policy      = "${var.alb_ssl_policy}"
   alb_certificate_arn = "${var.alb_certificate_arn}"
+  use_ssl = "${var.use_ssl}"
 }
