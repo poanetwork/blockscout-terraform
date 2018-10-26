@@ -33,6 +33,11 @@ variable "root_block_size" {
   default     = 8
 }
 
+variable "pool_size" {
+  description = "The number of connections available to the RDS instance"
+  default     = 30
+}
+
 variable "chains" {
   description = "A map of chain names to urls"
   default = {

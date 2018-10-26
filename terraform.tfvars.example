@@ -9,3 +9,4 @@ db_storage = "120"
 alb_ssl_policy = "ELBSecurityPolicy-2016-08"
 alb_certificate_arn = "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
 root_block_size = 120
+pool_size = 30

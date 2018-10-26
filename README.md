@@ -116,6 +116,7 @@ db_storage = "120"
 alb_ssl_policy = "ELBSecurityPolicy-2016-08"
 alb_certificate_arn = "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
 root_block_size = 120
+pool_size = 30
 ```
 
 - The region should be left at `us-east-1` as some of the other regions fail for different reasons.
@@ -126,6 +127,7 @@ root_block_size = 120
 - If you don't plan to use SSL, set variable `use_ssl = "false"`
 - The `alb_ssl_policy` and `alb_certificate_arn` are required in order to force SSL usage.
 - The `root_block_size` is the amount of storage on your EC2 instance. This value can be adjusted by how frequently logs are rotated. Logs are located in `/opt/app/logs` of your EC2 instance.
+- The `pool_size` defines the number of connections allowed by the RDS instance.
 
 ## Database Storage Required
 

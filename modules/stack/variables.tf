@@ -7,6 +7,7 @@ variable "db_subnet_cidr" {}
 variable "dns_zone_name" {}
 variable "instance_type" {}
 variable "root_block_size" {}
+variable "pool_size" {}
 
 variable "chain_jsonrpc_variant" {
   default = {}
