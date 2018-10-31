@@ -182,6 +182,11 @@ if ! which psql >/dev/null; then
     yum install -y --enablerepo=epel postgresql >"$LOG"
 fi
 
+if ! which g++ >/dev/null; then
+    log "Installing gcc-c++.."
+    yum install -y gcc-c++ >"$LOG"
+fi
+
 function has_db() {
     psql --tuples-only --no-align \
         "$DATABASE_URL/postgres" \
