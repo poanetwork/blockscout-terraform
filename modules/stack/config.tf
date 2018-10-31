@@ -34,20 +34,20 @@ resource "aws_ssm_parameter" "ethereum_jsonrpc_variant" {
 }
 resource "aws_ssm_parameter" "ethereum_url" {
   count = "${length(var.chains)}"
-  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_url"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_jsonrpc_http_url"
   value = "${element(values(var.chains),count.index)}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "trace_url" {
   count = "${length(var.chains)}"
-  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/trace_url"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_jsonrpc_trace_url"
   value = "${element(values(var.chain_trace_endpoint),count.index)}"
   type  = "String"
 }
 resource "aws_ssm_parameter" "ws_url" {
   count = "${length(var.chains)}"
-  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ws_url"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_jsonrpc_ws_url"
   value = "${element(values(var.chain_ws_endpoint),count.index)}"
   type  = "String"
 }
