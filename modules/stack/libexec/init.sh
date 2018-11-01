@@ -70,6 +70,7 @@ fi
 if ! which gcc >/dev/null; then
     log "Installing C compiling tools.."
     yum --enablerepo=epel group install -y "Development Tools" >"$LOG"
+    yum --enablerepo=epel install -y libgmp3-dev > "$LOG"
 fi
 
 log "Determining region this instance is in.."
