@@ -67,7 +67,10 @@ if ! which node >/dev/null; then
     log "Installing nodejs.."
     yum --enablerepo=epel install -y nodejs >"$LOG"
 fi
-
+if ! which gcc >/dev/null; then
+    log "Installing C compiling tools.."
+    yum --enablerepo=epel group install -y "Development Tools" >"$LOG"
+fi
 
 log "Determining region this instance is in.."
 REGION="$(curl -s $DYNDATA_URL/instance-identity/document | jq -r '.region')"
