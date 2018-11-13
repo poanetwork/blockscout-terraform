@@ -131,13 +131,13 @@ EOF
 
 log "Installing Erlang.."
 
-wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_21.0.5-1~centos~7_amd64.rpm
+wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_21.1-1~centos~7_amd64.rpm
 yum install -y wxGTK-devel unixODBC-devel >"$LOG"
-yum install -y esl-erlang_21.0.5-1~centos~7_amd64.rpm >"$LOG"
+yum install -y esl-erlang_21.1-1~centos~7_amd64.rpm >"$LOG"
 
 log "Installing Elixir to /opt/elixir.."
 mkdir -p /opt/elixir
-wget https://github.com/elixir-lang/elixir/releases/download/v1.7.2/Precompiled.zip >"$LOG"
+wget https://github.com/elixir-lang/elixir/releases/download/v1.7.4/Precompiled.zip >"$LOG"
 unzip Precompiled.zip -d /opt/elixir >"$LOG"
 log "Elixir installed successfully!"
 
@@ -186,7 +186,9 @@ log "Creating pgsql database for $CHAIN"
 
 if ! which psql >/dev/null; then
     log "Installing psql.."
-    yum install -y --enablerepo=epel postgresql >"$LOG"
+    yum install -y  https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-redhat10-10-2.noarch.rpm
+    sed -i "s/rhel-\$releasever-\$basearch/rhel-latest-x86_64/g" "/etc/yum.repos.d/pgdg-10-redhat.repo"
+    yum install -y postgresql10 >"$LOG"
 fi
 
 if ! which g++ >/dev/null; then
