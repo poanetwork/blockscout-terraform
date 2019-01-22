@@ -40,6 +40,16 @@ variable "chain_network_icon" {
   default = {}
 }
 
+variable "chain_heart_beat_timeout" {
+  default = {}
+}
+variable "chain_heart_command" {
+  default = {}
+}
+variable "chain_blockscout_version" {
+  default = {}
+}
+
 variable "db_id" {}
 variable "db_name" {}
 variable "db_username" {}

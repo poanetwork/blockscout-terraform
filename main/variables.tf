@@ -25,7 +25,7 @@ variable "dns_zone_name" {
 
 variable "instance_type" {
   description = "The EC2 instance type to use for app servers"
-  default     = "m5.xlarge"
+  default     = "m5.large"
 }
 
 variable "root_block_size" {
@@ -41,21 +41,21 @@ variable "pool_size" {
 variable "chains" {
   description = "A map of chain names to urls"
   default = {
-    "sokol" = "https://sokol-trace.poa.network"
+    "sokol" = "http://localhost:8545"
   }
 }
 
 variable "chain_trace_endpoint" {
   description = "A map of chain names to RPC tracing endpoint"
   default = {
-    "sokol" = "https://sokol-trace.poa.network"
+    "sokol" = "http://localhost:8545"
   }
 }
 
 variable "chain_ws_endpoint" {
   description = "A map of chain names to Websocket RPC Endpoint"
   default = {
-    "sokol" = "wss://sokol-ws.poa.network/ws"
+    "sokol" = "ws://localhost:8546"
   }
 }
 
@@ -105,6 +105,25 @@ variable "chain_network_icon" {
   description = "A map of chain names to network navigation icon"
   default = {
     "sokol" = "_test_network_icon.html"
+  }
+}
+
+variable "chain_heart_beat_timeout" {
+  description = "A map of the chain heart beat timeout number"
+  default = {
+    "sokol" = 30
+  }
+}
+variable "chain_heart_command" {
+  description = "A map of chain heart beat command"
+  default = {
+    "sokol" = "systemctl restart explorer.service"
+  }
+}
+variable "chain_blockscout_version" {
+  description = "A map of the blockscout version"
+  default = {
+    "sokol" = "v1.3.0-beta"
   }
 }
 

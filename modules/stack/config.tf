@@ -94,6 +94,27 @@ resource "aws_ssm_parameter" "network_icon" {
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "heart_beat_timeout" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/heart_beat_timeout"
+  value = "${element(values(var.chain_heart_beat_timeout),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "heart_command" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/heart_command"
+  value = "${element(values(var.chain_heart_command),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "blockscout_version" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/blockscout_version"
+  value = "${element(values(var.chain_blockscout_version),count.index)}"
+  type  = "String"
+}
+
 resource "aws_ssm_parameter" "exq_blocks_concurrency" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/exq_blocks_concurrency"

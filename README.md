@@ -177,6 +177,15 @@ chain_network_path = {
 chain_network_icon = {
     "mychain" = "_test_network_icon.html"
 }
+heart_beat_timeout = {
+    "mychain" = 30
+}
+heart_command = {
+    "mychain" = "systemctl restart explorer.service"
+}
+blockscout_version = {
+    "mychain" = "v1.3.0-beta"
+}
 ```
 
 This will ensure that those chains are used when provisioning the infrastructure.
