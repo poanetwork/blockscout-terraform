@@ -39,6 +39,9 @@ variable "chain_network_path" {
 variable "chain_network_icon" {
   default = {}
 }
+variable "chain_block_transformer" {
+  default = {}
+}
 
 variable "db_id" {}
 variable "db_name" {}

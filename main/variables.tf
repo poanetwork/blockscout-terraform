@@ -107,6 +107,12 @@ variable "chain_network_icon" {
     "sokol" = "_test_network_icon.html"
   }
 }
+variable "chain_block_transformer" {
+  description = "A map of chain names to block transformer algo"
+  default = {
+    "sokol" = "base"
+  }
+}
 
 # RDS/Database configuration
 variable "db_id" {

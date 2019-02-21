@@ -94,6 +94,13 @@ resource "aws_ssm_parameter" "network_icon" {
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "block_transformer" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/block_transformer"
+  value = "${element(values(var.chain_block_transformer),count.index)}"
+  type  = "String"
+}
+
 resource "aws_ssm_parameter" "exq_blocks_concurrency" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/exq_blocks_concurrency"

@@ -23,6 +23,7 @@ module "stack" {
   chain_subnetwork         = "${var.chain_subnetwork}"
   chain_network_path       = "${var.chain_network_path}"
   chain_network_icon       = "${var.chain_network_icon}"
+  chain_block_transformer  = "${var.chain_block_transformer}"
 
   vpc_cidr           = "${var.vpc_cidr}"
   public_subnet_cidr = "${var.public_subnet_cidr}"

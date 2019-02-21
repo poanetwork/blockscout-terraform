@@ -177,6 +177,9 @@ chain_network_path = {
 chain_network_icon = {
     "mychain" = "_test_network_icon.html"
 }
+chain_block_transformer = {
+    "mychain" = "base"
+}
 ```
 
 This will ensure that those chains are used when provisioning the infrastructure.
