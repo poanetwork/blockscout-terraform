@@ -108,6 +108,13 @@ variable "chain_network_icon" {
   }
 }
 
+variable "chain_graphiql_transaction" {
+  description = "A map of chain names to random transaction hash on that chain"
+  default = {
+    "sokol" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+  }
+}
+
 # RDS/Database configuration
 variable "db_id" {
   description = "The identifier for the RDS database"
