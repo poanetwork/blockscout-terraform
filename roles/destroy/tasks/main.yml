@@ -1,0 +1,41 @@
+- name: Local or remote backend selector (remote)
+  template:
+    src: roles/main_infra/templates/remote-backend-selector.tf.j2
+    dest: roles/main_infra/files/remote-backend-selector.tf
+  when:
+    - backend|bool == true
+
+- name: Local or remote backend selector (local)
+  file:
+    state: absent
+    dest: roles/main_infra/files/remote-backend-selector.tf
+  when:
+    - backend | default ('false') | bool != true
+
+- name: Generating variables file
+  template:
+    src: roles/main_infra/templates/terraform.tfvars.j2
+    dest: roles/main_infra/files/terraform.tfvars
+
+- name: Generating backend file
+  template:
+    src: roles/main_infra/templates/backend.tfvars.j2
+    dest: roles/main_infra/files/backend.tfvars
+  when: backend|bool == true
+
+- name: Terraform destroy main infra
+  shell: "echo yes | {{ terraform_location }} {{ item }}"
+  args:
+    chdir: "roles/main_infra/files"
+  with_items:
+    - "init {{ '-backend-config=backend.tfvars' if backend|bool == true else '' }}"
+    - destroy
+
+- name: Destroy S3 bucket
+  s3_bucket:
+    name: "{{ prefix }}-{{ bucket }}"
+    state: absent
+
+- dynamodb_table:
+    name: "{{ prefix }}-{{ table }}"
+    state: absent

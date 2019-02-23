@@ -1,0 +1,12 @@
+- name: Prepare infrastructure
+  hosts: localhost
+  roles:
+    - { role: check }
+    - { role: s3, when: "backend|bool == true" }
+    - { role: dynamodb, when: "backend|bool == true" }
+    - { role: ec2_key }
+    - { role: main_infra }
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_REGION: "us-east-1"

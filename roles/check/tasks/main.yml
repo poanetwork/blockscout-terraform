@@ -1,0 +1,29 @@
+- name: Check prefix
+  fail:
+    msg: "The prefix '{{ prefix }}' is invalid. It must consist only of the lowercase characters a-z and digits 0-9, and must be between 3 and 5 characters long."
+  when: prefix|length > 2 and prefix|length < 6 and prefix is match("^[a-z0-9]+$")
+
+- name: Check if terraform is installed
+  command: which terraform
+  register: terraform_status
+
+- name: Terraform check result
+  fail:
+    msg: "Terraform is not installed"
+  when: terraform_status.stdout == ""
+
+- name: Check if python is installed
+  command: which python
+  register: python_status
+
+- name: Python check result
+  fail:
+    msg: "Python either is not installed or is too old. Please install python version 2.6 or higher"
+  when: python_stats.stdout == "" or ansible_python_version.split(".")[0] * 100 + ansible_python_version.split(".")[1] * 10 + ansible_python_version.split(".")[2] < 260
+
+- name: Check if all required modules is installed
+  command: "python -c 'import {{ item }}'"
+  with_items:
+    - boto
+    - boto3
+    - botocore

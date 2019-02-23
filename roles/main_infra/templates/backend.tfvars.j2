@@ -1,0 +1,4 @@
+region         = "{{ lookup('env','AWS_REGION') }}"
+bucket         = "{{ prefix }}-{{ bucket }}"
+dynamodb_table = "{{ prefix }}-{{ dynamodb_table  }}"
+key            = "terraform.tfstate"

@@ -1,0 +1,28 @@
+region                = "{{ lookup('env','AWS_REGION') }}"
+prefix                = "{{ prefix }}"
+key_name              = "{{ ec2_ssh_key_name }}"
+vpc_cidr              = "{{ vpc_cidr }}"
+public_subnet_cidr    = "{{ public_subnet_cidr  }}"
+db_subnet_cidr        = "{{ db_subnet_cidr }}"
+dns_zone_name         = "{{ dns_zone_name }}"
+instance_type         = "{{ instance_type }}"
+root_block_size       = "{{ root_block_size }}"
+pool_size             = "{{ pool_size }}"
+
+db_id                 = "{{ db_id }}"
+db_name               = "{{ db_name }}"
+db_username           = "{{ db_username }}"
+db_password           = "{{ db_password }}"
+db_instance_class     = "{{ db_instance_class }}"
+db_storage            = "{{ db_storage }}"
+db_storage_type       = "{{ db_storage_type }}"
+
+alb_ssl_policy        = "{{ alb_ssl_policy }}"
+alb_certificate_arn   = "{{ alb_certificate_arn }}"
+use_ssl               = "{{ use_ssl }}"
+new_relic_app_name    = "{{ new_relic_app_name }}"
+new_relic_license_key = "{{ new_relic_license_key }}"
+secret_key_base       = "{{ secret_key_base }}" 
+
+
+{{ networks }}

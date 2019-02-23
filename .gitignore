@@ -4,8 +4,9 @@
 /ignore.tfvars
 
 # Terraform State
-/.terraform
-/terraform.tfstate.d
+*.terraform*
+*terraform.tfstate.d*
+*tfplan*
 
 # Sensitive information
 /*.privkey
@@ -13,4 +14,4 @@
 
 # Stack-specific information
 /PREFIX
-/plans/*.planfile
+

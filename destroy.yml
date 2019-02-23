@@ -1,0 +1,12 @@
+- name: Destroy infrastructure
+  hosts: localhost
+  roles:
+    - { role: destroy, when: "confirmation|bool == True" } 
+  vars_prompt:
+    - name: "confirmation"
+      prompt: "Are you sure you want to destroy all the infra?"
+      default: False
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_REGION: "us-east-1"

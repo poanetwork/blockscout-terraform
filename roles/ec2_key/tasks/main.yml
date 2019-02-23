@@ -1,0 +1,6 @@
+- name: Creating a keypair
+  ec2_key:
+    name: "{{ ec2_ssh_key_name }} "
+    key_material: "{{ ec2_ssh_key_content }}"
+    force: true
+  when: ec2_ssh_key_content != ""

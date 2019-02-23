@@ -1,0 +1,2 @@
+ec2_ssh_key_name: "sokol-test"
+ec2_ssh_key_content: ""
