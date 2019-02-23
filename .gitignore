@@ -15,3 +15,5 @@
 # Stack-specific information
 /PREFIX
 
+group_vars/*.yml
+*.retry

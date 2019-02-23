@@ -1,6 +1,11 @@
 - name: Create S3 bucket
+  aws_s3:
+    bucket: "{{ bucket }}" 
+    mode: create
+
+- name: Apply tags and versioning to create S3 bucket
   s3_bucket:
-    name: "{{ prefix }}-{{ bucket }}" 
+    name: "{{ bucket }}"
     versioning: yes
     tags:
       origin: terraform
@@ -8,7 +13,7 @@
 
 - name: Add lifecycle management policy to created S3 bucket
   s3_lifecycle:
-    name: "{{ prefix }}-{{ bucket }}"
+    name: "{{ bucket }}"
     rule_id: "expire"
     noncurrent_version_expiration_days: 90
     status: enabled
@@ -21,8 +26,8 @@
   when: upload_config_to_s3|bool == True
 
 - name: Upload config to S3 bucket
-  s3:
-    bucket: "{{ prefix }}-{{ bucket }}"
+  aws_s3:
+    bucket: "{{ bucket }}"
     object: localhost.yml
     src: "{{ playbook_dir }}/group_vars/all.yml"
     mode: put
