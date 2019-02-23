@@ -101,6 +101,13 @@ resource "aws_ssm_parameter" "block_transformer" {
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "graphiql_transaction" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/graphiql_transaction"
+  value = "${element(values(var.chain_graphiql_transaction),count.index)}"
+  type  = "String"
+}
+
 resource "aws_ssm_parameter" "exq_blocks_concurrency" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/exq_blocks_concurrency"

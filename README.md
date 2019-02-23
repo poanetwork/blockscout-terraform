@@ -180,6 +180,9 @@ chain_network_icon = {
 chain_block_transformer = {
     "mychain" = "base"
 }
+chain_graphiql_transaction = {
+    "mychain" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+}
 ```
 
 This will ensure that those chains are used when provisioning the infrastructure.
