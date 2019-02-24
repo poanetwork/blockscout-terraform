@@ -4,7 +4,6 @@ bucket: "poa-terraform-state"
 terraform_location: "/usr/local/bin/terraform"
 region: "us-east-1"
 prefix: "sokol"
-ec2_ssh_key_name: "sokol-test"
 vpc_cidr: "10.0.0.0/16"
 public_subnet_cidr: "10.0.0.0/24"
 db_subnet_cidr: "10.0.2.0/16"
@@ -12,6 +11,8 @@ dns_zone_name: "poa.internal"
 instance_type: "m5.xlarge"
 root_block_size: 8
 pool_size: 30
+ec2_ssh_key_name: "sokol-test"
+ec2_ssh_key_content: ""
 
 db_id: "poa"
 db_name: "poa"

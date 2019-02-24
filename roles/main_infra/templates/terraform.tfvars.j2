@@ -1,6 +1,7 @@
 region                = "{{ ansible_env.AWS_REGION }}"
 prefix                = "{{ prefix }}"
 key_name              = "{{ ec2_ssh_key_name }}"
+key_content           = "{{ ec2_ssh_key_content }}"
 vpc_cidr              = "{{ vpc_cidr }}"
 public_subnet_cidr    = "{{ public_subnet_cidr  }}"
 db_subnet_cidr        = "{{ db_subnet_cidr }}"

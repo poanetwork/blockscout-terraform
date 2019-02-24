@@ -9,6 +9,10 @@ variable "instance_type" {}
 variable "root_block_size" {}
 variable "pool_size" {}
 
+variable "key_content" {
+  default = ""
+}
+
 variable "chain_jsonrpc_variant" {
   default = {}
 }
