@@ -116,6 +116,11 @@ new_relic_license_key: ""
 #    "core" = "_test_network_icon.html",
 #    "sokol" = "_test_network_icon.html"
 # }
+## The following variable maps the chain names to random transaction hash on that chain
+# chain_graphiql_transaction = {
+#    "core" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+#    "sokol" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab5"
+# }
 networks: >
   chains = {
     "mychain" = "url/to/endpoint"
@@ -146,4 +151,7 @@ networks: >
   }
   chain_network_icon = {
     "mychain" = "_test_network_icon.html"
+  }
+  chain_graphiql_transaction = {
+    "mychain" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
   }

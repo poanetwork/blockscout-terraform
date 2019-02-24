@@ -58,3 +58,7 @@ variable "secret_key_base" {}
 variable "alb_ssl_policy" {}
 variable "alb_certificate_arn" {}
 variable "use_ssl" {}
+
+variable "chain_graphiql_transaction" {
+  default = {}
+}

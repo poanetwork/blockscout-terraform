@@ -104,6 +104,9 @@ networks: >
   chain_network_icon = {
     "mychain" = "_test_network_icon.html"
   }
+  chain_graphiql_transaction = {
+    "mychain" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+  }  
 ```
 
 - `aws_access_key` and `aws_secret_key` is a credentials pair that provides access to AWS for the deployer;
