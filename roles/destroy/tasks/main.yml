@@ -33,9 +33,10 @@
 
 - name: Destroy S3 bucket
   s3_bucket:
-    name: "{{ prefix }}-{{ bucket }}"
+    name: "{{ bucket }}"
     state: absent
+    force: yes
 
 - dynamodb_table:
-    name: "{{ prefix }}-{{ table }}"
+    name: "{{ dynamodb_table }}"
     state: absent

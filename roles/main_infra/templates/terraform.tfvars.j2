@@ -1,4 +1,4 @@
-region                = "{{ lookup('env','AWS_REGION') }}"
+region                = "{{ ansible_env.AWS_REGION }}"
 prefix                = "{{ prefix }}"
 key_name              = "{{ ec2_ssh_key_name }}"
 vpc_cidr              = "{{ vpc_cidr }}"

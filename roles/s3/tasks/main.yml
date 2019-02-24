@@ -2,6 +2,7 @@
   aws_s3:
     bucket: "{{ bucket }}" 
     mode: create
+    permission: private
 
 - name: Apply tags and versioning to create S3 bucket
   s3_bucket:
@@ -28,7 +29,7 @@
 - name: Upload config to S3 bucket
   aws_s3:
     bucket: "{{ bucket }}"
-    object: localhost.yml
+    object: all.yml
     src: "{{ playbook_dir }}/group_vars/all.yml"
     mode: put
   when: stat_result.stat.exists == True and upload_config_to_s3|bool == True

@@ -1,4 +1,4 @@
-region         = "{{ lookup('env','AWS_REGION') }}"
-bucket         = "{{ prefix }}-{{ bucket }}"
-dynamodb_table = "{{ prefix }}-{{ dynamodb_table  }}"
+region         = "{{ ansible_env.AWS_REGION }}"
+bucket         = "{{ bucket }}"
+dynamodb_table = "{{ dynamodb_table  }}"
 key            = "terraform.tfstate"

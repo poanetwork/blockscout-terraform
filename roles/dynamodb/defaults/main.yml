@@ -1,2 +1,2 @@
 prefix: "sokol"
-table: "dynamo"
+dynamodb_table: "dynamo"

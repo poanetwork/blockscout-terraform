@@ -7,6 +7,10 @@
 *.terraform*
 *terraform.tfstate.d*
 *tfplan*
+roles/main_infra/files/backend.tfvars
+roles/main_infra/files/remote-backend-selector.tf
+roles/main_infra/files/terraform.tfvars
+
 
 # Sensitive information
 /*.privkey

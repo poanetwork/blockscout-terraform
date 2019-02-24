@@ -1,6 +1,6 @@
 - name: Create DynamoDB table
   dynamodb_table:
-    name: "{{ table }}"
+    name: "{{ dynamodb_table }}"
     hash_key_name: LockID
     hash_key_type: STRING
     read_capacity: 1 

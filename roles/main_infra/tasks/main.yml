@@ -1,32 +1,31 @@
 - name: Local or remote backend selector (remote)
   template: 
     src: remote-backend-selector.tf.j2 
-    dest: roles/terraform/files/remote-backend-selector.tf
+    dest: roles/main_infra/files/remote-backend-selector.tf
   when: 
     - backend|bool == true
 
 - name: Local or remote backend selector (local)
   file:
     state: absent
-    dest: roles/terraform/files/remote-backend-selector.tf
+    dest: roles/main_infra/files/remote-backend-selector.tf
   when: 
     - backend | default ('false') | bool != true
 
 - name: Generating variables file
   template:
     src: terraform.tfvars.j2
-    dest: roles/terraform/files/terraform.tfvars
+    dest: roles/main_infra/files/terraform.tfvars
 
 - name: Generating backend file
   template:
     src: backend.tfvars.j2
-    dest: roles/terraform/files/backend.tfvars
+    dest: roles/main_infra/files/backend.tfvars
   when: backend|bool == true
     
 #Workaround since terraform module return unexpected error.
 - name: Terraform provisioning
   shell: "echo yes | {{ terraform_location }} {{ item }}"
-  register: output
   args:
     chdir: "roles/main_infra/files"
   with_items:
@@ -34,6 +33,12 @@
     - plan
     - apply
 
+- name: Terraform output info into variable
+  shell: "{{ terraform_location }} output"
+  register: output
+  args:
+    chdir: "roles/main_infra/files"
+
 - name: Output info from Terraform
   debug:
-    var: output
+    var: output.stdout_lines
