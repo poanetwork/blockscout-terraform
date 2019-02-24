@@ -86,10 +86,10 @@ new_relic_license_key: ""
 #    "core" = "parity",
 #    "sokol" = "geth"
 # }
-## Place your own logo at apps/block_scout_web/assets/static/images folder of blockscout repo and specify a relative path here
+## Place your own logo at apps/block_scout_web/assets/static folder of blockscout repo and specify a relative path here
 # chain_logo = {
-#    "core" = "core.svg",
-#    "sokol" = "sokol.svg"
+#    "core" = "/images/core.svg",
+#    "sokol" = "/images/sokol.svg"
 # }
 ## The following variables represents a name of the coin that will be shown at blockchain explorer
 # chain_coin = {

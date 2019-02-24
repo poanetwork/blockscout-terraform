@@ -137,7 +137,7 @@ networks: >
 - `chain_trace_endpoint` - maps chains to the URLs of HTTP RPC endpoints, which represents a node where state pruning is disabled (archive node) and tracing is enabled. If you don't have a trace endpoint, you can simply copy values from `chains` variable;
 - `chain_ws_endpoint` - maps chains to the URLs of HTTP RPCs that supports websockets. This is required to get the real-time updates. Can be the same as `chains` if websocket is enabled there (but make sure to use`ws(s)` instead of `htpp(s)` protocol);
 - `chain_jsonrpc_variant` - a client used to connect to the network. Can be `parity`, `geth`, etc;
-- `chain_logo` - maps chains to the it logos. Place your own logo at `apps/block_scout_web/assets/static/images` and specify a relative path at `chain_logo` variable;
+- `chain_logo` - maps chains to the it logos. Place your own logo at `apps/block_scout_web/assets/static` and specify a relative path at `chain_logo` variable;
 - `chain_coin` - a name of the coin used in each particular chain;
 - `chain_network` - usually, a name of the organization keeping group of networks, but can represent a name of any logical network grouping you want;
 - `chain_subnetwork` - a name of the network to be shown at BlockScout;
