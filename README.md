@@ -143,6 +143,7 @@ networks: >
 - `chain_subnetwork` - a name of the network to be shown at BlockScout;
 - `chain_network_path` - a relative URL path which will be used as an endpoint for defined chain. For example, if we will have our BlockScout at `blockscout.com` domain and place `core` network at `/poa/core`, then the resulting endpoint will be `blockscout.com/poa/core` for this network.
 - `chain_network_icon` - maps the chain name to the network navigation icon at apps/block_scout_web/lib/block_scout_web/templates/icons without .eex extension
+- `chain_graphiql_transaction` - is a variable that maps chain to a random transaction hash on that chain. This hash will be used to provide a sample query in the GraphIQL Playground.
 
 Chain configuration will be stored in the Systems Manager Parameter Store, each chain has its own set of config values. If you modify one of these values, you will need to go and terminate the instances for that chain so that they are reprovisioned with the new configuration.
 
