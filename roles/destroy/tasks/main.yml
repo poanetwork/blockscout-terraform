@@ -48,12 +48,19 @@
   command: mv roles/main_infra/files/outputs.tf.backup roles/main_infra/files/outputs.tf
   when: outputs_backup_stat.stat.exists
 
+- name: User prompt
+  pause:
+    prompt: "Do you want to delete S3 bucket with state file and DynamoDB attached to it also? [Yes/No] Default: No"
+  register: user_answer
+
 - name: Destroy S3 bucket
   s3_bucket:
     name: "{{ bucket }}"
     state: absent
     force: yes
+  when: user_answer.user_input|bool == True
 
 - dynamodb_table:
     name: "{{ dynamodb_table }}"
     state: absent
+  when: user_answer.user_input|bool == True

@@ -24,21 +24,38 @@
   when: backend|bool == true
     
 #Workaround since terraform module return unexpected error.
-- name: Terraform provisioning
+- name: Terraform plan construct
   shell: "echo yes | {{ terraform_location }} {{ item }}"
+  register: tf_plan
   args:
     chdir: "roles/main_infra/files"
   with_items:
     - "init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
     - plan
-    - apply
+
+- name: Show Terraform plan
+  debug:
+    var: tf_plan.stdout_lines
+
+- name: User prompt
+  pause:
+    prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [Yes/No] Default: No"
+  register: user_answer
+
+- name: Terraform provisioning
+  shell: "echo yes | {{ terraform_location }} apply" 
+  args:
+    chdir: "roles/main_infra/files"
+  when: user_answer.user_input|bool == True 
 
 - name: Terraform output info into variable
   shell: "{{ terraform_location }} output"
   register: output
   args:
     chdir: "roles/main_infra/files"
+  when: user_answer.user_input|bool == True
 
 - name: Output info from Terraform
   debug:
     var: output.stdout_lines
+  when: user_answer.user_input|bool == True

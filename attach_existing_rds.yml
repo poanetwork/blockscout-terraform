@@ -1,0 +1,11 @@
+- name: Attach existing RDS instance
+  hosts: localhost
+  roles:
+    - { role: check }
+    - { role: s3, when: "backend|bool == true" }
+    - { role: dynamodb, when: "backend|bool == true" }
+    - { role: attach_existing_rds }
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_REGION: "{{ region }}"

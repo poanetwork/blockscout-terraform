@@ -186,6 +186,11 @@ Also note, that changing `backend` variable will force Terraform to forget about
 
 You can easily manipulate your deployment from any machine with sufficient prerequisites. If  `upload_config_to_s3` variable is set to true, the deployer will automatically upload your `all.yml` file to the s3 bucket, so you can easily download it to any other machine. Simply download this file to your `group_vars` folder and your new deployer will pick up the current deployment instead of creating a new one.
 
+
+## Attaching the existing RDS instance to the current deployment
+
+In some cases you may want not to create a new database, but to add the existing one to use within the deployment. In order to do that configure all the proper values at `group_vars/all.yml` including yours DB ID and name and execute the `ansible-playbook attach_existing_rds.yml` command. This will add the current DB instance into TF managed resource group. After that run `ansible-playbook deploy.yml` as usually. 
+
 ## Common Errors and Questions
 
 ### S3: 403 error during provisioning
