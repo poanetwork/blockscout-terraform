@@ -34,13 +34,14 @@ dns_zone_name: "poa.internal"
 ## All resources will be prefixed with this one
 prefix: "sokol"
 
-## The following settings are related to the RDS instance which will be created during deployment 
+## The following settings are related to the Postgres RDS instance which will be created during deployment 
 db_id: "poa"
 db_username: "username"
 db_password: "qwerty12345"
 db_instance_class: "db.m4.xlarge"
 db_storage: "120"
 db_storage_type: "gp2"
+db_version: "10.5"
 
 ## The following settngs are related to SSL of Application Load Balancer that will be deployed to AWS. If use_ssl is set to false, alb_* variables can be omitted
 use_ssl: "false"

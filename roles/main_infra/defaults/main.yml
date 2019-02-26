@@ -21,6 +21,7 @@ db_password: "qwerty12345"
 db_instance_class: "db.m4.xlarge"
 db_storage: "120"
 db_storage_type: "gp2"
+db_version: "10.5"
 
 alb_ssl_policy: "ELBSecurityPolicy-2016-08"
 alb_certificate_arn: "arn:aws:acm:us-east-1:008312654217:certificate/ce6ec2cb-eba4-4b02-af1d-e77ce8813497"

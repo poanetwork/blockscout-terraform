@@ -1,7 +1,7 @@
 resource "aws_db_instance" "default" {
   identifier             = "${var.prefix}-${var.db_id}"
   engine                 = "postgres"
-  engine_version         = "10.5"
+  engine_version         = "${var.db_version}"
   instance_class         = "${var.db_instance_class}"
   storage_type           = "${var.db_storage_type}"
   allocated_storage      = "${var.db_storage}"

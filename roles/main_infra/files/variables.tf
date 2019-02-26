@@ -50,6 +50,7 @@ variable "db_password" {}
 variable "db_storage" {}
 variable "db_storage_type" {}
 variable "db_instance_class" {}
+variable "db_version" {}
 
 variable "new_relic_app_name" {}
 variable "new_relic_license_key" {}
