@@ -176,8 +176,7 @@ Once infrastructure is deployed, read [this](https://forum.poa.network/t/deployi
 
 ## Destroying Provisioned Infrastructure
 
-You can use `ansible-playbook destroy.yml` file to remove any generated infrastructure. It is
-important to note though that if you run this script on partially generated infrastructure, or if an error occurs during the destroy process, that you may need to manually check for, and remove, any resources that were not able to be deleted for you. 
+You can use `ansible-playbook destroy.yml` file to remove any generated infrastructure. But first of all you have to remove resources deployed via CodeDeploy manually (it includes a virtual machine and associated autoscaling group). It is also important to note though that if you run this script on partially generated infrastructure, or if an error occurs during the destroy process, that you may need to manually check for, and remove, any resources that were not able to be deleted for you. 
 
 **Note!** While Terraform is stateful, Ansible is stateless, so if you modify `bucket` or `dynamodb_table` variables and run `destroy.yml` or `deploy.yml`  playbooks, it will not alter the current S3/Dynamo resources names, but create a new resources. Moreover, altering `bucket` variable will make Terraform to forget about existing infrastructure and, as a consequence, redeploy it. If it absolutely necessary for you to alter the S3 or DynamoDB names you can do it manually and then change the appropriate variable accordingly. 
 
