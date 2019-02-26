@@ -21,7 +21,7 @@ ec2_ssh_key_name: "sokol-test"
 ec2_ssh_key_content: ""
 
 ## EC2 Instance will have the following size:
-instance_type: "m5.xlarge"
+instance_type: "m5.large"
 
 ## VPC containing Blockscout resources will be created as following:
 vpc_cidr: "10.0.0.0/16"
@@ -108,7 +108,7 @@ new_relic_license_key: ""
 # }
 ## The next variable represent a relative URL path which will be used as an endpoint for defined chain. For example, if we will have our blockscout at blockscout.com domain and place "core" network at "/poa/core", then the resulting endpoint will be blockscout.com/poa/core for this network.
 # chain_network_path = {
-#    "core" = "/poa/core"
+#    "core" = "/poa/core",
 #    "sokol" = "/poa/sokol"
 # }
 ## The following variable maps the chain name to the network navigation icon at apps/block_scout_web/lib/block_scout_web/templates/icons without .eex extension
@@ -118,8 +118,27 @@ new_relic_license_key: ""
 # }
 ## The following variable maps the chain names to random transaction hash on that chain. "chain_graphiql_transaction" is a variable that takes a transaction hash from a network to provide a sample query in the GraphIQL Playground.
 # chain_graphiql_transaction = {
-#    "core" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+#    "core" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4",
 #    "sokol" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab5"
+# }
+## A variable required in indexer configuration files. Can be either base or clique. Usually you don't want to change this value unless you know what are you doing. 
+# chain_block_transformer = {
+#    "core" = "base",
+#    "rinkeby" = "clique"
+# }
+## Heartbeat is an Erlang monitoring service that will restart BlockScout if it becomes unresponsive. The following two variables configures the timeout before Blockscout will be restarted and command to restart. Usually you don't want to change these values.
+# chain_heart_beat_timeout = {
+#    "core" = 30,
+#    "sokol" = 30
+# }
+# chain_heart_command = {
+#    "core" = "systemctl restart explorer.service",
+#    "sokol" = "systemctl restart explorer.service"
+# }
+## This value describes a version of Blockscout that will be shown at the footer. You can write any text there you want to see at the footer.
+# chain_blockscout_version = {
+#    "core" = "v1.3.4-beta",
+#    "sokol" = "v1.3.4-beta"
 # }
 networks: >
   chains = {
@@ -154,4 +173,16 @@ networks: >
   }
   chain_graphiql_transaction = {
     "mychain" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+  }
+  chain_block_transformer = {
+    "mychain" = "base"
+  }
+  chain_heart_beat_timeout = {
+    "mychain" = 30
+  }
+  chain_heart_command = {
+    "mychain" = "systemctl restart explorer.service"
+  }
+  chain_blockscout_version = {
+    "mychain" = "v1.3.0-beta"
   }

@@ -1,3 +1,10 @@
+resource "aws_ssm_parameter" "block_transformer" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/block_transformer"
+  value = "${element(values(var.chain_block_transformer),count.index)}"
+  type  = "String"
+}
+
 resource "aws_ssm_parameter" "new_relic_app_name" {
   count = "${var.new_relic_app_name == "" ? 0 : length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/new_relic_app_name"
@@ -189,3 +196,24 @@ resource "aws_ssm_parameter" "alb_certificate_arn" {
   value = "${var.alb_certificate_arn}"
   type  = "String"
 }
+resource "aws_ssm_parameter" "heart_beat_timeout" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/heart_beat_timeout"
+  value = "${element(values(var.chain_heart_beat_timeout),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "heart_command" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/heart_command"
+  value = "${element(values(var.chain_heart_command),count.index)}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "blockscout_version" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/blockscout_version"
+  value = "${element(values(var.chain_blockscout_version),count.index)}"
+  type  = "String"
+}
+

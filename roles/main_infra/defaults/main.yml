@@ -8,7 +8,7 @@ vpc_cidr: "10.0.0.0/16"
 public_subnet_cidr: "10.0.0.0/24"
 db_subnet_cidr: "10.0.2.0/16"
 dns_zone_name: "poa.internal"
-instance_type: "m5.xlarge"
+instance_type: "m5.large"
 root_block_size: 8
 pool_size: 30
 ec2_ssh_key_name: "sokol-test"
@@ -60,4 +60,18 @@ networks: >
   chain_network_icon = {
     "mychain" = "_test_network_icon.html"
   }
-
+  chain_graphiql_transaction = {
+    "mychain" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+  }
+  chain_block_transformer = {
+    "mychain" = "base"
+  }
+  chain_heart_beat_timeout = {
+    "mychain" = 30
+  }
+  chain_heart_command = {
+    "mychain" = "systemctl restart explorer.service"
+  }
+  chain_blockscout_version = {
+    "mychain" = "v1.3.0-beta"
+  }

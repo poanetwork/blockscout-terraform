@@ -62,3 +62,19 @@ variable "use_ssl" {}
 variable "chain_graphiql_transaction" {
   default = {}
 }
+
+variable "chain_block_transformer" {
+  default = {}
+}
+
+variable "chain_heart_beat_timeout" {
+  default = {}
+}
+
+variable "chain_heart_command" {
+  default = {}
+}
+
+variable "chain_blockscout_version" {
+  default = {}
+}
