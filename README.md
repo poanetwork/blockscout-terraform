@@ -191,14 +191,18 @@ You can easily manipulate your deployment from any machine with sufficient prere
 
 In some cases you may want not to create a new database, but to add the existing one to use within the deployment. In order to do that configure all the proper values at `group_vars/all.yml` including yours DB ID and name and execute the `ansible-playbook attach_existing_rds.yml` command. This will add the current DB instance into Terraform-managed resource group. After that run `ansible-playbook deploy.yml` as usually. 
 
-Note 1: that this action includes creating the S3 and DynamoDB (if `backend` variable is set to `true`) to store Terraform state files. 
+**Note 1**:  while executing `ansible-playbook attach_existing_rds.yml` the S3 and DynamoDB will be automatically created (if `backend` variable is set to `true`) to store Terraform state files. 
 
-Note 2: the actual name of your resource must include prefix that you will use in this deployment!
+**Note 2**: the actual name of your resource must include prefix that you will use in this deployment.
 Example:
   Real resource: tf-poa
-  prefix variable: tf
-  db_id variable: poa
-   
+  `prefix` variable: tf
+  `db_id` variable: poa
+
+**Note 3**: make sure MultiAZ is disabled on your database.
+
+**Note 4**: make sure that all the variables at `group_vars/all.yml` are exactly the same as at your existing DB.
+
 ## Common Errors and Questions
 
 ### S3: 403 error during provisioning
