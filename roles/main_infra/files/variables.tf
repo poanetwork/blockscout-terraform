@@ -45,7 +45,6 @@ variable "chain_network_icon" {
 }
 
 variable "db_id" {}
-variable "db_name" {}
 variable "db_username" {}
 variable "db_password" {}
 variable "db_storage" {}

@@ -5,6 +5,10 @@
     - { role: s3, when: "backend|bool == true" }
     - { role: dynamodb, when: "backend|bool == true" }
     - { role: attach_existing_rds }
+  vars_prompt:
+    - name: "confirmation"
+      prompt: "Are you sure you want to attach the existing RDS? If backend variable is set to True, this action includes creating the S3 and DynamoDB table for storing Terraform state files."
+      default: False
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"

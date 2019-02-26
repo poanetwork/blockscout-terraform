@@ -36,7 +36,6 @@ prefix: "sokol"
 
 ## The following settings are related to the RDS instance which will be created during deployment 
 db_id: "poa"
-db_name: "poa"
 db_username: "username"
 db_password: "qwerty12345"
 db_instance_class: "db.m4.xlarge"

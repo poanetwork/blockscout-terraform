@@ -35,11 +35,11 @@
 
 - name: Show Terraform plan
   debug:
-    var: tf_plan.stdout_lines
+    var: tf_plan.results[1].stdout_lines
 
 - name: User prompt
   pause:
-    prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [Yes/No] Default: No"
+    prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [False]"
   register: user_answer
 
 - name: Terraform provisioning
