@@ -23,6 +23,15 @@
     dest: roles/main_infra/files/backend.tfvars
   when: backend|bool == true
 
+# This is due to the TF0.11 bug which do not allow to completely destroy resources if interpolation syntax is used in outputs.tf at edge cases
+- name: Check if outputs.tf exists
+  stat: path=roles/main_infra/files/outputs.tf
+  register: outputs_stat
+
+- name: Temporarily remove outputs.tf file
+  command: mv roles/main_infra/files/outputs.tf roles/main_infra/files/outputs.tf.backup
+  when: outputs_stat.stat.exists
+
 - name: Terraform destroy main infra
   shell: "echo yes | {{ terraform_location }} {{ item }}"
   args:
@@ -30,6 +39,14 @@
   with_items:
     - "init {{ '-backend-config=backend.tfvars' if backend|bool == true else '' }}"
     - destroy
+
+- name: Check if outputs.tf.backup exists
+  stat: path=roles/main_infra/files/outputs.tf.backup
+  register: outputs_backup_stat
+
+- name: Get back outputs.tf file
+  command: mv roles/main_infra/files/outputs.tf.backup roles/main_infra/files/outputs.tf
+  when: outputs_backup_stat.stat.exists
 
 - name: Destroy S3 bucket
   s3_bucket:
