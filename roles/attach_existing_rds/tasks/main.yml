@@ -30,4 +30,4 @@
     chdir: "roles/main_infra/files"
   with_items:
     - "init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
-    - "import {{ db_id }}"
+    - "import aws_db_instance.default {{ db_id }}"
