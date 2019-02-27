@@ -58,6 +58,13 @@
   args:
     chdir: "roles/main_infra/files"
   when: user_answer.user_input|bool == True 
+  ignore_errors: True
+
+- name: Ensure Terraform resources being provisioned
+  shell: "echo yes | {{ terraform_location }} apply"
+  args:
+    chdir: "roles/main_infra/files"
+  when: user_answer.user_input|bool == True
 
 - name: Terraform output info into variable
   shell: "{{ terraform_location }} output"

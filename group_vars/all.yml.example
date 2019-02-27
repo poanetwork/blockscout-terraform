@@ -26,7 +26,7 @@ instance_type: "m5.large"
 ## VPC containing Blockscout resources will be created as following:
 vpc_cidr: "10.0.0.0/16"
 public_subnet_cidr: "10.0.0.0/24"
-db_subnet_cidr: "10.0.1.0/24"
+db_subnet_cidr: "10.0.1.0/16"
 
 ## Internal DNS zone will looks like:
 dns_zone_name: "poa.internal"
