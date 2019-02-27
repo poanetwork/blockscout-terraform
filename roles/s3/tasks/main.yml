@@ -31,7 +31,7 @@
   when: upload_config_to_s3|bool == True
 
 - name: Remove insecure variables
-- lineinfile:
+  lineinfile:
     path: "{{ playbook_dir }}/group_vars/all.yml.temp"
     regexp: 'aws_.*'
     line: '<There was and aws-related insecure variable to keep at S3. Removed>'
