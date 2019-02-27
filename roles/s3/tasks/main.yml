@@ -31,10 +31,10 @@
   when: upload_config_to_s3|bool == True
 
 - name: Remove insecure variables
-  lineinfile:
+  replace:
     path: "{{ playbook_dir }}/group_vars/all.yml.temp"
     regexp: 'aws_.*'
-    line: '<There was and aws-related insecure variable to keep at S3. Removed>'
+    replace: '<There was and aws-related insecure variable to keep at S3. Removed>'
   when: upload_config_to_s3|bool == True
 
 - name: Upload config to S3 bucket
@@ -47,6 +47,6 @@
 
 - name: Remove temp file
   file:
-    path: "{{ playbook_dir }}/group_vars/all.yml"
+    path: "{{ playbook_dir }}/group_vars/all.yml.temp"
     state: absent
   when: upload_config_to_s3|bool == True
