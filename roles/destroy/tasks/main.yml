@@ -55,12 +55,12 @@
 
 - name: Destroy S3 bucket
   s3_bucket:
-    name: "{{ bucket }}"
+    name: "{{ prefix }}-{{ bucket }}"
     state: absent
     force: yes
   when: user_answer.user_input|bool == True
 
 - dynamodb_table:
-    name: "{{ dynamodb_table }}"
+    name: "{{ prefix }}-{{ dynamodb_table }}"
     state: absent
   when: user_answer.user_input|bool == True
