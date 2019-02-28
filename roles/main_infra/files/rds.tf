@@ -11,6 +11,7 @@ resource "aws_db_instance" "default" {
   password               = "${var.db_password}"
   vpc_security_group_ids = ["${aws_security_group.database.id}"]
   db_subnet_group_name   = "${aws_db_subnet_group.database.id}"
+  apply_immediately      = true
 
   depends_on = ["aws_security_group.database"]
 
