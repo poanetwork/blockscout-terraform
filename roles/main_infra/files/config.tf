@@ -12,13 +12,6 @@ resource "aws_ssm_parameter" "new_relic_app_name" {
   type  = "String"
 }
 
-resource "aws_ssm_parameter" "graphiql_transaction" {
-  count = "${length(var.chains)}"
-  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/graphiql_transaction"
-  value = "${element(values(var.chain_graphiql_transaction),count.index)}"
-  type  = "String"
-}
-
 resource "aws_ssm_parameter" "new_relic_license_key" {
   count = "${var.new_relic_license_key == "" ? 0 : length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/new_relic_license_key"
