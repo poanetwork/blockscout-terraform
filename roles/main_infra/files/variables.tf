@@ -43,6 +43,9 @@ variable "chain_network_path" {
 variable "chain_network_icon" {
   default = {}
 }
+variable "chain_graphiql_transaction" {
+  default = {}
+}
 
 variable "db_id" {}
 variable "db_username" {}
