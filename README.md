@@ -165,9 +165,15 @@ The configuration variable `db_storage` can be used to define the amount of stor
 ## Deploying the Infrastructure
 
 1. Ensure all the [prerequisites](#Prerequisites) are installed and has the right version number;
+
 2. Create the AWS access key and secret access key for user with [sufficient permissions](#AWS);
+
 3. Set the configuration file as described at the [corresponding part of instruction](#Configuration);
-4. Run `ansible-playbook deploy.yml`;
+
+4. Run `ansible-playbook deploy.yml`; 
+
+   **Note:** during the deployment the ["diffs didn't match"](#error-applying-plan-diffs-didnt-match) error may occur, it will be ignored automatically. If  Ansible play recap shows 0 failed plays, then the deployment was successful despite the error.
+
 5. Save the output and proceed to the [next part of instruction](#Deploying-Blockscout).
 
 ## Deploying BlockScout
