@@ -22,3 +22,5 @@ roles/main_infra/files/terraform.tfvars
 group_vars/*.yml
 *.retry
 *.temp
+*.swp
+.*.swp

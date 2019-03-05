@@ -1,9 +1,8 @@
 dynamodb_table: "poa-terraform-lock"
 bucket: "poa-terraform-state"
-
 terraform_location: "/usr/local/bin/terraform"
 region: "us-east-1"
-prefix: "sokol"
+prefix: "test"
 vpc_cidr: "10.0.0.0/16"
 public_subnet_cidr: "10.0.0.0/24"
 db_subnet_cidr: "10.0.2.0/16"
@@ -11,68 +10,7 @@ dns_zone_name: "poa.internal"
 instance_type: "m5.large"
 root_block_size: 8
 pool_size: 30
-ec2_ssh_key_name: "sokol-test"
-ec2_ssh_key_content: ""
-
-db_id: "poa"
-db_name: "poa"
-db_username: "username"
-db_password: "qwerty12345"
-db_instance_class: "db.m4.xlarge"
-db_storage: "120"
-db_storage_type: "gp2"
-db_version: "10.5"
-
 alb_ssl_policy: "ELBSecurityPolicy-2016-08"
-alb_certificate_arn: "arn:aws:acm:us-east-1:008312654217:certificate/ce6ec2cb-eba4-4b02-af1d-e77ce8813497"
 new_relic_app_name: ""
 new_relic_license_key: ""
-secret_key_base: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ=="
 use_ssl: false
-
-networks: >
-  chains = {
-    "mychain" = "url/to/endpoint"
-  }
-  chain_trace_endpoint = {
-    "mychain" = "url/to/debug/endpoint/or/the/main/chain/endpoint"
-  }
-  chain_ws_endpoint = {
-    "mychain" = "url/to/websocket/endpoint"
-  }
-  chain_jsonrpc_variant = {
-    "mychain" = "parity"
-  }
-  chain_logo = {
-    "mychain" = "url/to/logo"
-  }
-  chain_coin = {
-    "mychain" = "coin"
-  }
-  chain_network = {
-    "mychain" = "network name"
-  }
-  chain_subnetwork = {
-    "mychain" = "subnetwork name"
-  }
-  chain_network_path = {
-    "mychain" = "path/to/root"
-  }
-  chain_network_icon = {
-    "mychain" = "_test_network_icon.html"
-  }
-  chain_graphiql_transaction = {
-    "mychain" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
-  }
-  chain_block_transformer = {
-    "mychain" = "base"
-  }
-  chain_heart_beat_timeout = {
-    "mychain" = 30
-  }
-  chain_heart_command = {
-    "mychain" = "systemctl restart explorer.service"
-  }
-  chain_blockscout_version = {
-    "mychain" = "v1.3.0-beta"
-  }

@@ -1,14 +1,16 @@
 resource "aws_db_instance" "default" {
-  identifier             = "${var.prefix}-${var.db_id}"
+  count                  = "${length(var.chains)}"
+  name                   = "${lookup(var.chain_db_name,element(keys(var.chains),count.index))}"
+  identifier             = "${var.prefix}-${lookup(var.chain_db_id,element(keys(var.chains),count.index))}"
   engine                 = "postgres"
-  engine_version         = "${var.db_version}"
-  instance_class         = "${var.db_instance_class}"
-  storage_type           = "${var.db_storage_type}"
-  allocated_storage      = "${var.db_storage}"
+  engine_version         = "${lookup(var.chain_db_version,element(keys(var.chains),count.index))}"
+  instance_class         = "${lookup(var.chain_db_instance_class,element(keys(var.chains),count.index))}"
+  storage_type           = "${lookup(var.chain_db_storage_type,element(keys(var.chains),count.index))}"
+  allocated_storage      = "${lookup(var.chain_db_storage,element(keys(var.chains),count.index))}"
   copy_tags_to_snapshot  = true
   skip_final_snapshot    = true
-  username               = "${var.db_username}"
-  password               = "${var.db_password}"
+  username               = "${lookup(var.chain_db_username,element(keys(var.chains),count.index))}"
+  password               = "${lookup(var.chain_db_password,element(keys(var.chains),count.index))}"
   vpc_security_group_ids = ["${aws_security_group.database.id}"]
   db_subnet_group_name   = "${aws_db_subnet_group.database.id}"
   apply_immediately      = true

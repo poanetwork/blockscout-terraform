@@ -1,7 +1,7 @@
 resource "aws_ssm_parameter" "block_transformer" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/block_transformer"
-  value = "${element(values(var.chain_block_transformer),count.index)}"
+  value = "${lookup(var.chain_block_transformer,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
@@ -36,7 +36,7 @@ resource "aws_ssm_parameter" "ecto_use_ssl" {
 resource "aws_ssm_parameter" "ethereum_jsonrpc_variant" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_jsonrpc_variant"
-  value = "${element(values(var.chain_jsonrpc_variant),count.index)}"
+  value = "${lookup(var.chain_jsonrpc_variant,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 resource "aws_ssm_parameter" "ethereum_url" {
@@ -49,62 +49,62 @@ resource "aws_ssm_parameter" "ethereum_url" {
 resource "aws_ssm_parameter" "trace_url" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_jsonrpc_trace_url"
-  value = "${element(values(var.chain_trace_endpoint),count.index)}"
+  value = "${lookup(var.chain_trace_endpoint,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 resource "aws_ssm_parameter" "ws_url" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/ethereum_jsonrpc_ws_url"
-  value = "${element(values(var.chain_ws_endpoint),count.index)}"
+  value = "${lookup(var.chain_ws_endpoint,element(keys(var.chains),count.index))}" 
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "logo" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/logo"
-  value = "${element(values(var.chain_logo),count.index)}"
+  value = "${lookup(var.chain_logo,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "coin" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/coin"
-  value = "${element(values(var.chain_coin),count.index)}"
+  value = "${lookup(var.chain_coin,element(keys(var.chains),count.index))}" 
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "network" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/network"
-  value = "${element(values(var.chain_network),count.index)}"
+  value = "${lookup(var.chain_network,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "subnetwork" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/subnetwork"
-  value = "${element(values(var.chain_subnetwork),count.index)}"
+  value = "${lookup(var.chain_subnetwork,element(keys(var.chains),count.index))}" 
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "network_path" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/network_path"
-  value = "${element(values(var.chain_network_path),count.index)}"
+  value = "${lookup(var.chain_network_path,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "network_icon" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/network_icon"
-  value = "${element(values(var.chain_network_icon),count.index)}"
+  value = "${lookup(var.chain_network_icon,element(keys(var.chains),count.index))}" 
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "graphiql_transaction" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/graphiql_transaction"
-  value = "${element(values(var.chain_graphiql_transaction),count.index)}"
+  value = "${lookup(var.chain_graphiql_transaction,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
@@ -160,28 +160,28 @@ resource "aws_ssm_parameter" "port" {
 resource "aws_ssm_parameter" "db_username" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/db_username"
-  value = "${var.db_username}"
+  value = "${lookup(var.chain_db_username,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "db_password" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/db_password"
-  value = "${var.db_password}"
+  value = "${lookup(var.chain_db_password,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "db_host" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/db_host"
-  value = "${aws_route53_record.db.fqdn}"
+  value = "${aws_route53_record.db.*.fqdn[count.index]}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "db_port" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/db_port"
-  value = "${aws_db_instance.default.port}"
+  value = "${aws_db_instance.default.*.port[count.index]}"
   type  = "String"
 }
 resource "aws_ssm_parameter" "alb_ssl_policy" {
@@ -199,21 +199,27 @@ resource "aws_ssm_parameter" "alb_certificate_arn" {
 resource "aws_ssm_parameter" "heart_beat_timeout" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/heart_beat_timeout"
-  value = "${element(values(var.chain_heart_beat_timeout),count.index)}"
+  value = "${lookup(var.chain_heart_beat_timeout,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "heart_command" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/heart_command"
-  value = "${element(values(var.chain_heart_command),count.index)}"
+  value = "${lookup(var.chain_heart_command,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
 resource "aws_ssm_parameter" "blockscout_version" {
   count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/blockscout_version"
-  value = "${element(values(var.chain_blockscout_version),count.index)}"
+  value = "${lookup(var.chain_blockscout_version,element(keys(var.chains),count.index))}"
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "db_name" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/db_name"
+  value = "${lookup(var.chain_db_name,element(keys(var.chains),count.index))}"
+  type  = "String"
+}

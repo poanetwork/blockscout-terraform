@@ -58,13 +58,6 @@ public_subnet_cidr: "10.0.0.0/24"
 db_subnet_cidr: "10.0.1.0/24"
 dns_zone_name: "poa.internal"
 prefix: "sokol"
-db_id: "poa"
-db_name: "poa"
-db_username: "username"
-db_password: "qwerty12345"
-db_instance_class: "db.m4.xlarge"
-db_storage: "120"
-db_storage_type: "gp2"
 use_ssl: "false"
 alb_ssl_policy: "ELBSecurityPolicy-2016-08"
 alb_certificate_arn: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
@@ -107,6 +100,39 @@ networks: >
   chain_graphiql_transaction = {
     "mychain" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
   }  
+  chain_block_transformer = {
+    "mychain" = "base"
+  }
+  chain_heart_beat_timeout = {
+    "mychain" = 30
+  }
+  chain_heart_command = {
+    "mychain" = "systemctl restart explorer.service"
+  }
+  chain_blockscout_version = {
+    "mychain" = "v1.3.0-beta"
+  }
+  chain_db_name = {
+    "mychain" = "myname"
+  }
+  chain_db_username = {
+     "mychain" = "myusername"
+  }
+  chain_db_password = {
+     "mychain" = "mypassword" 
+  }
+  chain_db_instance_class = {
+     "mychain" = "db.m4.xlarge"
+  }
+  chain_db_storage = {
+     "mychain" = "200"
+  }
+  chain_db_storage_type = {
+     "mychain" = "gp2"
+  }
+  chain_db_version = {
+     "mychain" = "10.5" 
+  }
 ```
 
 - `aws_access_key` and `aws_secret_key` is a credentials pair that provides access to AWS for the deployer;
@@ -118,7 +144,6 @@ networks: >
 - `vpc_cidr`, `public_subnet_cidr`, `db_subnet_cidr` represents the network configuration for the deployment. Usually you want to leave it as is. However, if you want to modify it, please, expect that `db_subnet_cidr` represents not a single network, but a group of networks united with one CIDR block that will be divided during the deployment. For details, see [subnets.tf](https://github.com/ArseniiPetrovich/blockscout-terraform/blob/master/roles/main_infra/files/subnets.tf#L35) for details;
 - An internal DNS zone with`dns_zone_name` name will be created to take care of BlockScout internal communications;
 - `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
-- `db_id` and `db_name` identifies your database among others. The `db_username` and `db_password` can be a changed to any alphanumeric value. The `db_instance_class`,`db_storage` and `db_storage_type` are not required but are defaulted to `db.m4.large` , `120GB` and `gp2` respectively;
 - The name of a IAM key pair to use for EC2 instances, if you provide a name which
   already exists it will be used, otherwise it will be generated for you;
 
@@ -144,6 +169,9 @@ networks: >
 - `chain_network_path` - a relative URL path which will be used as an endpoint for defined chain. For example, if we will have our BlockScout at `blockscout.com` domain and place `core` network at `/poa/core`, then the resulting endpoint will be `blockscout.com/poa/core` for this network.
 - `chain_network_icon` - maps the chain name to the network navigation icon at apps/block_scout_web/lib/block_scout_web/templates/icons without .eex extension
 - `chain_graphiql_transaction` - is a variable that maps chain to a random transaction hash on that chain. This hash will be used to provide a sample query in the GraphIQL Playground.
+-  `chain_block_transformer` - will be `clique` for clique networks like Rinkeby and Goerli, and `base` for the rest;
+-  `chain_heart_beat_timeout`, `chain_heart_command` - configs for the integrated heartbeat. First describes a timeout after the command described at the second variable will be executed;
+-  Each of the `chain_db_*` variables configures the database for each chain. Each chain will have the separate RDS instance.
 
 Chain configuration will be stored in the Systems Manager Parameter Store, each chain has its own set of config values. If you modify one of these values, you will need to go and terminate the instances for that chain so that they are reprovisioned with the new configuration.
 
@@ -227,7 +255,7 @@ Error: Error applying plan:
 
 Please include the following information in your report:
 
-    Terraform Version: 0.11.7
+    Terraform Version: 0.11.11
     Resource ID: aws_autoscaling_group.explorer
     Mismatch reason: attribute mismatch: availability_zones.1252502072
 ```

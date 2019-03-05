@@ -47,13 +47,37 @@ variable "chain_graphiql_transaction" {
   default = {}
 }
 
-variable "db_id" {}
-variable "db_username" {}
-variable "db_password" {}
-variable "db_storage" {}
-variable "db_storage_type" {}
-variable "db_instance_class" {}
-variable "db_version" {}
+variable "chain_db_id" {
+  default = {}
+}
+
+variable "chain_db_name" {
+  default = {}
+}
+
+variable "chain_db_username" {
+  default = {}
+}
+
+variable "chain_db_password" {
+  default = {}
+}
+
+variable "chain_db_storage" {
+  default = {}
+}
+
+variable "chain_db_storage_type" {
+  default = {}
+}
+
+variable "chain_db_instance_class" {
+  default = {}
+}
+
+variable "chain_db_version" {
+  default = {}
+}
 
 variable "new_relic_app_name" {}
 variable "new_relic_license_key" {}

@@ -12,12 +12,13 @@ resource "aws_route53_zone" "main" {
 # Private DNS records
 resource "aws_route53_record" "db" {
   zone_id = "${aws_route53_zone.main.zone_id}"
-  name    = "db"
+  name    = "db${count.index}"
   type    = "A"
+  count   = "${length(var.chains)}"
 
   alias {
-    name                   = "${aws_db_instance.default.address}"
-    zone_id                = "${aws_db_instance.default.hosted_zone_id}"
+    name                   = "${aws_db_instance.default.*.address[count.index]}"
+    zone_id                = "${aws_db_instance.default.*.hosted_zone_id[count.index]}"
     evaluate_target_health = false
   }
 }

@@ -157,7 +157,7 @@ DB_USER="$(get_param 'db_username')"
 DB_PASS="$(get_param 'db_password')"
 DB_HOST="$(get_param 'db_host')"
 DB_PORT="$(get_param 'db_port')"
-DB_NAME="$CHAIN"
+DB_NAME="$(get_param 'db_name')"
 DATABASE_URL="postgresql://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT"
 
 # Need to map the Parameter Store response to a set of NAME="<value>" entries,

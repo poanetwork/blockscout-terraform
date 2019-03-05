@@ -29,7 +29,3 @@ To deploy a new version of the application manually:
 OUTPUT
 }
 
-output "db_instance_address" {
-  description = "The internal IP address of the RDS instance"
-  value       = "${aws_db_instance.default.address}"
-}

@@ -60,21 +60,21 @@ resource "aws_lb_target_group" "explorer" {
 
 # The Listener for the ALB (HTTP protocol)
 resource "aws_alb_listener" "alb_listener_http" {
-  count             = "${var.use_ssl == "true" ? 0 : 1}"
-  load_balancer_arn = "${aws_lb.explorer.arn}"
+  count             = "${var.use_ssl == "true" ? 0 : length(var.chains)}"
+  load_balancer_arn = "${aws_lb.explorer.*.arn[count.index]}"
   port              = 80
   protocol          = "HTTP"
 
   default_action {
     type = "forward"
-    target_group_arn = "${aws_lb_target_group.explorer.arn}"
+    target_group_arn = "${aws_lb_target_group.explorer.*.arn[count.index]}"
   }
 }
 
 # The Listener for the ALB (HTTPS protocol)
 resource "aws_alb_listener" "alb_listener_https" {
-  count             = "${var.use_ssl == "true" ? 1 : 0}"
-  load_balancer_arn = "${aws_lb.explorer.arn}"
+  count             = "${var.use_ssl == "true" ? length(var.chains) : 0}"
+  load_balancer_arn = "${aws_lb.explorer.*.arn[count.index]}"
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "${var.alb_ssl_policy}"
@@ -82,6 +82,6 @@ resource "aws_alb_listener" "alb_listener_https" {
   
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.explorer.arn}" 
+    target_group_arn = "${aws_lb_target_group.explorer.*.arn[count.index]}" 
   }
 }

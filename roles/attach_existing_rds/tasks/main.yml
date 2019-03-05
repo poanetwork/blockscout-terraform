@@ -24,10 +24,15 @@
   when: backend|bool == true
 
 #Workaround since terraform module return unexpected error.
-- name: Attach RDS to the current deployment
-  shell: "echo yes | {{ terraform_location }} {{ item }}"
+- name: Initialize Terraform
+  shell: "echo yes | {{ terraform_location }} init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
   args:
     chdir: "roles/main_infra/files"
-  with_items:
-    - "init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
-    - "import aws_db_instance.default {{ prefix }}-{{ db_id }}"
+
+- name: Attach existing DB instances 
+  shell: "echo yes | {{ terraform_location }} import aws_db_instance.default[{{ index }}] {{ prefix }}-{{ item.value }}"
+  args:
+    chdir: "roles/main_infra/files"
+  loop: "{{ chain_db_id|dict2items }}"
+  loop_control:
+    index_var: index

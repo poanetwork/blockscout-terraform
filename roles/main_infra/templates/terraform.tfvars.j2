@@ -10,14 +10,6 @@ instance_type         = "{{ instance_type }}"
 root_block_size       = "{{ root_block_size }}"
 pool_size             = "{{ pool_size }}"
 
-db_id                 = "{{ db_id }}"
-db_username           = "{{ db_username }}"
-db_password           = "{{ db_password }}"
-db_instance_class     = "{{ db_instance_class }}"
-db_storage            = "{{ db_storage }}"
-db_storage_type       = "{{ db_storage_type }}"
-db_version            = "{{ db_version }}"
-
 alb_ssl_policy        = "{{ alb_ssl_policy }}"
 alb_certificate_arn   = "{{ alb_certificate_arn }}"
 use_ssl               = "{{ use_ssl }}"
@@ -25,5 +17,140 @@ new_relic_app_name    = "{{ new_relic_app_name }}"
 new_relic_license_key = "{{ new_relic_license_key }}"
 secret_key_base       = "{{ secret_key_base }}" 
 
+chains = {
+{% for key, value in chains.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
 
-{{ networks }}
+chain_trace_endpoint = {
+{% for key, value in chain_trace_endpoint.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_ws_endpoint = {
+{% for key, value in chain_ws_endpoint.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_jsonrpc_variant = {
+{% for key, value in chain_jsonrpc_variant.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_logo = {
+{% for key, value in chain_logo.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_coin = {
+{% for key, value in chain_coin.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_network = {
+{% for key, value in chain_network.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_subnetwork = {
+{% for key, value in chain_subnetwork.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_network_path = {
+{% for key, value in chain_network_path.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_network_icon = {
+{% for key, value in chain_network_icon.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_graphiql_transaction = {
+{% for key, value in chain_graphiql_transaction.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_block_transformer = {
+{% for key, value in chain_block_transformer.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_heart_beat_timeout = {
+{% for key, value in chain_heart_beat_timeout.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_heart_command = {
+{% for key, value in chain_heart_command.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_blockscout_version = {
+{% for key, value in chain_blockscout_version.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_id = {
+{% for key, value in chain_db_id.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_name = {
+{% for key, value in chain_db_name.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_username = {
+{% for key, value in chain_db_username.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_password = {
+{% for key, value in chain_db_password.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_instance_class = {
+{% for key, value in chain_db_instance_class.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_storage = {
+{% for key, value in chain_db_storage.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_storage_type = {
+{% for key, value in chain_db_storage_type.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_version = {
+{% for key, value in chain_db_version.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
