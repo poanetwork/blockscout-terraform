@@ -67,72 +67,52 @@ secret_key_base: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6Zeg
 new_relic_app_name: ""
 new_relic_license_key: ""
 networks: >
-  chains = {
-    "mychain" = "url/to/endpoint"
-  }
-  chain_trace_endpoint = {
-    "mychain" = "url/to/debug/endpoint/or/the/main/chain/endpoint"
-  }
-  chain_ws_endpoint = {
-    "mychain" = "url/to/websocket/endpoint"
-  }
-  chain_jsonrpc_variant = {
-    "mychain" = "parity"
-  }
-  chain_logo = {
-    "mychain" = "url/to/logo"
-  }
-  chain_coin = {
-    "mychain" = "coin"
-  }
-  chain_network = {
-    "mychain" = "network name"
-  }
-  chain_subnetwork = {
-    "mychain" = "subnetwork name"
-  }
-  chain_network_path = {
-    "mychain" = "path/to/root"
-  }
-  chain_network_icon = {
-    "mychain" = "_test_network_icon.html"
-  }
-  chain_graphiql_transaction = {
-    "mychain" = "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
-  }  
-  chain_block_transformer = {
-    "mychain" = "base"
-  }
-  chain_heart_beat_timeout = {
-    "mychain" = 30
-  }
-  chain_heart_command = {
-    "mychain" = "systemctl restart explorer.service"
-  }
-  chain_blockscout_version = {
-    "mychain" = "v1.3.0-beta"
-  }
-  chain_db_name = {
-    "mychain" = "myname"
-  }
-  chain_db_username = {
-     "mychain" = "myusername"
-  }
-  chain_db_password = {
-     "mychain" = "mypassword" 
-  }
-  chain_db_instance_class = {
-     "mychain" = "db.m4.xlarge"
-  }
-  chain_db_storage = {
-     "mychain" = "200"
-  }
-  chain_db_storage_type = {
-     "mychain" = "gp2"
-  }
-  chain_db_version = {
-     "mychain" = "10.5" 
-  }
+chains:
+  mychain: "url/to/endpoint"
+chain_trace_endpoint:
+  mychain: "url/to/debug/endpoint/or/the/main/chain/endpoint"
+chain_ws_endpoint:
+  mychain: "url/to/websocket/endpoint"
+chain_jsonrpc_variant:
+  mychain: "parity"
+chain_logo:
+  mychain: "url/to/logo"
+chain_coin:
+  mychain: "coin"
+chain_network:
+  mychain: "network name"
+chain_subnetwork:
+  mychain: "subnetwork name"
+chain_network_path:
+  mychain: "path/to/root"
+chain_network_icon:
+  mychain: "_test_network_icon.html"
+chain_graphiql_transaction:
+  mychain: "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+chain_block_transformer:
+  mychain: "base"
+chain_heart_beat_timeout:
+  mychain: 30
+chain_heart_command:
+  mychain: "systemctl restart explorer.service"
+chain_blockscout_version:
+  mychain: "v1.3.0-beta"
+chain_db_id:
+  mychain: "myid"
+chain_db_name:
+  mychain: "myname"
+chain_db_username:
+   mychain: "myusername"
+chain_db_password:
+   mychain: "mypassword" 
+chain_db_instance_class:
+   mychain: "db.m4.xlarge"
+chain_db_storage:
+   mychain: "200"
+chain_db_storage_type:
+   mychain: "gp2"
+chain_db_version:
+   mychain: "10.5" 
 ```
 
 - `aws_access_key` and `aws_secret_key` is a credentials pair that provides access to AWS for the deployer;
@@ -154,7 +134,7 @@ networks: >
 - The `pool_size` defines the number of connections allowed by the RDS instance;
 - `secret_key_base` is a random password used for BlockScout internally. It is highly recommended to gernerate your own `secret_key_base` before the deployment. For instance, you can do it via `openssl rand -base64 64 | tr -d '\n'` command;
 - `new_relic_app_name` and  `new_relic_license_key` should usually stay empty unless you want and know how to configure New Relic integration;
-- Chain configuration is made via `networks ` variable. It is Ansible multiline variable that nests Terraform configuration based on HCL syntax. For details of chain configuration see the [appropriate section](#Chain-Configuration) of this ReadMe. For example, see the `group_vars/all.yml.example` file.
+- Chain configuration is made via `chain_*` variables. For details of chain configuration see the [appropriate section](#Chain-Configuration) of this ReadMe. For examples, see the `group_vars/all.yml.example` file.
 
 ## Chain Configuration
 
@@ -231,7 +211,7 @@ In some cases you may want not to create a new database, but to add the existing
 Example:
   Real resource: tf-poa
   `prefix` variable: tf
-  `db_id` variable: poa
+  `chain_db_id` variable: poa
 
 **Note 3**: make sure MultiAZ is disabled on your database.
 
