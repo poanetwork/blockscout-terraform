@@ -68,51 +68,51 @@ new_relic_app_name: ""
 new_relic_license_key: ""
 networks: >
 chains:
-  mychain: "url/to/endpoint"
+  chain: "url/to/endpoint"
 chain_trace_endpoint:
-  mychain: "url/to/debug/endpoint/or/the/main/chain/endpoint"
+  chain: "url/to/debug/endpoint/or/the/main/chain/endpoint"
 chain_ws_endpoint:
-  mychain: "url/to/websocket/endpoint"
+  chain: "url/to/websocket/endpoint"
 chain_jsonrpc_variant:
-  mychain: "parity"
+  chain: "parity"
 chain_logo:
-  mychain: "url/to/logo"
+  chain: "url/to/logo"
 chain_coin:
-  mychain: "coin"
+  chain: "coin"
 chain_network:
-  mychain: "network name"
+  chain: "network name"
 chain_subnetwork:
-  mychain: "subnetwork name"
+  chain: "subnetwork name"
 chain_network_path:
-  mychain: "path/to/root"
+  chain: "path/to/root"
 chain_network_icon:
-  mychain: "_test_network_icon.html"
+  chain: "_test_network_icon.html"
 chain_graphiql_transaction:
-  mychain: "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+  chain: "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
 chain_block_transformer:
-  mychain: "base"
+  chain: "base"
 chain_heart_beat_timeout:
-  mychain: 30
+  chain: 30
 chain_heart_command:
-  mychain: "systemctl restart explorer.service"
+  chain: "systemctl restart explorer.service"
 chain_blockscout_version:
-  mychain: "v1.3.0-beta"
+  chain: "v1.3.0-beta"
 chain_db_id:
-  mychain: "myid"
+  chain: "myid"
 chain_db_name:
-  mychain: "myname"
+  chain: "myname"
 chain_db_username:
-   mychain: "myusername"
+  chain: "myusername"
 chain_db_password:
-   mychain: "mypassword" 
+  chain: "mypassword" 
 chain_db_instance_class:
-   mychain: "db.m4.xlarge"
+  chain: "db.m4.xlarge"
 chain_db_storage:
-   mychain: "200"
+  chain: "200"
 chain_db_storage_type:
-   mychain: "gp2"
+  chain: "gp2"
 chain_db_version:
-   mychain: "10.5" 
+  chain: "10.5" 
 ```
 
 - `aws_access_key` and `aws_secret_key` is a credentials pair that provides access to AWS for the deployer;
@@ -137,6 +137,8 @@ chain_db_version:
 - Chain configuration is made via `chain_*` variables. For details of chain configuration see the [appropriate section](#Chain-Configuration) of this ReadMe. For examples, see the `group_vars/all.yml.example` file.
 
 ## Chain Configuration
+
+*Notice*: a chain name shouldn't be more than 5 characters. Otherwise, it causing the error, because the aws load balancer name should not be greater than 32 characters.
 
 - `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
 - `chain_trace_endpoint` - maps chains to the URLs of HTTP RPC endpoints, which represents a node where state pruning is disabled (archive node) and tracing is enabled. If you don't have a trace endpoint, you can simply copy values from `chains` variable;
