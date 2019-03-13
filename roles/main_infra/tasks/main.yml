@@ -1,0 +1,79 @@
+- name: Local or remote backend selector (remote)
+  template: 
+    src: remote-backend-selector.tf.j2 
+    dest: roles/main_infra/files/remote-backend-selector.tf
+  when: 
+    - backend|bool == true
+
+- name: Local or remote backend selector (local)
+  file:
+    state: absent
+    dest: roles/main_infra/files/remote-backend-selector.tf
+  when: 
+    - backend | default ('false') | bool != true
+
+- name: Generating variables file
+  template:
+    src: terraform.tfvars.j2
+    dest: roles/main_infra/files/terraform.tfvars
+
+- name: Generating backend file
+  template:
+    src: backend.tfvars.j2
+    dest: roles/main_infra/files/backend.tfvars
+  when: backend|bool == true
+
+- name: Check if .terraform folder exists
+  stat:
+    path: "roles/main_infra/files/.terraform/"
+  register: stat_result  
+
+- name: Remove .terraform folder 
+  file:
+    path: roles/main_infra/files/.terraform/
+    state: absent
+  when: stat_result.stat.exists == True
+    
+#Workaround since terraform module return unexpected error.
+- name: Terraform plan construct
+  shell: "echo yes | {{ terraform_location }} {{ item }}"
+  register: tf_plan
+  args:
+    chdir: "roles/main_infra/files"
+  with_items:
+    - "init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
+    - plan
+
+- name: Show Terraform plan
+  debug:
+    var: tf_plan.results[1].stdout_lines
+
+- name: User prompt
+  pause:
+    prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [False]"
+  register: user_answer
+
+- name: Terraform provisioning
+  shell: "echo yes | {{ terraform_location }} apply" 
+  args:
+    chdir: "roles/main_infra/files"
+  when: user_answer.user_input|bool == True 
+  ignore_errors: True
+
+- name: Ensure Terraform resources being provisioned
+  shell: "echo yes | {{ terraform_location }} apply"
+  args:
+    chdir: "roles/main_infra/files"
+  when: user_answer.user_input|bool == True
+
+- name: Terraform output info into variable
+  shell: "{{ terraform_location }} output"
+  register: output
+  args:
+    chdir: "roles/main_infra/files"
+  when: user_answer.user_input|bool == True
+
+- name: Output info from Terraform
+  debug:
+    var: output.stdout_lines
+  when: user_answer.user_input|bool == True

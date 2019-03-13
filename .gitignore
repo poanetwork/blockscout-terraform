@@ -4,8 +4,13 @@
 /ignore.tfvars
 
 # Terraform State
-/.terraform
-/terraform.tfstate.d
+*.terraform*
+*terraform.tfstate.d*
+*tfplan*
+roles/main_infra/files/backend.tfvars
+roles/main_infra/files/remote-backend-selector.tf
+roles/main_infra/files/terraform.tfvars
+*.backup
 
 # Sensitive information
 /*.privkey
@@ -13,4 +18,9 @@
 
 # Stack-specific information
 /PREFIX
-/plans/*.planfile
+
+group_vars/*.yml
+*.retry
+*.temp
+*.swp
+.*.swp
