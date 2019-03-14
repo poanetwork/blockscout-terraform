@@ -1,0 +1,12 @@
+- name: Clean TF cache
+  hosts: localhost
+  tasks:
+    - name: Clean TF cache
+      file:
+        state: absent
+        path: "{{ item }}"
+      with_items:
+        - roles/main_infra/files/.terraform
+        - roles/main_infra/files/terraform.tfstate.d
+        - roles/main_infra/files/main.tfvars
+        - roles/main_infra/files/backend.tfvars

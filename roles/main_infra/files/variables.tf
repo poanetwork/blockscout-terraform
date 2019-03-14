@@ -8,6 +8,7 @@ variable "dns_zone_name" {}
 variable "instance_type" {}
 variable "root_block_size" {}
 variable "pool_size" {}
+variable "elixir_version" {}
 
 variable "key_content" {
   default = ""
@@ -68,6 +69,10 @@ variable "chain_db_storage" {
 }
 
 variable "chain_db_storage_type" {
+  default = {}
+}
+
+variable "chain_db_iops" {
   default = {}
 }
 

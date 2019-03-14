@@ -63,6 +63,7 @@ alb_ssl_policy: "ELBSecurityPolicy-2016-08"
 alb_certificate_arn: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
 root_block_size: 120
 pool_size: 30
+elixir_version: v1.7.4
 secret_key_base: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ=="
 new_relic_app_name: ""
 new_relic_license_key: ""
@@ -110,7 +111,9 @@ chain_db_instance_class:
 chain_db_storage:
    mychain: "200"
 chain_db_storage_type:
-   mychain: "gp2"
+   chain: "io1"
+chain_db_iops:
+   chain: "1000"
 chain_db_version:
    mychain: "10.5" 
 ```
@@ -121,7 +124,12 @@ chain_db_version:
 - `bucket` and `dynamodb_table` represents the name of AWS resources that will be used for Terraform state management;
 - If `ec2_ssh_key_content` variable is not empty, Terraform will try to create EC2 SSH key with the `ec2_ssh_key_name` name. Otherwise, the existing key with `ec2_ssh_key_name` name will be used;
 - `instance_type` defines a size of the Blockscout instance that will be launched during the deployment process;
-- `vpc_cidr`, `public_subnet_cidr`, `db_subnet_cidr` represents the network configuration for the deployment. Usually you want to leave it as is. However, if you want to modify it, please, expect that `db_subnet_cidr` represents not a single network, but a group of networks united with one CIDR block that will be divided during the deployment. For details, see [subnets.tf](https://github.com/ArseniiPetrovich/blockscout-terraform/blob/master/roles/main_infra/files/subnets.tf#L35) for details;
+- `vpc_cidr`, `public_subnet_cidr`, `db_subnet_cidr` represents the network configuration for the deployment. Usually you want to leave it as is. However, if you want to modify it, please, expect that `db_subnet_cidr` represents not a single network, but a group of networks started with defined CIDR block increased by 8 bits. 
+Example:
+  Number of networks: 2
+  `db_subnet_cidr`: "10.0.1.0/16"
+  Real networks: 10.0.1.0/24 and 10.0.2.0/24
+    
 - An internal DNS zone with`dns_zone_name` name will be created to take care of BlockScout internal communications;
 - `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
 - The name of a IAM key pair to use for EC2 instances, if you provide a name which

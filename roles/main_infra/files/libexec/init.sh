@@ -135,9 +135,10 @@ wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/
 yum install -y wxGTK-devel unixODBC-devel >"$LOG"
 yum install -y esl-erlang_21.1-1~centos~7_amd64.rpm >"$LOG"
 
+ELIXIR_VERSION="$(get_param 'elixir_version')"
 log "Installing Elixir to /opt/elixir.."
 mkdir -p /opt/elixir
-wget https://github.com/elixir-lang/elixir/releases/download/v1.7.4/Precompiled.zip >"$LOG"
+wget https://github.com/elixir-lang/elixir/releases/download/${ELIXIR_VERSION}/Precompiled.zip >"$LOG"
 unzip Precompiled.zip -d /opt/elixir >"$LOG"
 log "Elixir installed successfully!"
 
