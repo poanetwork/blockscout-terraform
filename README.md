@@ -188,7 +188,7 @@ The configuration variable `db_storage` can be used to define the amount of stor
 
 3. Set the configuration file as described at the [corresponding part of instruction](#Configuration);
 
-4. Run `ansible-playbook deploy.yml`; 
+4. Run `ansible-playbook deploy_infra.yml`; 
 
    **Note:** during the deployment the ["diffs didn't match"](#error-applying-plan-diffs-didnt-match) error may occur, it will be ignored automatically. If  Ansible play recap shows 0 failed plays, then the deployment was successful despite the error.
 
@@ -202,7 +202,7 @@ Once infrastructure is deployed, read [this](https://forum.poa.network/t/deployi
 
 You can use `ansible-playbook destroy.yml` file to remove any generated infrastructure. But first of all you have to remove resources deployed via CodeDeploy manually (it includes a virtual machine and associated autoscaling group). It is also important to note though that if you run this script on partially generated infrastructure, or if an error occurs during the destroy process, that you may need to manually check for, and remove, any resources that were not able to be deleted for you. 
 
-**Note!** While Terraform is stateful, Ansible is stateless, so if you modify `bucket` or `dynamodb_table` variables and run `destroy.yml` or `deploy.yml`  playbooks, it will not alter the current S3/Dynamo resources names, but create a new resources. Moreover, altering `bucket` variable will make Terraform to forget about existing infrastructure and, as a consequence, redeploy it. If it absolutely necessary for you to alter the S3 or DynamoDB names you can do it manually and then change the appropriate variable accordingly. 
+**Note!** While Terraform is stateful, Ansible is stateless, so if you modify `bucket` or `dynamodb_table` variables and run `destroy.yml` or `deploy_infra.yml`  playbooks, it will not alter the current S3/Dynamo resources names, but create a new resources. Moreover, altering `bucket` variable will make Terraform to forget about existing infrastructure and, as a consequence, redeploy it. If it absolutely necessary for you to alter the S3 or DynamoDB names you can do it manually and then change the appropriate variable accordingly. 
 
 Also note, that changing `backend` variable will force Terraform to forget about created infrastructure also, since it will start searching the current state files locally instead of remote.
 
@@ -213,7 +213,7 @@ You can easily manipulate your deployment from any machine with sufficient prere
 
 ## Attaching the existing RDS instance to the current deployment
 
-In some cases you may want not to create a new database, but to add the existing one to use within the deployment. In order to do that configure all the proper values at `group_vars/all.yml` including yours DB ID and name and execute the `ansible-playbook attach_existing_rds.yml` command. This will add the current DB instance into Terraform-managed resource group. After that run `ansible-playbook deploy.yml` as usually. 
+In some cases you may want not to create a new database, but to add the existing one to use within the deployment. In order to do that configure all the proper values at `group_vars/all.yml` including yours DB ID and name and execute the `ansible-playbook attach_existing_rds.yml` command. This will add the current DB instance into Terraform-managed resource group. After that run `ansible-playbook deploy_infra.yml` as usually. 
 
 **Note 1**:  while executing `ansible-playbook attach_existing_rds.yml` the S3 and DynamoDB will be automatically created (if `backend` variable is set to `true`) to store Terraform state files. 
 
@@ -250,4 +250,4 @@ Please include the following information in your report:
     Mismatch reason: attribute mismatch: availability_zones.1252502072
 ```
 
-This is due to a bug in Terraform, however the fix is to just rerun `ansible-playbook deploy.yml` again, and Terraform will pick up where it left off. This does not always happen, but this is the current workaround if you see it.
+This is due to a bug in Terraform, however the fix is to just rerun `ansible-playbook deploy_infra.yml` again, and Terraform will pick up where it left off. This does not always happen, but this is the current workaround if you see it.
