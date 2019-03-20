@@ -14,6 +14,7 @@ function log() {
 }
 
 parameters_json="{}"
+
 function fetch_ssm_with_token() {
     if [ -z "$1" ]; then
         log "(fetch_ssm_with_token) Calling ssm without token"
@@ -39,7 +40,7 @@ function fetch_ssm_with_token() {
 
 wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -P /tmp
 
-yum install -y /tmp/epel-release-latest-7.noarch.rpm
+yum localinstall -y /tmp/epel-release-latest-7.noarch.rpm
 
 yum update -y
 
@@ -132,18 +133,10 @@ EOF
 log "Installing Erlang.."
 
 wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_21.1-1~centos~7_amd64.rpm
-yum install -y wxGTK-devel unixODBC-devel >"$LOG"
-yum install -y esl-erlang_21.1-1~centos~7_amd64.rpm >"$LOG"
-
-ELIXIR_VERSION="$(get_param 'elixir_version')"
-log "Installing Elixir to /opt/elixir.."
-mkdir -p /opt/elixir
-wget https://github.com/elixir-lang/elixir/releases/download/${ELIXIR_VERSION}/Precompiled.zip >"$LOG"
-unzip Precompiled.zip -d /opt/elixir >"$LOG"
-log "Elixir installed successfully!"
+yum localinstall -y wxGTK-devel unixODBC-devel >"$LOG"
+yum localinstall -y esl-erlang_21.1-1~centos~7_amd64.rpm >"$LOG"
 
 log "Fetching configuration from Parameter Store..."
-#parameters_json=$(aws ssm get-parameters-by-path --region "$REGION" --path "/$PREFIX/$CHAIN")
 fetch_ssm_with_token
 params=$(echo "$parameters_json" | jq '.Parameters[].Name' --raw-output)
 log "$(printf 'Found the following parameters:\n\n%s\n' "$params")"
@@ -153,6 +146,13 @@ function get_param() {
     jq ".Parameters[] | select(.Name == \"/$PREFIX/$CHAIN/$1\") | .Value" \
         --raw-output
 }
+
+ELIXIR_VERSION="$(get_param 'elixir_version')"
+log "Installing Elixir to /opt/elixir.."
+mkdir -p /opt/elixir
+wget https://github.com/elixir-lang/elixir/releases/download/${ELIXIR_VERSION}/Precompiled.zip >"$LOG"
+unzip Precompiled.zip -d /opt/elixir >"$LOG"
+log "Elixir installed successfully!"
 
 DB_USER="$(get_param 'db_username')"
 DB_PASS="$(get_param 'db_password')"

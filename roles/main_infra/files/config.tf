@@ -1,5 +1,5 @@
 resource "aws_ssm_parameter" "elixir_version" {
-  count = "${var.new_relic_license_key == "" ? 0 : length(var.chains)}"
+  count = "${length(var.chains)}"
   name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/elixir_version"
   value = "${var.elixir_version}"
   type  = "String"

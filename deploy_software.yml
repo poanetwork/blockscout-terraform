@@ -1,3 +1,12 @@
+- name: Save config file
+  hosts: localhost
+  roles:
+    - { role: s3, when: "backend|bool == true" }
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_REGION: "{{ region }}"
+
 - name: Deploy BlockScout
   hosts: localhost
   tasks:
@@ -7,8 +16,4 @@
      loop: "{{ chains.keys() }}"  
      loop_control:
        loop_var: chain
-       index_var: index 
-     environment:
-       AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
-       AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
-       AWS_REGION: "{{ region }}"
+       index_var: index
