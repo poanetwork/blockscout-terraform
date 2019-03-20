@@ -1,67 +1,20 @@
-# Credentials to connect to AWS
+# Common variables
+
+## Credentials to connect to AWS
 aws_access_key: ""
 aws_secret_key: ""
-
-# Deployment-related variables
 
 ## If set to true backend will be uploaded and stored at S3 bucket, so you can easily manage your deployment from any machine. It is highly recommended to do not change this variable
 backend: true
 ## If this is set to true along with backend variable, this config file will be saved to s3 bucket. Please, make sure to name it as all.yml. Otherwise, no upload will be performed
 upload_config_to_s3: true
 
-### The bucket and dynamodb_table variables will be used only when backend variable is set to true
-### Name of the bucket where TF state files will be stored
+## The bucket and dynamodb_table variables will be used only when backend variable is set to true
+## Name of the bucket where TF state files will be stored
 bucket: "poa-terraform-state"
 
-### Name of the DynamoDB table where current lease of TF state file will be stored
-dynamodb_table: "poa-terraform-lock"
-
-## If ec2_ssh_key_content is empty all the virtual machines will be created with ec2_ssh_key_name key. Otherwise, playbooks will upload ec2_ssh_key_content with the name of ec2_ssh_key_name and launch virtual machines with that key
-ec2_ssh_key_name: "sokol-test"
-ec2_ssh_key_content: ""
-
-## EC2 Instance will have the following size:
-instance_type: "m5.large"
-
-## VPC containing Blockscout resources will be created as following:
-vpc_cidr: "10.0.0.0/16"
-public_subnet_cidr: "10.0.0.0/24"
-# This variable should be interpreted as following:
-# Variable: 10.0.1.0/16
-# Real networks: 10.0.1+{{ number of chain starting with 0 }}.0/24
-db_subnet_cidr: "10.0.1.0/16"
-
-## Internal DNS zone will looks like:
-dns_zone_name: "poa.internal"
-
-## All resources will be prefixed with this one
-prefix: "sokol"
-
-## The following settngs are related to SSL of Application Load Balancer that will be deployed to AWS. If use_ssl is set to false, alb_* variables can be omitted
-use_ssl: "false"
-alb_ssl_policy: "ELBSecurityPolicy-2016-08"
-alb_certificate_arn: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
-
-# Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
-region: "us-east-1"
-
-## Size of the EC2 instance EBS root volume
-root_block_size: 120
-
-## Number of connections allowed by EC2 instance
-pool_size: 30
-
-## Secret key of Explorer. Please, generate your own key here. For example, you can use the following command: openssl rand -base64 64 | tr -d '\n'
-secret_key_base: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ=="
-
-## New Relic related configs. Usually you want this empty
-new_relic_app_name: ""
-new_relic_license_key: ""
-
-## The following variable represents the elixir version that will be used to run BlockScout instance. Will be used to download the Elixir at the following link: https://github.com/elixir-lang/elixir/releases/download/{{ elixir_version }}/Precompiled.zip
-elixir_version: "v1.7.4"
-
 # Network related variables
+
 ## This variable represents network RPC endpoint: 
 chains:
    core: "http://10.10.10.10:8545"
@@ -133,8 +86,8 @@ chain_heart_command:
 
 ## This value describes a version of Blockscout that will be shown at the footer. You can write any text there you want to see at the footer.
 chain_blockscout_version:
-  core: "v1.3.4-beta"
-  sokol: "v1.3.4-beta"
+  core: "v1.3.7-beta"
+  sokol: "v1.3.7-beta"
 
 ## This value represents the name of the DB that will be created/attached. Must be unique. Will be prefixed with `prefix` variable.
 chain_db_id:
@@ -159,47 +112,101 @@ chain_db_instance_class:
   core: "db.m4.xlarge"
   sokol: "db.m4.large"
 
-# Size of storage in GiB.
+## Size of storage in GiB.
 chain_db_storage:
   core: "200"
   sokol: "100"
 
-# Type of disk to be used for the DB.
+## Type of disk to be used for the DB.
 chain_db_storage_type:
   core: "io1"
   sokol: "gp2"
 
-# This should be set only if chain_db_storage is set to io1
+## This should be set only if chain_db_storage is set to io1
 #chain_db_iops:
 #  core: "1000"
 #  sokol: "1500"
 
-# Blockscout uses Postgres as the DB engine. This variable describes the Postgres version used in each particular chain.
+## Blockscout uses Postgres as the DB engine. This variable describes the Postgres version used in each particular chain.
 chain_db_version:
   core: "10.5"
   sokol: "10.6"
 
+# Infrastructure related variables
+
+## Name of the DynamoDB table where current lease of TF state file will be stored
+dynamodb_table: "poa-terraform-lock"
+
+## If ec2_ssh_key_content is empty all the virtual machines will be created with ec2_ssh_key_name key. Otherwise, playbooks will upload ec2_ssh_key_content with the name of ec2_ssh_key_name and launch virtual machines with that key
+ec2_ssh_key_name: "sokol-test"
+ec2_ssh_key_content: ""
+
+## EC2 Instance will have the following size:
+instance_type: "m5.large"
+
+## VPC containing Blockscout resources will be created as following:
+vpc_cidr: "10.0.0.0/16"
+public_subnet_cidr: "10.0.0.0/24"
+# This variable should be interpreted as following:
+# Variable: 10.0.1.0/16
+# Real networks: 10.0.1+{{ number of chain starting with 0 }}.0/24
+db_subnet_cidr: "10.0.1.0/16"
+
+## Internal DNS zone will looks like:
+dns_zone_name: "poa.internal"
+
+## All resources will be prefixed with this one
+prefix: "sokol"
+
+## The following settngs are related to SSL of Application Load Balancer that will be deployed to AWS. If use_ssl is set to false, alb_* variables can be omitted
+use_ssl: "false"
+alb_ssl_policy: "ELBSecurityPolicy-2016-08"
+alb_certificate_arn: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
+
+## Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
+region: "us-east-1"
+
+## Size of the EC2 instance EBS root volume
+root_block_size: 120
+
+## Number of connections allowed by EC2 instance
+pool_size: 30
+
+## Secret key of Explorer. Please, generate your own key here. For example, you can use the following command: openssl rand -base64 64 | tr -d '\n'
+secret_key_base: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ=="
+
+## New Relic related configs. Usually you want this empty
+new_relic_app_name: ""
+new_relic_license_key: ""
+
+## The following variable represents the elixir version that will be used to run BlockScout instance. Will be used to download the Elixir at the following link: https://github.com/elixir-lang/elixir/releases/download/{{ elixir_version }}/Precompiled.zip
+elixir_version: "v1.7.4"
+
+# BlockScout related variables
+
+## An address of BlockScout repo to download
+blockscout_repo: https://github.com/poanetwork/blockscout
+
+## A branch at `blockscout_repo` with ready-to-deploy version of BlockScout 
 chain_branch:
   core: "production-core"
   sokol: "production-sokol"
 
+## Usually you don't want to merge branches, so it is commented out by default
 #chain_merge_commit:
 #  core: "2cdead1"
 #  sokol: "2cdead1"
 
-# An address of BlockScout repo to download
-blockscout_repo: https://github.com/poanetwork/blockscout
-
-# If you want you can download and configure repo on your own. It should has the following name - blockscout-{{ chain_name }} and exist inside root playbook folder. Use the following variable to prevent playbooks from overriding
+## If you want you can download and configure repo on your own. It should has the following name - blockscout-{{ chain_name }} and exist inside root playbook folder. Use the following variable to prevent playbooks from overriding
 skip_fetch: false
 
-# Login data for the test database. Please, use postgres database with the version specified at BlockScout repo prerequisites
+## Login data for the test database. Please, use postgres database with the version specified at BlockScout repo prerequisites
 ps_host: localhost
 ps_user: myuser
 ps_password: mypass
 ps_db: mydb
 
-# Custom environment variables that will be exported when testing the Blockscout instance
+## Custom environment variables that will be exported when testing the Blockscout instance
 chain_custom_environment:
   core:
     METADATA_CONTRACT: 0xE3FfFD154931EB80b2aCE096EC32D6df23661203

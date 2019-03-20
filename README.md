@@ -2,19 +2,34 @@
 
 This repo contains Ansible playbooks designed in purpose of automation [Blockscout](https://github.com/poanetwork/blockscout) deployment builds. Currently it supports only [AWS](#AWS) as a cloud provider. Playbooks will create all necessary infrastructure along with cloud storage space required for saving configuration and state files.
 
-## Prerequisites
+# Prerequisites
 
 Playbooks relies on Terraform under the hood, which is the stateful infrastructure-as-a-code software tool. It allows to keep a hand on your infrastructure - modify and recreate single and multiple resources depending on your needs.
+
+## Prerequisites for deploying infrastructure
 
 | Dependency name                        | Installation method                                          |
 | -------------------------------------- | ------------------------------------------------------------ |
 | Ansible >= 2.6                         | [Installation guide](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) |
-| Terraform 0.11                         | [Installation guide](https://learn.hashicorp.com/terraform/getting-started/install.html) |
+| Terraform >=0.11.11                    | [Installation guide](https://learn.hashicorp.com/terraform/getting-started/install.html) |
 | Python >=2.6.0                         | `apt install python`                                         |
 | Python-pip                             | `apt install python-pip`                                     |
 | boto & boto3 & botocore python modules | `pip install boto boto3 botocore`                            |
 
-## AWS
+## Prerequisites for deploying BlockScout
+
+| Dependency name                        | Installation method                                          |
+| -------------------------------------- | ------------------------------------------------------------ |
+| Ansible >= 2.7.3                       | [Installation guide](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) |
+| Terraform >=0.11.11                    | [Installation guide](https://learn.hashicorp.com/terraform/getting-started/install.html) |
+| Python >=2.6.0                         | `apt install python`                                         |
+| Python-pip                             | `apt install python-pip`                                     |
+| boto & boto3 & botocore python modules | `pip install boto boto3 botocore`                            |
+| AWS CLI                                | `pip install awscli`                                         |
+| All BlockScout prerequisites           | [Check it here](https://github.com/poanetwork/blockscout#requirements) |
+
+
+# AWS permissions
 
 During deployment you will have to provide credentials to your AWS account. Deployment process requires a wide set of permissions to do the job, so it would work best of all if you specify the administrator account credentials. 
 
@@ -39,97 +54,45 @@ Each configured chain will receive its own ASG (autoscaling group) and deploymen
 
 The deployment process goes in two stages. First, Ansible creates S3 bucket and DynamoDB table that are required for Terraform state management. It is needed to ensure that Terraforms state is stored in a centralized location, so that multiple people can use Terraform on the same infra without stepping on each others toes. Terraform prevents this from happening by holding locks (via DynamoDB) against the state data (stored in S3). 
 
-## Configuration
+# Configuration
 
-The single point of configuration in this script is a `group_vars/all.yml` file. First, copy it from `group_vars/all.yml.example` template by executing`cp group_vars/all.yml.example group_vars/all.yml` command and then modify it via any text editor you want (vim example - `vim group_vars/all.yml`). Here is the example of configuration file (Scroll down for variables description):
+The single point of configuration in this script is a `group_vars/all.yml` file. First, copy it from `group_vars/all.yml.example` template by executing `cp group_vars/all.yml.example group_vars/all.yml` command and then modify it via any text editor you want (vim example - `vim group_vars/all.yml`). The subsections describe the variable you may want to adjust.
 
-```yaml
-aws_access_key: ""
-aws_secret_key: ""
-backend: true
-upload_config_to_s3: true
-bucket: "poa-terraform-state"
-dynamodb_table: "poa-terraform-lock"
-ec2_ssh_key_name: "sokol-test"
-ec2_ssh_key_content: ""
-instance_type: "m5.xlarge"
-vpc_cidr: "10.0.0.0/16"
-public_subnet_cidr: "10.0.0.0/24"
-db_subnet_cidr: "10.0.1.0/24"
-dns_zone_name: "poa.internal"
-prefix: "sokol"
-use_ssl: "false"
-alb_ssl_policy: "ELBSecurityPolicy-2016-08"
-alb_certificate_arn: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
-root_block_size: 120
-pool_size: 30
-elixir_version: v1.7.4
-secret_key_base: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ=="
-new_relic_app_name: ""
-new_relic_license_key: ""
-networks: >
-chains:
-  chain: "url/to/endpoint"
-chain_trace_endpoint:
-  chain: "url/to/debug/endpoint/or/the/main/chain/endpoint"
-chain_ws_endpoint:
-  chain: "url/to/websocket/endpoint"
-chain_jsonrpc_variant:
-  chain: "parity"
-chain_logo:
-  chain: "url/to/logo"
-chain_coin:
-  chain: "coin"
-chain_network:
-  chain: "network name"
-chain_subnetwork:
-  chain: "subnetwork name"
-chain_network_path:
-  chain: "path/to/root"
-chain_network_icon:
-  chain: "_test_network_icon.html"
-chain_graphiql_transaction:
-  chain: "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
-chain_block_transformer:
-  chain: "base"
-chain_heart_beat_timeout:
-  chain: 30
-chain_heart_command:
-  chain: "systemctl restart explorer.service"
-chain_blockscout_version:
-  chain: "v1.3.0-beta"
-chain_db_id:
-  chain: "myid"
-chain_db_name:
-  chain: "myname"
-chain_db_username:
-  chain: "myusername"
-chain_db_password:
-  chain: "mypassword" 
-chain_db_instance_class:
-  chain: "db.m4.xlarge"
-chain_db_storage:
-  chain: "200"
-chain_db_storage_type:
-   chain: "io1"
-chain_db_iops:
-   chain: "1000"
-chain_db_version:
-  chain: "10.5" 
-```
+## Common variables
 
 - `aws_access_key` and `aws_secret_key` is a credentials pair that provides access to AWS for the deployer;
-- `backend` variable defines whether Terraform should keep state files remote or locally. Set `backend` variable to `true` if you want to save state file to the remote S3 bucket;
+- `backend` variable defines whether deployer should keep state files remote or locally. Set `backend` variable to `true` if you want to save state file to the remote S3 bucket;
 - `upload_config_to_s3` - set to `true` if you want to upload config`all.yml` file to the S3 bucket automatically during deployment. Will not work if `backend` is set to false;
-- `bucket` and `dynamodb_table` represents the name of AWS resources that will be used for Terraform state management;
+- `bucket` represents a globally unique name of the bucket where your configs and state will be stored. It will be created automatically during the deployment;
+
+- `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
+
+*Note*: a chain name shouldn't be more than 5 characters. Otherwise, it causing the error, because the aws load balancer name should not be greater than 32 characters.
+
+- `chain_trace_endpoint` - maps chains to the URLs of HTTP RPC endpoints, which represents a node where state pruning is disabled (archive node) and tracing is enabled. If you don't have a trace endpoint, you can simply copy values from `chains` variable;
+- `chain_ws_endpoint` - maps chains to the URLs of HTTP RPCs that supports websockets. This is required to get the real-time updates. Can be the same as `chains` if websocket is enabled there (but make sure to use`ws(s)` instead of `htpp(s)` protocol);
+- `chain_jsonrpc_variant` - a client used to connect to the network. Can be `parity`, `geth`, etc;
+- `chain_logo` - maps chains to the it logos. Place your own logo at `apps/block_scout_web/assets/static` and specify a relative path at `chain_logo` variable;
+- `chain_coin` - a name of the coin used in each particular chain;
+- `chain_network` - usually, a name of the organization keeping group of networks, but can represent a name of any logical network grouping you want;
+- `chain_subnetwork` - a name of the network to be shown at BlockScout;
+- `chain_network_path` - a relative URL path which will be used as an endpoint for defined chain. For example, if we will have our BlockScout at `blockscout.com` domain and place `core` network at `/poa/core`, then the resulting endpoint will be `blockscout.com/poa/core` for this network.
+- `chain_network_icon` - maps the chain name to the network navigation icon at apps/block_scout_web/lib/block_scout_web/templates/icons without .eex extension
+- `chain_graphiql_transaction` - is a variable that maps chain to a random transaction hash on that chain. This hash will be used to provide a sample query in the GraphIQL Playground.
+- `chain_block_transformer` - will be `clique` for clique networks like Rinkeby and Goerli, and `base` for the rest;
+- `chain_heart_beat_timeout`, `chain_heart_command` - configs for the integrated heartbeat. First describes a timeout after the command described at the second variable will be executed;
+- Each of the `chain_db_*` variables configures the database for each chain. Each chain will have the separate RDS instance.
+
+## Infrastructure related variables
+
+- `dynamodb_table` represents the name of  table that will be used for Terraform state lock management;
 - If `ec2_ssh_key_content` variable is not empty, Terraform will try to create EC2 SSH key with the `ec2_ssh_key_name` name. Otherwise, the existing key with `ec2_ssh_key_name` name will be used;
 - `instance_type` defines a size of the Blockscout instance that will be launched during the deployment process;
 - `vpc_cidr`, `public_subnet_cidr`, `db_subnet_cidr` represents the network configuration for the deployment. Usually you want to leave it as is. However, if you want to modify it, please, expect that `db_subnet_cidr` represents not a single network, but a group of networks started with defined CIDR block increased by 8 bits. 
-Example:
+  Example:
   Number of networks: 2
   `db_subnet_cidr`: "10.0.1.0/16"
   Real networks: 10.0.1.0/24 and 10.0.2.0/24
-    
 - An internal DNS zone with`dns_zone_name` name will be created to take care of BlockScout internal communications;
 - `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
 - The name of a IAM key pair to use for EC2 instances, if you provide a name which
@@ -142,32 +105,19 @@ Example:
 - The `pool_size` defines the number of connections allowed by the RDS instance;
 - `secret_key_base` is a random password used for BlockScout internally. It is highly recommended to gernerate your own `secret_key_base` before the deployment. For instance, you can do it via `openssl rand -base64 64 | tr -d '\n'` command;
 - `new_relic_app_name` and  `new_relic_license_key` should usually stay empty unless you want and know how to configure New Relic integration;
-- Chain configuration is made via `chain_*` variables. For details of chain configuration see the [appropriate section](#Chain-Configuration) of this ReadMe. For examples, see the `group_vars/all.yml.example` file.
 
-## Chain Configuration
+## Blockscout related variables
 
-*Notice*: a chain name shouldn't be more than 5 characters. Otherwise, it causing the error, because the aws load balancer name should not be greater than 32 characters.
+- `blockscout_repo` - a direct link to the Blockscout repo;
+- `chain_branch` - maps branch at `blockscout_repo` to each chain;
+- Specify the `chain_merge_commit` variable if you want to merge any of the specified `chains` with the commit in the other branch. Usually may be used to update production branches with the releases from master branch;
+- `skip_fetch` - if this variable is set to `true` , BlockScout repo will not be cloned and the process will start from building the dependencies. Use this variable to prevent playbooks from overriding manual changes in cloned repo;
+- `ps_*` variables represents a connection details to the test Postgres database. This one will not be installed automatically, so make sure `ps_*` credentials are valid before starting the deployment;
+- `chain_custom_environment` - is a set of additional environment variables mapped with chains that needs to be set during the test deployment.
 
-- `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
-- `chain_trace_endpoint` - maps chains to the URLs of HTTP RPC endpoints, which represents a node where state pruning is disabled (archive node) and tracing is enabled. If you don't have a trace endpoint, you can simply copy values from `chains` variable;
-- `chain_ws_endpoint` - maps chains to the URLs of HTTP RPCs that supports websockets. This is required to get the real-time updates. Can be the same as `chains` if websocket is enabled there (but make sure to use`ws(s)` instead of `htpp(s)` protocol);
-- `chain_jsonrpc_variant` - a client used to connect to the network. Can be `parity`, `geth`, etc;
-- `chain_logo` - maps chains to the it logos. Place your own logo at `apps/block_scout_web/assets/static` and specify a relative path at `chain_logo` variable;
-- `chain_coin` - a name of the coin used in each particular chain;
-- `chain_network` - usually, a name of the organization keeping group of networks, but can represent a name of any logical network grouping you want;
-- `chain_subnetwork` - a name of the network to be shown at BlockScout;
-- `chain_network_path` - a relative URL path which will be used as an endpoint for defined chain. For example, if we will have our BlockScout at `blockscout.com` domain and place `core` network at `/poa/core`, then the resulting endpoint will be `blockscout.com/poa/core` for this network.
-- `chain_network_icon` - maps the chain name to the network navigation icon at apps/block_scout_web/lib/block_scout_web/templates/icons without .eex extension
-- `chain_graphiql_transaction` - is a variable that maps chain to a random transaction hash on that chain. This hash will be used to provide a sample query in the GraphIQL Playground.
--  `chain_block_transformer` - will be `clique` for clique networks like Rinkeby and Goerli, and `base` for the rest;
--  `chain_heart_beat_timeout`, `chain_heart_command` - configs for the integrated heartbeat. First describes a timeout after the command described at the second variable will be executed;
--  Each of the `chain_db_*` variables configures the database for each chain. Each chain will have the separate RDS instance.
+*Note*: `chain_custom_environment` variables will not be propagated to the Parameter Store at production  servers and need to be set there manually.
 
-Chain configuration will be stored in the Systems Manager Parameter Store, each chain has its own set of config values. If you modify one of these values, you will need to go and terminate the instances for that chain so that they are reprovisioned with the new configuration.
-
-You will need to make sure to import the changes into the Terraform state though, or you run the risk of getting out of sync.
-
-## Database Storage Required
+# Database Storage Required
 
 The configuration variable `db_storage` can be used to define the amount of storage allocated to your RDS instance. The chart below shows an estimated amount of storage that is required to index individual chains. The `db_storage` can only be adjusted 1 time in a 24 hour period on AWS.
 
@@ -180,31 +130,46 @@ The configuration variable `db_storage` can be used to define the amount of stor
 | Kovan Testnet    | 800           |
 | Ropsten Testnet  | 1500          |
 
-## Deploying the Infrastructure
+# Deploying the Infrastructure
 
-1. Ensure all the [prerequisites](#Prerequisites) are installed and has the right version number;
+1. Ensure all the [infrastructure prerequisites](#Prerequisites-for-deploying-infrastructure) are installed and has the right version number;
 
 2. Create the AWS access key and secret access key for user with [sufficient permissions](#AWS);
 
-3. Set the configuration file as described at the [corresponding part of instruction](#Configuration);
+3. Set the appropriate [infrastructure](#Infrastructure-related-variables) and [common](#Common-variables) variables as described at the [corresponding part of instruction](#Configuration);
 
 4. Run `ansible-playbook deploy_infra.yml`; 
 
-   **Note:** during the deployment the ["diffs didn't match"](#error-applying-plan-diffs-didnt-match) error may occur, it will be ignored automatically. If  Ansible play recap shows 0 failed plays, then the deployment was successful despite the error.
+   - During the deployment the ["diffs didn't match"](#error-applying-plan-diffs-didnt-match) error may occur, it will be ignored automatically. If  Ansible play recap shows 0 failed plays, then the deployment was successful despite the error.
 
-5. Save the output and proceed to the [next part of instruction](#Deploying-Blockscout).
+   - Optionally, you may want to check the variables the were uploaded to the [Parameter Store](https://console.aws.amazon.com/systems-manager/parameters) at AWS Console.
 
-## Deploying BlockScout
+5. Proceed to the [next part of instruction](#Deploying-Blockscout).
 
-Once infrastructure is deployed, read [this](https://forum.poa.network/t/deploying-blockscout-with-terraform/1952#preparing-blockscout) and [this](https://forum.poa.network/t/deploying-blockscout-with-terraform/1952#deploying-blockscout) parts of Blockscout deployment instruction along with the infrastructure deployment output to continue Blockscout deployment.
+# Deploying BlockScout
 
-## Destroying Provisioned Infrastructure
+1. Ensure all the [BlockScout prerequisites](#Prerequisites-for-deploying-blockscout) are installed and has the right version number;
+2. Set the appropriate [BlockScout](#Blockscout-related-variables) and [common](#Common-variables) variables as described at the [corresponding part of instruction](#Configuration);
+3. Run `ansible-playbook deploy_software.yml`; 
+4. When the prompt appears, check that server is running and there is no visual artifacts. The server will be launched at port 4000 at the same machine where you run the Ansible playbooks. If you face any errors you can either fix it or cancel the deployment by pressing **Ctrl+C** and then pressing **A** when additionally prompted.
+5. When server is ready to be deployed simply press enter and deployer will upload Blockscout to the appropriate S3.
+6. After that another prompt will ask you to confirm your will to deploy the BlockScout. Type **yes** or **true** to confirm the deployment.
+   - Deployment will update most of the Parameter Store variables except **DB**, **EXQ** and **New Relic** ones. Those you will have to update manually **before** the deployment
+7. Monitor and manage your deployment at [CodeDeploy](https://console.aws.amazon.com/codesuite/codedeploy/applications) service page at AWS Console.
 
-You can use `ansible-playbook destroy.yml` file to remove any generated infrastructure. But first of all you have to remove resources deployed via CodeDeploy manually (it includes a virtual machine and associated autoscaling group). It is also important to note though that if you run this script on partially generated infrastructure, or if an error occurs during the destroy process, that you may need to manually check for, and remove, any resources that were not able to be deleted for you. 
+# Destroying Provisioned Infrastructure
+
+First of all you have to remove autoscaling groups (ASG) deployed via CodeDeploy manually since Terraform doesn't track them and will miss them during the automatic destroy process. Once ASG is deleted you can use `ansible-playbook destroy.yml` playbook to remove the rest of generated infrastructure. Make sure to check the playbook output since in some cases it might not be able to delete everything. Check the error description for details.
 
 **Note!** While Terraform is stateful, Ansible is stateless, so if you modify `bucket` or `dynamodb_table` variables and run `destroy.yml` or `deploy_infra.yml`  playbooks, it will not alter the current S3/Dynamo resources names, but create a new resources. Moreover, altering `bucket` variable will make Terraform to forget about existing infrastructure and, as a consequence, redeploy it. If it absolutely necessary for you to alter the S3 or DynamoDB names you can do it manually and then change the appropriate variable accordingly. 
 
 Also note, that changing `backend` variable will force Terraform to forget about created infrastructure also, since it will start searching the current state files locally instead of remote.
+
+# Useful information
+
+## Cleaning Deployment cache
+
+Despite the fact that Terraform cache is automatically cleared automatically before each deployment, you may also want to force the cleaning process manually. To do this simply run the `ansible-playbook clean.yml` command, and Terraform cache will be cleared.
 
 ## Migrating deployer to another machine
 
@@ -251,3 +216,7 @@ Please include the following information in your report:
 ```
 
 This is due to a bug in Terraform, however the fix is to just rerun `ansible-playbook deploy_infra.yml` again, and Terraform will pick up where it left off. This does not always happen, but this is the current workaround if you see it.
+
+### Server doesn't start during deployment
+
+Even if server is configured correctly, sometimes it may not bind the appropriate 4000 port due to unknown reason. If so, simply go to the appropriate nested blockscout folder, kill and rerun server. For example, you can use the following command: `pkill beam.smp && pkill node && sleep 10 && mix phx.server`.
