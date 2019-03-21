@@ -1,6 +1,10 @@
 # About
 
-This repo contains Ansible playbooks designed in purpose of automation [Blockscout](https://github.com/poanetwork/blockscout) deployment builds. Currently it supports only [AWS](#AWS) as a cloud provider. Playbooks will create all necessary infrastructure along with cloud storage space required for saving configuration and state files.
+This repo contains scripts designed to automate [Blockscout](https://github.com/poanetwork/blockscout) deployment builds. Currently it supports only [AWS](#AWS) as a cloud provider. 
+
+In the root folder you can find an Ansible Playbooks that will create all necessary infrastructure and deploy BlockScout. Please, read this ReadMe for more information on configuring and executing this playbooks.
+
+Also you may want to refer to the `lambda` folder which contains a set of scripts that may be useful in your BlockScout infrastructure.
 
 # Prerequisites
 
