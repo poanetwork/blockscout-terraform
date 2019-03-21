@@ -153,7 +153,7 @@ The configuration variable `db_storage` can be used to define the amount of stor
 # Deploying BlockScout
 
 1. Ensure all the [BlockScout prerequisites](#Prerequisites-for-deploying-blockscout) are installed and has the right version number;
-2. Set the appropriate [BlockScout](#Blockscout-related-variables) and [common](#Common-variables) variables as described at the [corresponding part of instruction](#Configuration);
+2. Set the all the variables as described at the [corresponding part of instruction](#Configuration);
 3. Run `ansible-playbook deploy_software.yml`; 
 4. When the prompt appears, check that server is running and there is no visual artifacts. The server will be launched at port 4000 at the same machine where you run the Ansible playbooks. If you face any errors you can either fix it or cancel the deployment by pressing **Ctrl+C** and then pressing **A** when additionally prompted.
 5. When server is ready to be deployed simply press enter and deployer will upload Blockscout to the appropriate S3.
