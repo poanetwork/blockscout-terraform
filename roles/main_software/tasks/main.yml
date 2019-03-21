@@ -16,7 +16,7 @@
   command: "git merge {{ chain_merge_commit[chain] }}" 
   args:
     chdir: "blockscout-{{ chain }}"
-  when: skip_fetch | bool != true and chain_merge_commit_item | bool != false
+  when: skip_fetch | bool != true and chain_merge_commit_item != 'false'
   vars:
     chain_mc: "{{ chain_merge_commit | default({}) }}"
     chain_merge_commit_item: "{{ chain_mc[chain] | default('false') }}"
