@@ -14,6 +14,8 @@ resource "aws_db_instance" "default" {
   vpc_security_group_ids = ["${aws_security_group.database.id}"]
   db_subnet_group_name   = "${aws_db_subnet_group.database.id}"
   apply_immediately      = true
+  iops                   = "${lookup(var.chain_db_iops,element(keys(var.chains),count.index),"0")}"
+
 
   depends_on = ["aws_security_group.database"]
 

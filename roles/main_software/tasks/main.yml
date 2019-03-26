@@ -1,0 +1,169 @@
+- name: Clone BlockScout
+  git:
+    repo: "{{ blockscout_repo }}"
+    dest: "blockscout-{{ chain }}"
+    version: "{{ chain_branch[chain] }}"
+    force: true
+  when: skip_fetch | bool != true
+
+- name: Git clean
+  command: "git clean -fdx"
+  args:
+    chdir: "blockscout-{{ chain }}"
+  when: skip_fetch | bool != true
+
+- name: Merge branches
+  command: "git merge {{ chain_merge_commit[chain] }}" 
+  args:
+    chdir: "blockscout-{{ chain }}"
+  when: skip_fetch | bool != true and chain_merge_commit_item != 'false'
+  vars:
+    chain_mc: "{{ chain_merge_commit | default({}) }}"
+    chain_merge_commit_item: "{{ chain_mc[chain] | default('false') }}"
+
+- name: Copy web config files
+  copy:
+    src: "blockscout-{{ chain }}/apps/block_scout_web/config/dev.secret.exs.example"
+    dest: "blockscout-{{ chain }}/apps/block_scout_web/config/dev.secret.exs" 
+
+- name: Template explorer config files
+  template:
+    src: dev.secret.exs.j2 
+    dest: "blockscout-{{ chain }}/apps/explorer/config/dev.secret.exs" 
+
+- name: Remove static assets from previous deployment, if any
+  file:
+    path: "blockscout-{{ chain }}/apps/block_scout_web/priv/static"
+    state: absent 
+
+- name: Compile BlockScout
+  command: "mix do {{ item }}"
+  args:
+    chdir: "blockscout-{{ chain }}" 
+  with_items:
+    - deps.get
+    - local.rebar --force
+    - deps.compile
+    - compile
+    - ecto.drop
+    - ecto.create
+    - ecto.migrate 
+
+- name: Install Node modules at apps/block_scout_web/assets
+  command: npm install 
+  args:
+    chdir: "blockscout-{{ chain }}/apps/block_scout_web/assets" 
+
+- name: Execute webpack.js at apps/block_scout_web/assets/node_modules/webpack/bin 
+  command: node_modules/webpack/bin/webpack.js --mode production
+  args:
+    chdir: "blockscout-{{ chain }}/apps/block_scout_web/assets"
+
+- name: Instal Node modules at apps/explorer
+  command: npm install
+  args:
+    chdir: "blockscout-{{ chain }}/apps/explorer" 
+
+- name: Install SSL certificates
+  command: mix phx.gen.cert blockscout blockscout.local
+  args:
+    chdir: "blockscout-{{ chain }}/apps/block_scout_web"
+
+- name: Start server
+  block:
+    - name: Start server
+      command: "mix phx.server"
+      environment: "{{ chain_env }}"
+      ignore_errors: true
+      args:
+        chdir: "blockscout-{{ chain }}" 
+      vars:
+        chain_env: "{{ chain_custom_environment_chain | combine({'BLOCKSCOUT_VERSION': chain_blockscout_version[chain], 'COIN': chain_coin[chain], 'ETHEREUM_JSONRPC_HTTP_URL': chains[chain], 'ETHEREUM_JSONRPC_TRACE_URL': chain_trace_endpoint[chain], 'ETHEREUM_JSONRPC_WS_URL': chain_ws_endpoint[chain], 'ETHEREUM_JSONRPC_VARIANT': chain_jsonrpc_variant[chain], 'HEART_BEAT_TIMEOUT': chain_heart_beat_timeout[chain], 'HEART_COMMAND': chain_heart_command[chain], 'LOGO': chain_logo[chain], 'NETWORK': chain_network[chain], 'SUBNETWORK': chain_subnetwork[chain], 'NETWORK_ICON': chain_network_icon[chain]}) }}"
+        chain_custom_environment_chain: "{{ chain_cec[chain] | default({}) }}"
+        chain_cec: "{{ chain_custom_environment | default ({}) }}"
+      async: 10000
+      poll: 0 
+    - name: User prompt
+      pause:
+        prompt: "Please, open your browser and open 4000 port at the machine were Ansible is currently run. BlockScout should appear. Ensure that there is no visual artifacts and then press Enter to continue. Press Ctrl+C and then A if you face any issues to cancel the deployment."
+  rescue:
+    - name: 'Stop execution' 
+      fail: 
+        msg: "Execution aborted."
+  always:
+    - name: kill server
+      command: "pkill -e {{ item }}"
+      with_items:
+        - beam.smp
+        - node
+      failed_when: false  
+ 
+- name: Build static assets
+  command: mix phx.digest
+  args:
+    chdir: "blockscout-{{ chain }}"
+
+- name: Remove dev dependencies
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "blockscout-{{ chain }}/_build/"
+    - "blockscout-{{ chain }}/deps/"
+    - "blockscout-{{ chain }}/apps/block_scout_web/assets/node_modules/"
+    - "blockscout-{{ chain }}/apps/explorer/node_modules/"
+    - "blockscout-{{ chain }}/logs/dev/"
+
+- name: Upload Blockscout to S3
+  command: "aws deploy push --application-name={{ prefix }}-explorer --s3-location s3://{{ prefix }}-explorer-codedeploy-releases/blockscout-{{ chain }}.zip --source=blockscout-{{ chain }}"
+  register: push_output
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_REGION: "{{ region }}"
+
+- name: User prompt
+  pause:
+    prompt: "Do you want to deploy the built BlockScout version? [Yes/No] Default: No"
+  register: user_answer
+
+- name: Update chain variables
+  aws_ssm_parameter_store:
+    name: "/{{ prefix }}/{{ chain }}/{{ item.name }}" 
+    value: "{{ item.value }}"
+  with_items:
+    - { name: elixir_version, value: "{{ elixir_version }}" }
+    - { name: block_transformer, value: "{{ chain_block_transformer[chain] }}" }
+    - { name: pool_size, value: "{{ pool_size }}" }
+    - { name: ecto_use_ssl, value: "{{ use_ssl }}" }
+    - { name: ethereum_jsonrpc_variant, value: "{{ chain_jsonrpc_variant[chain] }}" }
+    - { name: ethereum_jsonrpc_http_url, value: "{{ chains[chain] }}" }
+    - { name: ethereum_jsonrpc_trace_url, value: "{{ chain_trace_endpoint[chain] }}" }
+    - { name: ethereum_jsonrpc_ws_url, value: "{{ chain_ws_endpoint[chain] }}" }
+    - { name: logo, value: "{{ chain_logo[chain] }}" }
+    - { name: coin, value: "{{ chain_coin[chain] }}" }
+    - { name: network, value: "{{ chain_network[chain] }}" }
+    - { name: subnetwork, value: "{{ chain_subnetwork[chain] }}" }
+    - { name: network_path, value: "{{ chain_network_path[chain] }}" }
+    - { name: network_icon, value: "{{ chain_network_icon[chain] }}" }
+    - { name: graphiql_transaction, value: "{{ chain_graphiql_transaction[chain] }}" }
+    - { name: secret_key_base, value: "{{ secret_key_base }}" }
+    - { name: alb_ssl_policy, value: "{{ alb_ssl_policy }}" }
+    - { name: alb_certificate_arn, value: "{{ alb_certificate_arn }}" }
+    - { name: heart_beat_timeout, value: "{{ chain_heart_beat_timeout[chain] }}" }
+    - { name: heart_command, value: "{{ chain_heart_command[chain] }}" }
+    - { name: blockscout_version, value: "{{ chain_blockscout_version[chain] }}" }
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_REGION: "{{ region }}"
+  when: user_answer.user_input|bool == true
+# DB and New Relic info will not be refreshed
+
+- name: Deploy Blockscout
+  command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_blockscout_version[chain] }}'" 
+  when: user_answer.user_input|bool == true
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_REGION: "{{ region }}"

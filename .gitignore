@@ -24,3 +24,5 @@ group_vars/*.yml
 *.temp
 *.swp
 .*.swp
+
+blockscout-*/

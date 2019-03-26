@@ -16,6 +16,7 @@ use_ssl               = "{{ use_ssl }}"
 new_relic_app_name    = "{{ new_relic_app_name }}"
 new_relic_license_key = "{{ new_relic_license_key }}"
 secret_key_base       = "{{ secret_key_base }}" 
+elixir_version        = "{{ elixir_version }}"
 
 chains = {
 {% for key, value in chains.iteritems() %}
@@ -145,6 +146,12 @@ chain_db_storage = {
 
 chain_db_storage_type = {
 {% for key, value in chain_db_storage_type.iteritems() %}
+{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+chain_db_iops = {
+{% for key, value in chain_db_iops.iteritems() %}
 {{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
