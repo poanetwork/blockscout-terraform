@@ -68,6 +68,7 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 - `backend` variable defines whether deployer should keep state files remote or locally. Set `backend` variable to `true` if you want to save state file to the remote S3 bucket;
 - `upload_config_to_s3` - set to `true` if you want to upload config`all.yml` file to the S3 bucket automatically during deployment. Will not work if `backend` is set to false;
 - `bucket` represents a globally unique name of the bucket where your configs and state will be stored. It will be created automatically during the deployment;
+- `elixir_version` - is an Elixir version used in BlockScout release;
 
 - `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
 
@@ -86,6 +87,7 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 - `chain_block_transformer` - will be `clique` for clique networks like Rinkeby and Goerli, and `base` for the rest;
 - `chain_heart_beat_timeout`, `chain_heart_command` - configs for the integrated heartbeat. First describes a timeout after the command described at the second variable will be executed;
 - Each of the `chain_db_*` variables configures the database for each chain. Each chain will have the separate RDS instance.
+- `chain_blockscout_version` - is a text at the footer of BlockScout instance. Usually represents the current BlockScout version.
 
 ## Infrastructure related variables
 
@@ -104,7 +106,7 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 
 * If `use_ssl` is set to `false`, SSL will be forced on Blockscout. To configure SSL, use `alb_ssl_policy` and `alb_certificate_arn` variables;
 
-- The region should be left at `us-east-1` as some of the other regions fail for different reasons;
+- The `region` should be left at `us-east-1` as some of the other regions fail for different reasons;
 - The `root_block_size` is the amount of storage on your EC2 instance. This value can be adjusted by how frequently logs are rotated. Logs are located in `/opt/app/logs` of your EC2 instance;
 - The `pool_size` defines the number of connections allowed by the RDS instance;
 - `secret_key_base` is a random password used for BlockScout internally. It is highly recommended to gernerate your own `secret_key_base` before the deployment. For instance, you can do it via `openssl rand -base64 64 | tr -d '\n'` command;
