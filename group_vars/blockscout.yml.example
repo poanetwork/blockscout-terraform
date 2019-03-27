@@ -1,0 +1,34 @@
+# BlockScout related variables
+
+## An address of BlockScout repo to download
+blockscout_repo: https://github.com/poanetwork/blockscout
+
+## A branch at `blockscout_repo` with ready-to-deploy version of BlockScout 
+chain_branch:
+  core: "production-core"
+  sokol: "production-sokol"
+
+## Usually you don't want to merge branches, so it is commented out by default
+#chain_merge_commit:
+#  core: "2cdead1"
+#  sokol: "2cdead1"
+
+## If you want you can download and configure repo on your own. It should has the following name - blockscout-{{ chain_name }} and exist inside root playbook folder. Use the following variable to prevent playbooks from overriding
+skip_fetch: false
+
+## Login data for the test database. Please, use postgres database with the version specified at BlockScout repo prerequisites
+ps_host: localhost
+ps_user: myuser
+ps_password: mypass
+ps_db: mydb
+
+## Custom environment variables that will be exported when testing the Blockscout instance
+chain_custom_environment:
+  core:
+    METADATA_CONTRACT: 0xE3FfFD154931EB80b2aCE096EC32D6df23661203
+    VALIDATORS_CONTRACT: 0xa105Db0e6671C7B5f4f350ff1Af6460E6C696e71
+    LINK_TO_OTHER_EXPLORERS: false
+  sokol:
+    METADATA_CONTRACT: 0x81c47A798226e1b90A1b4C9dBDd844033B528D06
+    VALIDATORS_CONTRACT: 0x4c6a159659CCcb033F4b2e2Be0C16ACC62b89DDB
+    LINK_TO_OTHER_EXPLORERS: false

@@ -1,0 +1,168 @@
+# Infrastructure related variables
+
+## Name of the DynamoDB table where current lease of TF state file will be stored
+dynamodb_table: "poa-terraform-lock"
+
+## If ec2_ssh_key_content is empty all the virtual machines will be created with ec2_ssh_key_name key. Otherwise, playbooks will upload ec2_ssh_key_content with the name of ec2_ssh_key_name and launch virtual machines with that key
+ec2_ssh_key_name: "sokol-test"
+ec2_ssh_key_content: ""
+
+## EC2 Instance will have the following size:
+instance_type: "m5.large"
+
+## VPC containing Blockscout resources will be created as following:
+vpc_cidr: "10.0.0.0/16"
+public_subnet_cidr: "10.0.0.0/24"
+# This variable should be interpreted as following:
+# Variable: 10.0.1.0/16 
+# Real networks: 10.0.1+{{ number of chain starting with 0 }}.0/24
+db_subnet_cidr: "10.0.1.0/16"
+
+## Internal DNS zone will looks like:
+dns_zone_name: "poa.internal"
+
+## All resources will be prefixed with this one
+prefix: "sokol"
+
+## The following settngs are related to SSL of Application Load Balancer that will be deployed to AWS. If use_ssl is set to false, alb_* variables can be omitted
+use_ssl: "false"
+alb_ssl_policy: "ELBSecurityPolicy-2016-08"
+alb_certificate_arn: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
+
+## Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
+region: "us-east-1"
+
+## Size of the EC2 instance EBS root volume
+root_block_size: 120
+
+## Number of connections allowed by EC2 instance
+pool_size: 30
+
+## Secret key of Explorer. Please, generate your own key here. For example, you can use the following command: openssl rand -base64 64 | tr -d '\n'
+secret_key_base: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ=="
+
+## New Relic related configs. Usually you want this empty
+new_relic_app_name: ""
+new_relic_license_key: ""
+
+# Network related variables
+
+## This variable represents network RPC endpoint: 
+chains:
+   core: "http://10.10.10.10:8545"
+   sokol:  "https://192.168.0.1:8545"
+
+## This variable represents network RPC endpoint in trace mode. Can be the same as the previous variable:
+chain_trace_endpoint:
+  core: "http://10.10.10.11:8545"
+  sokol: "http://192.168.0.1:8546"
+
+## This variable represents network RPC endpoint in websocket mode:
+chain_ws_endpoint:
+  core: "ws://10.10.10.10/ws"
+  sokol: "ws://192.168.0.1/ws"
+
+## Next variable represents the client that is used to connect to the chain.
+chain_jsonrpc_variant:
+  core: "parity"
+  sokol: "geth"
+
+## Place your own logo at apps/block_scout_web/assets/static folder of blockscout repo and specify a relative path here
+chain_logo:
+  core: "/images/core.svg"
+  sokol: "/images/sokol.svg"
+
+## The following variables represents a name of the coin that will be shown at blockchain explorer
+chain_coin:
+  core: "POA"
+  sokol: "POA"
+
+## Next variable usually represents the name of the organization/community that hosts the chain
+chain_network:
+  core: "POA Network"
+  sokol: "POA Network"
+
+## Next variable represents the actual name of the particular network
+chain_subnetwork:
+  core: "POA Core Network"
+  sokol: "POA Sokol test network"
+
+## The next variable represent a relative URL path which will be used as an endpoint for defined chain. For example, if we will have our blockscout at blockscout.com domain and place "core" network at "/poa/core", then the resulting endpoint will be blockscout.com/poa/core for this network.
+chain_network_path:
+  core: "/poa/core"
+  sokol: "/poa/sokol"
+
+## The following variable maps the chain name to the network navigation icon at apps/block_scout_web/lib/block_scout_web/templates/icons without .eex extension
+chain_network_icon:
+  core: "_test_network_icon.html"
+  sokol: "_test_network_icon.html"
+
+## The following variable maps the chain names to random transaction hash on that chain. "chain_graphiql_transaction" is a variable that takes a transaction hash from a network to provide a sample query in the GraphIQL Playground.
+chain_graphiql_transaction:
+  core: "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4"
+  sokol: "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab5"
+
+## A variable required in indexer configuration files. Can be either base or clique. Usually you don't want to change this value unless you know what are you doing. 
+chain_block_transformer:
+  core: "base"
+  sokol: "base"
+
+## Heartbeat is an Erlang monitoring service that will restart BlockScout if it becomes unresponsive. The following two variables configures the timeout before Blockscout will be restarted and command to restart. Usually you don't want to change these values.
+chain_heart_beat_timeout:
+  core: 30
+  sokol: 30
+
+chain_heart_command:
+  core: "systemctl restart explorer.service"
+  sokol: "systemctl restart explorer.service"
+
+## This value describes a version of Blockscout that will be shown at the footer. You can write any text there you want to see at the footer.
+chain_blockscout_version:
+  core: "v1.3.7-beta"
+  sokol: "v1.3.7-beta"
+
+## This value represents the name of the DB that will be created/attached. Must be unique. Will be prefixed with `prefix` variable.
+chain_db_id:
+  core: "core"
+  sokol: "sokol"
+
+## Each network should have it's own DB. This variable maps chain to DB name. Should not be messed with db_id variable, which represents the RDS instance ID.
+chain_db_name:
+  core: "core"
+  sokol: "sokol"
+
+## The following variables describes the DB configurations for each network including usernames, password, instance class, etc.
+chain_db_username:
+  core: "core"
+  sokol: "sokol"
+
+chain_db_password:
+  core: "fkowfjpoi309021"
+  sokol: "kopsdOPpa9213K"
+ 
+chain_db_instance_class:
+  core: "db.m4.xlarge"
+  sokol: "db.m4.large"
+
+## Size of storage in GiB.
+chain_db_storage:
+  core: "200"
+  sokol: "100"
+
+## Type of disk to be used for the DB.
+chain_db_storage_type:
+  core: "io1"
+  sokol: "gp2"
+
+## This should be set only if chain_db_storage is set to io1
+#chain_db_iops:
+#  core: "1000"
+#  sokol: "1500"
+
+## Blockscout uses Postgres as the DB engine. This variable describes the Postgres version used in each particular chain.
+chain_db_version:
+  core: "10.5"
+  sokol: "10.6"
+  
+## The following variable represents the elixir version that will be used to run BlockScout instance. Will be used to download the Elixir at the following link: https://github.com/elixir-lang/elixir/releases/download/{{ elixir_version }}/Precompiled.zip
+elixir_version: "v1.7.4"

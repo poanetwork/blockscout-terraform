@@ -21,6 +21,8 @@ roles/main_infra/files/terraform.tfvars
 
 group_vars/*
 !group_vars/all.yml.example
+!group_vars/blockscout.yml.example
+!group_vars/infrastructure.yml.example
 *.retry
 *.temp
 *.swp
