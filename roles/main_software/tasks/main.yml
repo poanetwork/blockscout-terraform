@@ -69,20 +69,37 @@
   args:
     chdir: "blockscout-{{ chain }}/apps/block_scout_web"
 
+- name: Fetch environment variables
+  set_fact: 
+    chain_env: "{{ lookup('aws_ssm', path, aws_access_key=aws_access_key, aws_secret_key=aws_secret_key, region=region, shortnames=true, bypath=true, recursive=true  ) }}"
+  vars:
+    path: "/{{ prefix }}/{{ chain }}"
+
+- name: Override env variables
+  set_fact:
+    chain_env: "{{ chain_env | combine(chain_custom_environment_chain) }}"
+  vars:
+    chain_custom_environment_chain: "{{ chain_cec[chain] | default({}) }}"
+    chain_cec: "{{ chain_custom_environment | default ({}) }}"    
+
+- name: Uppercase chain 
+  set_fact:
+    chain_upper_env: "{{ chain_upper_env | combine ({item.key|upper : item.value})  }}"
+  with_dict: "{{ chain_env }}"
+  vars:
+    chain_upper_env: {}
+
 - name: Start server
   block:
     - name: Start server
       command: "mix phx.server"
-      environment: "{{ chain_env }}"
+      environment: "{{ chain_upper_env }}"
       ignore_errors: true
       args:
         chdir: "blockscout-{{ chain }}" 
-      vars:
-        chain_env: "{{ chain_custom_environment_chain | combine({'BLOCKSCOUT_VERSION': chain_blockscout_version[chain], 'COIN': chain_coin[chain], 'ETHEREUM_JSONRPC_HTTP_URL': chains[chain], 'ETHEREUM_JSONRPC_TRACE_URL': chain_trace_endpoint[chain], 'ETHEREUM_JSONRPC_WS_URL': chain_ws_endpoint[chain], 'ETHEREUM_JSONRPC_VARIANT': chain_jsonrpc_variant[chain], 'HEART_BEAT_TIMEOUT': chain_heart_beat_timeout[chain], 'HEART_COMMAND': chain_heart_command[chain], 'LOGO': chain_logo[chain], 'NETWORK': chain_network[chain], 'SUBNETWORK': chain_subnetwork[chain], 'NETWORK_ICON': chain_network_icon[chain]}) }}"
-        chain_custom_environment_chain: "{{ chain_cec[chain] | default({}) }}"
-        chain_cec: "{{ chain_custom_environment | default ({}) }}"
       async: 10000
       poll: 0 
+ 
     - name: User prompt
       pause:
         prompt: "Please, open your browser and open 4000 port at the machine were Ansible is currently run. BlockScout should appear. Ensure that there is no visual artifacts and then press Enter to continue. Press Ctrl+C and then A if you face any issues to cancel the deployment."
@@ -103,6 +120,11 @@
   args:
     chdir: "blockscout-{{ chain }}"
 
+- name: User prompt
+  pause:
+    prompt: "Would you like to remove staging dependencies? [Yes/No] Default: No"
+  register: user_answer
+
 - name: Remove dev dependencies
   file:
     state: absent
@@ -113,6 +135,7 @@
     - "blockscout-{{ chain }}/apps/block_scout_web/assets/node_modules/"
     - "blockscout-{{ chain }}/apps/explorer/node_modules/"
     - "blockscout-{{ chain }}/logs/dev/"
+  when: user_answer.user_input|bool == true 
 
 - name: Upload Blockscout to S3
   command: "aws deploy push --application-name={{ prefix }}-explorer --s3-location s3://{{ prefix }}-explorer-codedeploy-releases/blockscout-{{ chain }}.zip --source=blockscout-{{ chain }}"
@@ -122,43 +145,30 @@
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
     AWS_REGION: "{{ region }}"
 
+- name: Upload output
+  debug:
+    msg: "If deployment will fail, you can try to deploy blockscout manually using the following commands: {{ push_output.stdout_lines }}" 
+
 - name: User prompt
   pause:
-    prompt: "Do you want to deploy the built BlockScout version? [Yes/No] Default: No"
+    prompt: "Do you want to update the Parameter Store variables? [Yes/No] Default: No"
   register: user_answer
 
 - name: Update chain variables
   aws_ssm_parameter_store:
-    name: "/{{ prefix }}/{{ chain }}/{{ item.name }}" 
+    name: "/{{ prefix }}/{{ chain }}/{{ item.key }}" 
     value: "{{ item.value }}"
-  with_items:
-    - { name: elixir_version, value: "{{ elixir_version }}" }
-    - { name: block_transformer, value: "{{ chain_block_transformer[chain] }}" }
-    - { name: pool_size, value: "{{ pool_size }}" }
-    - { name: ecto_use_ssl, value: "{{ use_ssl }}" }
-    - { name: ethereum_jsonrpc_variant, value: "{{ chain_jsonrpc_variant[chain] }}" }
-    - { name: ethereum_jsonrpc_http_url, value: "{{ chains[chain] }}" }
-    - { name: ethereum_jsonrpc_trace_url, value: "{{ chain_trace_endpoint[chain] }}" }
-    - { name: ethereum_jsonrpc_ws_url, value: "{{ chain_ws_endpoint[chain] }}" }
-    - { name: logo, value: "{{ chain_logo[chain] }}" }
-    - { name: coin, value: "{{ chain_coin[chain] }}" }
-    - { name: network, value: "{{ chain_network[chain] }}" }
-    - { name: subnetwork, value: "{{ chain_subnetwork[chain] }}" }
-    - { name: network_path, value: "{{ chain_network_path[chain] }}" }
-    - { name: network_icon, value: "{{ chain_network_icon[chain] }}" }
-    - { name: graphiql_transaction, value: "{{ chain_graphiql_transaction[chain] }}" }
-    - { name: secret_key_base, value: "{{ secret_key_base }}" }
-    - { name: alb_ssl_policy, value: "{{ alb_ssl_policy }}" }
-    - { name: alb_certificate_arn, value: "{{ alb_certificate_arn }}" }
-    - { name: heart_beat_timeout, value: "{{ chain_heart_beat_timeout[chain] }}" }
-    - { name: heart_command, value: "{{ chain_heart_command[chain] }}" }
-    - { name: blockscout_version, value: "{{ chain_blockscout_version[chain] }}" }
+  with_dict: "{{ chain_env }}"
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
     AWS_REGION: "{{ region }}"
   when: user_answer.user_input|bool == true
-# DB and New Relic info will not be refreshed
+
+- name: User prompt
+  pause:
+    prompt: "Do you want to deploy BlockScout? [Yes/No] Default: No"
+  register: user_answer
 
 - name: Deploy Blockscout
   command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_blockscout_version[chain] }}'" 
