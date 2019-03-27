@@ -131,6 +131,9 @@ chain_db_storage_type:
 chain_db_version:
   core: "10.5"
   sokol: "10.6"
+  
+## The following variable represents the elixir version that will be used to run BlockScout instance. Will be used to download the Elixir at the following link: https://github.com/elixir-lang/elixir/releases/download/{{ elixir_version }}/Precompiled.zip
+elixir_version: "v1.7.4"
 
 # Infrastructure related variables
 
@@ -178,9 +181,6 @@ secret_key_base: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6Zeg
 ## New Relic related configs. Usually you want this empty
 new_relic_app_name: ""
 new_relic_license_key: ""
-
-## The following variable represents the elixir version that will be used to run BlockScout instance. Will be used to download the Elixir at the following link: https://github.com/elixir-lang/elixir/releases/download/{{ elixir_version }}/Precompiled.zip
-elixir_version: "v1.7.4"
 
 # BlockScout related variables
 
