@@ -21,9 +21,6 @@ db_subnet_cidr: "10.0.1.0/16"
 ## Internal DNS zone will looks like:
 dns_zone_name: "poa.internal"
 
-## All resources will be prefixed with this one
-prefix: "sokol"
-
 ## The following settngs are related to SSL of Application Load Balancer that will be deployed to AWS. If use_ssl is set to false, alb_* variables can be omitted
 use_ssl: "false"
 alb_ssl_policy: "ELBSecurityPolicy-2016-08"
@@ -46,11 +43,6 @@ new_relic_app_name: ""
 new_relic_license_key: ""
 
 # Network related variables
-
-## This variable represents network RPC endpoint: 
-chains:
-   core: "http://10.10.10.10:8545"
-   sokol:  "https://192.168.0.1:8545"
 
 ## This variable represents network RPC endpoint in trace mode. Can be the same as the previous variable:
 chain_trace_endpoint:

@@ -68,6 +68,10 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 - `backend` variable defines whether deployer should keep state files remote or locally. Set `backend` variable to `true` if you want to save state file to the remote S3 bucket;
 - `upload_config_to_s3` - set to `true` if you want to upload config`all.yml` file to the S3 bucket automatically during deployment. Will not work if `backend` is set to false;
 - `bucket` represents a globally unique name of the bucket where your configs and state will be stored. It will be created automatically during the deployment;
+- `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
+- `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
+
+*Note*: a chain name shouldn't be more than 5 characters. Otherwise, it causing the error, because the aws load balancer name should not be greater than 32 characters.
 
 ## Infrastructure related variables
 
@@ -80,7 +84,6 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
   `db_subnet_cidr`: "10.0.1.0/16"
   Real networks: 10.0.1.0/24 and 10.0.2.0/24
 - An internal DNS zone with`dns_zone_name` name will be created to take care of BlockScout internal communications;
-- `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
 - The name of a IAM key pair to use for EC2 instances, if you provide a name which
   already exists it will be used, otherwise it will be generated for you;
 
@@ -92,10 +95,6 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 - `secret_key_base` is a random password used for BlockScout internally. It is highly recommended to gernerate your own `secret_key_base` before the deployment. For instance, you can do it via `openssl rand -base64 64 | tr -d '\n'` command;
 - `new_relic_app_name` and  `new_relic_license_key` should usually stay empty unless you want and know how to configure New Relic integration;
 - `elixir_version` - is an Elixir version used in BlockScout release;
-- `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
-
-*Note*: a chain name shouldn't be more than 5 characters. Otherwise, it causing the error, because the aws load balancer name should not be greater than 32 characters.
-
 - `chain_trace_endpoint` - maps chains to the URLs of HTTP RPC endpoints, which represents a node where state pruning is disabled (archive node) and tracing is enabled. If you don't have a trace endpoint, you can simply copy values from `chains` variable;
 - `chain_ws_endpoint` - maps chains to the URLs of HTTP RPCs that supports websockets. This is required to get the real-time updates. Can be the same as `chains` if websocket is enabled there (but make sure to use`ws(s)` instead of `htpp(s)` protocol);
 - `chain_jsonrpc_variant` - a client used to connect to the network. Can be `parity`, `geth`, etc;

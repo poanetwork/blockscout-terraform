@@ -12,3 +12,11 @@ upload_config_to_s3: true
 ## The bucket and dynamodb_table variables will be used only when backend variable is set to true
 ## Name of the bucket where TF state files will be stored
 bucket: "poa-terraform-state"
+
+## All resources will be prefixed with this one
+prefix: "sokol"
+
+## This variable represents network RPC endpoint: 
+chains:
+   core: "http://10.10.10.10:8545"
+   sokol:  "https://192.168.0.1:8545"
