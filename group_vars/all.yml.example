@@ -20,3 +20,6 @@ prefix: "sokol"
 chains:
    core: "http://10.10.10.10:8545"
    sokol:  "https://192.168.0.1:8545"
+
+## Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
+region: "us-east-1"
