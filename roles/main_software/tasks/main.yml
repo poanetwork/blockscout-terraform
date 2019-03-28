@@ -93,7 +93,7 @@
   block:
     - name: Start server
       command: "mix phx.server"
-      environment: "{{ chain_upper_env }}"
+      environment: "{{ chain_upper_env | combine({'network_path':'/'}) }}"
       ignore_errors: true
       args:
         chdir: "blockscout-{{ chain }}" 
