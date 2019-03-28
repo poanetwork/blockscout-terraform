@@ -70,6 +70,7 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 - `bucket` represents a globally unique name of the bucket where your configs and state will be stored. It will be created automatically during the deployment;
 - `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
 - `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
+- The `region` should be left at `us-east-1` as some of the other regions fail for different reasons;
 
 *Note*: a chain name shouldn't be more than 5 characters. Otherwise, it causing the error, because the aws load balancer name should not be greater than 32 characters.
 
@@ -89,7 +90,6 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 
 * If `use_ssl` is set to `false`, SSL will be forced on Blockscout. To configure SSL, use `alb_ssl_policy` and `alb_certificate_arn` variables;
 
-- The `region` should be left at `us-east-1` as some of the other regions fail for different reasons;
 - The `root_block_size` is the amount of storage on your EC2 instance. This value can be adjusted by how frequently logs are rotated. Logs are located in `/opt/app/logs` of your EC2 instance;
 - The `pool_size` defines the number of connections allowed by the RDS instance;
 - `secret_key_base` is a random password used for BlockScout internally. It is highly recommended to gernerate your own `secret_key_base` before the deployment. For instance, you can do it via `openssl rand -base64 64 | tr -d '\n'` command;

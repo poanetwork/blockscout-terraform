@@ -26,9 +26,6 @@ use_ssl: "false"
 alb_ssl_policy: "ELBSecurityPolicy-2016-08"
 alb_certificate_arn: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
 
-## Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
-region: "us-east-1"
-
 ## Size of the EC2 instance EBS root volume
 root_block_size: 120
 
