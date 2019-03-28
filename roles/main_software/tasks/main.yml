@@ -93,7 +93,7 @@
   block:
     - name: Start server
       command: "mix phx.server"
-      environment: "{{ chain_upper_env | combine({'network_path':'/'}) }}"
+      environment: "{{ chain_upper_env | combine({'NETWORK_PATH':'/'}) }}"
       ignore_errors: true
       args:
         chdir: "blockscout-{{ chain }}" 
@@ -171,7 +171,7 @@
   register: user_answer
 
 - name: Deploy Blockscout
-  command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_blockscout_version[chain] }}'" 
+  command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_env['blockscout_version']  }}'" 
   when: user_answer.user_input|bool == true
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
