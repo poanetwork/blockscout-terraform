@@ -137,6 +137,13 @@
     - "blockscout-{{ chain }}/logs/dev/"
   when: user_answer.user_input|bool == true 
 
+- name: Fix bug with favicon 
+  copy:
+    src: "{{ item }}"
+    dest: "blockscout-{{ chain }}/apps/block_scout_web/priv/static/images/"
+  with_fileglob:
+    - "blockscout-{{ chain }}/apps/block_scout_web/priv/static/favicon*"
+
 - name: Upload Blockscout to S3
   command: "aws deploy push --application-name={{ prefix }}-explorer --s3-location s3://{{ prefix }}-explorer-codedeploy-releases/blockscout-{{ chain }}.zip --source=blockscout-{{ chain }}"
   register: push_output
