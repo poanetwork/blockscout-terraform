@@ -9,42 +9,12 @@ variable "instance_type" {}
 variable "root_block_size" {}
 variable "pool_size" {}
 variable "elixir_version" {}
-
+variable "use_placement_group" {}
 variable "key_content" {
   default = ""
 }
 
-variable "chain_jsonrpc_variant" {
-  default = {}
-}
 variable "chains" {
-  default = {}
-}
-variable "chain_trace_endpoint" {
-  default = {}
-}
-variable "chain_ws_endpoint" {
-  default = {}
-}
-variable "chain_logo" {
-  default = {}
-}
-variable "chain_coin" {
-  default = {}
-}
-variable "chain_network" {
-  default = {}
-}
-variable "chain_subnetwork" {
-  default = {}
-}
-variable "chain_network_path" {
-  default = {}
-}
-variable "chain_network_icon" {
-  default = {}
-}
-variable "chain_graphiql_transaction" {
   default = {}
 }
 
@@ -84,25 +54,11 @@ variable "chain_db_version" {
   default = {}
 }
 
-variable "new_relic_app_name" {}
-variable "new_relic_license_key" {}
-variable "secret_key_base" {}
+variable "secret_key_base" {
+default = {} 
+}
 variable "alb_ssl_policy" {}
 variable "alb_certificate_arn" {}
-variable "use_ssl" {}
-
-variable "chain_block_transformer" {
-  default = {}
-}
-
-variable "chain_heart_beat_timeout" {
-  default = {}
-}
-
-variable "chain_heart_command" {
-  default = {}
-}
-
-variable "chain_blockscout_version" {
-  default = {}
+variable "use_ssl" {
+default = {} 
 }

@@ -40,7 +40,7 @@ resource "aws_launch_configuration" "explorer" {
 }
 
 resource "aws_placement_group" "explorer" {
-  count    = "${length(var.chains)}"
+  count    = "${var.use_placement_group ? length(var.chains): 0}"
   name     = "${var.prefix}-explorer-placement-group${count.index}"
   strategy = "cluster"
 }
@@ -51,7 +51,7 @@ resource "aws_autoscaling_group" "explorer" {
   max_size             = "${length(var.chains) * 4}"
   min_size             = "${length(var.chains)}"
   desired_capacity     = "${length(var.chains)}"
-  placement_group      = "${aws_placement_group.explorer.*.id[count.index]}"
+  placement_group      = "${var.use_placement_group ? aws_placement_group.explorer.*.id[count.index] : "zero"}"
   launch_configuration = "${aws_launch_configuration.explorer.name}"
   vpc_zone_identifier  = ["${aws_subnet.default.id}"]
   availability_zones   = ["${data.aws_availability_zones.available.names}"]
@@ -69,25 +69,7 @@ resource "aws_autoscaling_group" "explorer" {
   ]
 
   depends_on = [
-    "aws_ssm_parameter.new_relic_app_name",
-    "aws_ssm_parameter.new_relic_license_key",
-    "aws_ssm_parameter.pool_size",
-    "aws_ssm_parameter.ecto_use_ssl",
-    "aws_ssm_parameter.exq_blocks_concurrency",
-    "aws_ssm_parameter.exq_concurrency",
-    "aws_ssm_parameter.exq_internal_transactions_concurrency",
-    "aws_ssm_parameter.exq_receipts_concurrency",
-    "aws_ssm_parameter.exq_transactions_concurrency",
-    "aws_ssm_parameter.secret_key_base",
-    "aws_ssm_parameter.port",
-    "aws_ssm_parameter.db_username",
-    "aws_ssm_parameter.db_password",
-    "aws_ssm_parameter.db_host",
-    "aws_ssm_parameter.db_port",
-    "aws_ssm_parameter.ethereum_url",
-    "aws_ssm_parameter.trace_url",
-    "aws_ssm_parameter.ws_url",
-    "aws_ssm_parameter.network_path",
+    "aws_ssm_parameter.db_host"
   ]
 
   lifecycle {

@@ -1,6 +1,6 @@
 - name: Prepare variables for Parameter Store
   set_fact:
-    chain_upper_env: "{{ chain_ps_env | combine ({item.key|lower : item.value})  }}"
+    chain_ps_env: "{{ chain_ps_env | combine ({item.key|lower : item.value})  }}"
   with_dict: "{{ chain_custom_environment[chain] }}"
   vars:
     chain_ps_env: {}

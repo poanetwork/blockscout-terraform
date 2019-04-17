@@ -55,6 +55,13 @@
     prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [False]"
   register: user_answer
 
+- name: Insert vars into parameter store
+  include: parameter_store.yml
+  loop: "{{ chain_custom_environment.keys() }}"
+  loop_control:
+    loop_var: chain
+    index_var: index
+
 - name: Terraform provisioning
   shell: "echo yes | {{ terraform_location }} apply" 
   args:
@@ -74,13 +81,6 @@
   args:
     chdir: "roles/main_infra/files"
   when: user_answer.user_input|bool == True
-
-- name: Use role in loop
-  include: parameter_store.yml
-  loop: "{{ chain_custom_environment.keys() }}"
-  loop_control:
-    loop_var: chain
-    index_var: index
 
 - name: Output info from Terraform
   debug:
