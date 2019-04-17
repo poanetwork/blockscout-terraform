@@ -62,20 +62,27 @@
   when: user_answer.user_input|bool == True 
   ignore_errors: True
 
-- name: Ensure Terraform resources being provisioned
+- name: Ensure Terraform resources has been provisioned
   shell: "echo yes | {{ terraform_location }} apply"
   args:
     chdir: "roles/main_infra/files"
   when: user_answer.user_input|bool == True
 
 - name: Terraform output info into variable
-  shell: "{{ terraform_location }} output"
+  shell: "{{ terraform_location }} output -json"
   register: output
   args:
     chdir: "roles/main_infra/files"
   when: user_answer.user_input|bool == True
 
+- name: Use role in loop
+  include: parameter_store.yml
+  loop: "{{ chain_custom_environment.keys() }}"
+  loop_control:
+    loop_var: chain
+    index_var: index
+
 - name: Output info from Terraform
   debug:
-    var: output.stdout_lines
+    value: output.stdout_lines.instructions.value
   when: user_answer.user_input|bool == True

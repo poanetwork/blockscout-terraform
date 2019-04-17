@@ -1,3 +1,10 @@
+resource "aws_ssm_parameter" "db_host" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(keys(var.chains),count.index)}/db_host"
+  value = "${aws_route53_record.db.*.fqdn[count.index]}"
+  type  = "String"
+}
+
 resource "aws_db_instance" "default" {
   count                  = "${length(var.chains)}"
   name                   = "${lookup(var.chain_db_name,element(keys(var.chains),count.index))}"

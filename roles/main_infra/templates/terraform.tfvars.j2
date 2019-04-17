@@ -8,105 +8,34 @@ db_subnet_cidr        = "{{ db_subnet_cidr }}"
 dns_zone_name         = "{{ dns_zone_name }}"
 instance_type         = "{{ instance_type }}"
 root_block_size       = "{{ root_block_size }}"
-pool_size             = "{{ pool_size }}"
 
 alb_ssl_policy        = "{{ alb_ssl_policy }}"
 alb_certificate_arn   = "{{ alb_certificate_arn }}"
-use_ssl               = "{{ use_ssl }}"
-new_relic_app_name    = "{{ new_relic_app_name }}"
-new_relic_license_key = "{{ new_relic_license_key }}"
-secret_key_base       = "{{ secret_key_base }}" 
 elixir_version        = "{{ elixir_version }}"
 
-chains = {
-{% for key, value in chains.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+pool_size = {
+{% for key, value in chain_custom_environment.iteritems() %}
+{{ key }}={{ value['POOL_SIZE'] }}{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-chain_trace_endpoint = {
-{% for key, value in chain_trace_endpoint.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+secret_key_base = {
+{% for key, value in chain_custom_environment.iteritems() %}
+{{ key }}={{ value['SECRET_KEY_BASE'] }}{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-chain_ws_endpoint = {
-{% for key, value in chain_ws_endpoint.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+use_ssl = {
+{% for key, value in chain_custom_environment.iteritems() %}
+{{ key }}={{ value['ECTO_USE_SSL'] }}{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-chain_jsonrpc_variant = {
-{% for key, value in chain_jsonrpc_variant.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
+chains = [
+{% for key in chain_custom_environment.iteritems() %}
+{{ key }}{% if not loop.last %},{% endif %}
 {% endfor %}
-}
-
-chain_logo = {
-{% for key, value in chain_logo.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_coin = {
-{% for key, value in chain_coin.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_network = {
-{% for key, value in chain_network.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_subnetwork = {
-{% for key, value in chain_subnetwork.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_network_path = {
-{% for key, value in chain_network_path.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_network_icon = {
-{% for key, value in chain_network_icon.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_graphiql_transaction = {
-{% for key, value in chain_graphiql_transaction.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_block_transformer = {
-{% for key, value in chain_block_transformer.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_heart_beat_timeout = {
-{% for key, value in chain_heart_beat_timeout.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_heart_command = {
-{% for key, value in chain_heart_command.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_blockscout_version = {
-{% for key, value in chain_blockscout_version.iteritems() %}
-{{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
+]
 
 chain_db_id = {
 {% for key, value in chain_db_id.iteritems() %}

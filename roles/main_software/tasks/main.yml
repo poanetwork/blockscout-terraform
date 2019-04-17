@@ -122,7 +122,7 @@
 
 - name: User prompt
   pause:
-    prompt: "Would you like to remove staging dependencies? [Yes/No] Default: No"
+    prompt: "Would you like to remove staging dependencies? [Yes/No] Default: Yes"
   register: user_answer
 
 - name: Remove dev dependencies
@@ -135,7 +135,7 @@
     - "blockscout-{{ chain }}/apps/block_scout_web/assets/node_modules/"
     - "blockscout-{{ chain }}/apps/explorer/node_modules/"
     - "blockscout-{{ chain }}/logs/dev/"
-  when: user_answer.user_input|bool == true 
+  when: user_answer.user_input|default(true)|bool != false 
 
 - name: Fix bug with favicon 
   copy:
@@ -158,28 +158,36 @@
 
 - name: User prompt
   pause:
-    prompt: "Do you want to update the Parameter Store variables? [Yes/No] Default: No"
+    prompt: "Do you want to update the Parameter Store variables? [Yes/No] Default: Yes"
   register: user_answer
+
+- name: Prepare variables for Parameter Store
+  set_fact:
+    chain_lower_env: "{{ chain_lower_env | combine ({item.key|lower : item.value})  }}"
+  with_dict: "{{ chain_upper_env }}"
+  vars:
+    chain_lower_env: {}
+  when: user_answer.user_input|default(true)|bool != false
 
 - name: Update chain variables
   aws_ssm_parameter_store:
     name: "/{{ prefix }}/{{ chain }}/{{ item.key }}" 
     value: "{{ item.value }}"
-  with_dict: "{{ chain_env }}"
+  with_dict: "{{ chain_lower_env }}"
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
     AWS_REGION: "{{ region }}"
-  when: user_answer.user_input|bool == true
+  when: user_answer.user_input|default(true)|bool != false
 
 - name: User prompt
   pause:
-    prompt: "Do you want to deploy BlockScout? [Yes/No] Default: No"
+    prompt: "Do you want to deploy BlockScout? [Yes/No] Default: Yes"
   register: user_answer
 
 - name: Deploy Blockscout
-  command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_env['blockscout_version']  }}'" 
-  when: user_answer.user_input|bool == true
+  command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_upper_env['BLOCKSCOUT_VERSION']  }}'" 
+  when: user_answer.user_input|default(true)|bool != false
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"

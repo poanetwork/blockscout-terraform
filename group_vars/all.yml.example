@@ -17,12 +17,46 @@ upload_config_to_s3: true
 bucket: "poa-terraform-state"
 
 ## All resources will be prefixed with this one
-prefix: "sokol"
+prefix: "poa"
 
 ## This variable represents network RPC endpoint: 
-chains:
-   core: "http://10.10.10.10:8545"
-   sokol:  "https://192.168.0.1:8545"
+chain_custom_environment:
+  core:
+    NETWORK: "(POA)" # Name of the organization/community that hosts the chain
+    SUBNETWORK: "Core Network" # Actual name of the particular network
+    NETWORK_ICON: "_network_icon.html" # Either _test_network_icon.html or _network_icon.html, depending on the type of the network (prod/test).
+    LOGO: "/images/blockscout_logo.svg" # Chain logo
+    ETHEREUM_JSONRPC_VARIANT: "parity" # Chain client installed at ETHEREUM_JSONRPC_HTTP_URL
+    ETHEREUM_JSONRPC_HTTP_URL: "http://localhost:8545" # Network RPC endpoint
+    ETHEREUM_JSONRPC_TRACE_URL: "http://localhost:8545" # Network RPC endpoint in trace mode. Can be the same as the previous variable
+    ETHEREUM_JSONRPC_WS_URL: "ws://localhost:8546" # Network RPC endpoint in websocket mode
+    NETWORK_PATH: "/poa/core" # relative URL path, for example: blockscout.com/$NETWORK_PATH
+    SECRET_KEY_BASE: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ==" # Secret key for production assets protection. Use mix phx.gen.secret to generate
+    CHECK_ORIGIN: false # Used to check the origin of requests when the origin header is present
+    PORT: 4000 # Port the application runs on
+    COIN: "POA" # Coin name at the Coinmarketcap, used to display current exchange rate
+    #METADATA_CONTRACT: # Address of metadata smart contract. Used by POA Network to obtain Validators information to display in the UI
+    #VALIDATORS_CONTRACT: #Address of the EMission Fund smart contract
+    SUPPLY_MODULE: false # Used by the xDai Chain to calculate the total supply of the chain
+    SOURCE_MODULE: false # Used to calculate the total supply 
+    #DATABASE_URL: # Database URL. Usually generated automatically, but this variable can be used to modify the URL of the databases during the updates.
+    POOL_SIZE: 20 # Defines the number of database connections allowed 
+    ECTO_USE_SSL: false # Specifies whether or not to use SSL on Ecto queries
+    #DATADOG_HOST: # Host configuration variable for Datadog integration
+    #DATADOG_PORT: # Port configuration variable for Datadog integration
+    #SPANDEX_BATCH_SIZE: # Spandex and Datadog configuration setting.
+    #SPANDEX_SYNC_THRESHOLD: # 	Spandex and Datadog configuration setting.
+    HEART_BEAT_TIMEOUT: 30 # Heartbeat is an Erlang monitoring service that will restart BlockScout if it becomes unresponsive. This variables configures the timeout before Blockscout will be restarted.
+    HEART_COMMAND: "sudo systemctl restart explorer.service" # This variable represents a command that is used to restart the service
+    BLOCKSCOUT_VERSION: "v1.3.9" # Added to the footer to signify the current BlockScout version
+    RELEASE_LINK: "https://github.com/poanetwork/blockscout/releases/tag/v1.3.9-beta" # The link to Blockscout release notes in the footer.
+    ELIXIR_VERSION: "v1.8.1" # Elixir version to install on the node before Blockscout deploy
+    BLOCK_TRANSFORMER: "base" # Transformer for blocks: base or clique.
+    GRAPHIQL_TRANSACTION: "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4" # Random tx hash on the network, used as default for graphiql tx.
+    FIRST_BLOCK: 0 # The block number, where indexing begins from.
+    TXS_COUNT_CACHE_PERIOD: 7200 # Interval in seconds to restart the task, which calculates the total txs count.
+    ADDRESS_WITH_BALANCES_UPDATE_INTERVAL: 1800 #Interval in seconds to restart the task, which calculates addresses with balances
+    LINK_TO_OTHER_EXPLORERS: "false" # If true, links to other explorers are added in the footer
 
 ## Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
 region: "us-east-1"

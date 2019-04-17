@@ -21,14 +21,3 @@ ps_host: localhost
 ps_user: myuser
 ps_password: mypass
 ps_db: mydb
-
-## Custom environment variables that will be exported when testing the Blockscout instance
-chain_custom_environment:
-  core:
-    METADATA_CONTRACT: 0xE3FfFD154931EB80b2aCE096EC32D6df23661203
-    VALIDATORS_CONTRACT: 0xa105Db0e6671C7B5f4f350ff1Af6460E6C696e71
-    LINK_TO_OTHER_EXPLORERS: false
-  sokol:
-    METADATA_CONTRACT: 0x81c47A798226e1b90A1b4C9dBDd844033B528D06
-    VALIDATORS_CONTRACT: 0x4c6a159659CCcb033F4b2e2Be0C16ACC62b89DDB
-    LINK_TO_OTHER_EXPLORERS: false

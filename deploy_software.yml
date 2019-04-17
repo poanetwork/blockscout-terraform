@@ -13,7 +13,7 @@
    - name: Use role in loop
      include_role:
        name: main_software
-     loop: "{{ chains.keys() }}"  
+     loop: "{{ chain_custom_environment.keys() }}"  
      loop_control:
        loop_var: chain
        index_var: index

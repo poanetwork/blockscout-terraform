@@ -187,9 +187,7 @@ log "Creating pgsql database for $CHAIN"
 
 if ! which psql >/dev/null; then
     log "Installing psql.."
-    yum install -y  https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-redhat10-10-2.noarch.rpm
-    sed -i "s/rhel-\$releasever-\$basearch/rhel-latest-x86_64/g" "/etc/yum.repos.d/pgdg-10-redhat.repo"
-    yum install -y postgresql10 >"$LOG"
+    amazon-linux-extras install postgresql10 >"$LOG"
 fi
 
 if ! which g++ >/dev/null; then

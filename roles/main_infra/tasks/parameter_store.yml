@@ -1,0 +1,16 @@
+- name: Prepare variables for Parameter Store
+  set_fact:
+    chain_upper_env: "{{ chain_ps_env | combine ({item.key|lower : item.value})  }}"
+  with_dict: "{{ chain_custom_environment[chain] }}"
+  vars:
+    chain_ps_env: {}
+
+- name: Insert variables in PS
+  aws_ssm_parameter_store:
+    name: "/{{ prefix }}/{{ chain }}/{{ item.key }}"
+    value: "{{ item.value }}"
+  with_dict: "{{ chain_ps_env }}"
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    AWS_REGION: "{{ region }}"
