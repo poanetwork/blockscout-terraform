@@ -84,7 +84,7 @@ resource "aws_autoscaling_group" "explorer" {
 
   tag {
     key                 = "chain"
-    value               = "${element(keys(var.chains),count.index)}"
+    value               = "${element(var.chains,count.index)}"
     propagate_at_launch = true
   }
 }
