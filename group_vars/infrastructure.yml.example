@@ -21,15 +21,8 @@ db_subnet_cidr: "10.0.1.0/16"
 ## Internal DNS zone will looks like:
 dns_zone_name: "poa.internal"
 
-## The following settngs are related to SSL of Application Load Balancer that will be deployed to AWS. If ECTO_USE_SSL is set to false, alb_* variables can be omitted
-alb_ssl_policy: "ELBSecurityPolicy-2016-08"
-alb_certificate_arn: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24"
-
 ## Size of the EC2 instance EBS root volume
 root_block_size: 120
-
-## Number of connections allowed by EC2 instance
-pool_size: 30
 
 ## The following variable represents the elixir version that will be used to run BlockScout instance. Will be used to download the Elixir at the following link: https://github.com/elixir-lang/elixir/releases/download/{{ elixir_version }}/Precompiled.zip
 elixir_version: "v1.7.4"

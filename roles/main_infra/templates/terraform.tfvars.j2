@@ -8,8 +8,6 @@ db_subnet_cidr        = "{{ db_subnet_cidr }}"
 dns_zone_name         = "{{ dns_zone_name }}"
 instance_type         = "{{ instance_type }}"
 root_block_size       = "{{ root_block_size }}"
-alb_ssl_policy        = "{{ alb_ssl_policy }}"
-alb_certificate_arn   = "{{ alb_certificate_arn }}"
 elixir_version        = "{{ elixir_version }}"
 
 pool_size = {
@@ -27,6 +25,18 @@ secret_key_base = {
 use_ssl = {
 {% for key, value in chain_custom_environment.iteritems() %}
 {{ key }}="{{ value['ECTO_USE_SSL'] }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+alb_ssl_policy = {
+{% for key, value in chain_custom_environment.iteritems() %}
+{{ key }}="{{ value['ALB_SSL_POLICY'] }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+alb_certificate_arn = {
+{% for key, value in chain_custom_environment.iteritems() %}
+{{ key }}="{{ value['ALB_CERTIFICATE_ARN'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 

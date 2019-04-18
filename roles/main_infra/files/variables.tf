@@ -62,8 +62,13 @@ variable "secret_key_base" {
   default = {} 
 }
 
-variable "alb_ssl_policy" {}
-variable "alb_certificate_arn" {}
+variable "alb_ssl_policy" {
+  default = {}
+}
+
+variable "alb_certificate_arn" {
+  default = {}
+}
 
 variable "use_ssl" {
   default = {} 

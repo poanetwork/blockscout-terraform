@@ -32,16 +32,19 @@ chain_custom_environment:
     ETHEREUM_JSONRPC_WS_URL: "ws://localhost:8546" # Network RPC endpoint in websocket mode
     NETWORK_PATH: "/poa/core" # relative URL path, for example: blockscout.com/$NETWORK_PATH
     SECRET_KEY_BASE: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ==" # Secret key for production assets protection. Use `mix phx.gen.secret` or `openssl rand -base64 64 | tr -d '\n'` to generate
-    CHECK_ORIGIN: false # Used to check the origin of requests when the origin header is present
+    #CHECK_ORIGIN: "false" # Used to check the origin of requests when the origin header is present
     PORT: 4000 # Port the application runs on
     COIN: "POA" # Coin name at the Coinmarketcap, used to display current exchange rate
     #METADATA_CONTRACT: # Address of metadata smart contract. Used by POA Network to obtain Validators information to display in the UI
     #VALIDATORS_CONTRACT: #Address of the EMission Fund smart contract
-    SUPPLY_MODULE: false # Used by the xDai Chain to calculate the total supply of the chain
-    SOURCE_MODULE: false # Used to calculate the total supply 
+    #SUPPLY_MODULE: "false" # Used by the xDai Chain to calculate the total supply of the chain
+    #SOURCE_MODULE: "false" # Used to calculate the total supply 
     #DATABASE_URL: # Database URL. Usually generated automatically, but this variable can be used to modify the URL of the databases during the updates.
     POOL_SIZE: 20 # Defines the number of database connections allowed 
-    ECTO_USE_SSL: false # Specifies whether or not to use SSL on Ecto queries
+    ECTO_USE_SSL: "false" # Specifies whether or not to use SSL on Ecto queries
+    ALB_SSL_POLICY: "ELBSecurityPolicy-2016-08" #SSL policy for Load Balancer. Required if ECTO_USE_SSL is set to true
+    ALB_CERTIFICATE_ARN: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24" #ARN of the certificate to attach to the LB. Required if ECTO_USE_SSL is set to
+ true
     #DATADOG_HOST: # Host configuration variable for Datadog integration
     #DATADOG_PORT: # Port configuration variable for Datadog integration
     #SPANDEX_BATCH_SIZE: # Spandex and Datadog configuration setting.
@@ -58,6 +61,9 @@ chain_custom_environment:
     ADDRESS_WITH_BALANCES_UPDATE_INTERVAL: 1800 #Interval in seconds to restart the task, which calculates addresses with balances
     LINK_TO_OTHER_EXPLORERS: "false" # If true, links to other explorers are added in the footer
     USE_PLACEMENT_GROUP: "false" # If true, BlockScout instance will be created in the placement group
+    EXQ_BLOCKS_CONCURRENCY="1"
+    EXQ_INTERNAL_TRANSACTIONS_CONCURRENCY="1"
+    EXQ_TRANSACTIONS_CONCURRENCY="1"
 
 ## Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
 region: "us-east-1"
