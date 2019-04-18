@@ -141,7 +141,7 @@
     - "blockscout-{{ chain }}/apps/block_scout_web/assets/node_modules/"
     - "blockscout-{{ chain }}/apps/explorer/node_modules/"
     - "blockscout-{{ chain }}/logs/dev/"
-  when: user_answer.user_input|lower != "false" or user_answer.user_input|lower != "no"  
+  when: user_answer.user_input|lower != "false" and user_answer.user_input|lower != "no"  
 
 - name: Fix bug with favicon 
   copy:
@@ -176,7 +176,7 @@
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
     AWS_REGION: "{{ region }}"
-  when: user_answer.user_input|lower != "false" or user_answer.user_input|lower != "no"
+  when: user_answer.user_input|lower != "false" and user_answer.user_input|lower != "no"
 
 - name: User prompt
   pause:
@@ -185,7 +185,7 @@
 
 - name: Deploy Blockscout
   command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_upper_env['BLOCKSCOUT_VERSION']  }}'" 
-  when: user_answer.user_input|lower != "false" or user_answer.user_input|lower != "no"
+  when: user_answer.user_input|lower != "false" and user_answer.user_input|lower != "no"
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
