@@ -2,7 +2,11 @@
 
 This repo contains scripts designed to automate [Blockscout](https://github.com/poanetwork/blockscout) deployment builds. Currently it supports only [AWS](#AWS) as a cloud provider. 
 
-In the root folder you can find an Ansible Playbooks that will create all necessary infrastructure and deploy BlockScout. Please, read this ReadMe for more information on configuring and executing this playbooks.
+In the root folder you can find an Ansible Playbooks that will create all necessary infrastructure and deploy BlockScout. Please refer to the following sections of the README for details:
+
+1. [Deploying the Infrastructure](#deploying-the-infrastructure). This section describes all the steps to deploy the virtual hardware that is required for production instance of BlockScout. Skip this section if you do have an infrastructure and simply want to install or update your BlockScout. 
+2. [Deploying BlockScout](#deploying-blockscout). Follow this section to install or update your BlockScout.
+3. [Destroying Provisioned Infrastructure](#destroying-provisioned-infrastructure). Refer to this section if you want to destroy your BlockScout installation.
 
 Also you may want to refer to the `lambda` folder which contains a set of scripts that may be useful in your BlockScout infrastructure.
 
@@ -68,12 +72,33 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 - `backend` variable defines whether deployer should keep state files remote or locally. Set `backend` variable to `true` if you want to save state file to the remote S3 bucket;
 - `upload_config_to_s3` - set to `true` if you want to upload config`all.yml` file to the S3 bucket automatically during deployment. Will not work if `backend` is set to false;
 - `bucket` represents a globally unique name of the bucket where your configs and state will be stored. It will be created automatically during the deployment;
-- `elixir_version` - is an Elixir version used in BlockScout release;
-
+- `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
 - `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
+- The `region` should be left at `us-east-1` as some of the other regions fail for different reasons;
 
 *Note*: a chain name shouldn't be more than 5 characters. Otherwise, it causing the error, because the aws load balancer name should not be greater than 32 characters.
 
+## Infrastructure related variables
+
+- `dynamodb_table` represents the name of  table that will be used for Terraform state lock management;
+- If `ec2_ssh_key_content` variable is not empty, Terraform will try to create EC2 SSH key with the `ec2_ssh_key_name` name. Otherwise, the existing key with `ec2_ssh_key_name` name will be used;
+- `instance_type` defines a size of the Blockscout instance that will be launched during the deployment process;
+- `vpc_cidr`, `public_subnet_cidr`, `db_subnet_cidr` represents the network configuration for the deployment. Usually you want to leave it as is. However, if you want to modify it, please, expect that `db_subnet_cidr` represents not a single network, but a group of networks started with defined CIDR block increased by 8 bits. 
+  Example:
+  Number of networks: 2
+  `db_subnet_cidr`: "10.0.1.0/16"
+  Real networks: 10.0.1.0/24 and 10.0.2.0/24
+- An internal DNS zone with`dns_zone_name` name will be created to take care of BlockScout internal communications;
+- The name of a IAM key pair to use for EC2 instances, if you provide a name which
+  already exists it will be used, otherwise it will be generated for you;
+
+* If `use_ssl` is set to `false`, SSL will be forced on Blockscout. To configure SSL, use `alb_ssl_policy` and `alb_certificate_arn` variables;
+
+- The `root_block_size` is the amount of storage on your EC2 instance. This value can be adjusted by how frequently logs are rotated. Logs are located in `/opt/app/logs` of your EC2 instance;
+- The `pool_size` defines the number of connections allowed by the RDS instance;
+- `secret_key_base` is a random password used for BlockScout internally. It is highly recommended to gernerate your own `secret_key_base` before the deployment. For instance, you can do it via `openssl rand -base64 64 | tr -d '\n'` command;
+- `new_relic_app_name` and  `new_relic_license_key` should usually stay empty unless you want and know how to configure New Relic integration;
+- `elixir_version` - is an Elixir version used in BlockScout release;
 - `chain_trace_endpoint` - maps chains to the URLs of HTTP RPC endpoints, which represents a node where state pruning is disabled (archive node) and tracing is enabled. If you don't have a trace endpoint, you can simply copy values from `chains` variable;
 - `chain_ws_endpoint` - maps chains to the URLs of HTTP RPCs that supports websockets. This is required to get the real-time updates. Can be the same as `chains` if websocket is enabled there (but make sure to use`ws(s)` instead of `htpp(s)` protocol);
 - `chain_jsonrpc_variant` - a client used to connect to the network. Can be `parity`, `geth`, etc;
@@ -89,29 +114,6 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 - Each of the `chain_db_*` variables configures the database for each chain. Each chain will have the separate RDS instance.
 - `chain_blockscout_version` - is a text at the footer of BlockScout instance. Usually represents the current BlockScout version.
 
-## Infrastructure related variables
-
-- `dynamodb_table` represents the name of  table that will be used for Terraform state lock management;
-- If `ec2_ssh_key_content` variable is not empty, Terraform will try to create EC2 SSH key with the `ec2_ssh_key_name` name. Otherwise, the existing key with `ec2_ssh_key_name` name will be used;
-- `instance_type` defines a size of the Blockscout instance that will be launched during the deployment process;
-- `vpc_cidr`, `public_subnet_cidr`, `db_subnet_cidr` represents the network configuration for the deployment. Usually you want to leave it as is. However, if you want to modify it, please, expect that `db_subnet_cidr` represents not a single network, but a group of networks started with defined CIDR block increased by 8 bits. 
-  Example:
-  Number of networks: 2
-  `db_subnet_cidr`: "10.0.1.0/16"
-  Real networks: 10.0.1.0/24 and 10.0.2.0/24
-- An internal DNS zone with`dns_zone_name` name will be created to take care of BlockScout internal communications;
-- `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
-- The name of a IAM key pair to use for EC2 instances, if you provide a name which
-  already exists it will be used, otherwise it will be generated for you;
-
-* If `use_ssl` is set to `false`, SSL will be forced on Blockscout. To configure SSL, use `alb_ssl_policy` and `alb_certificate_arn` variables;
-
-- The `region` should be left at `us-east-1` as some of the other regions fail for different reasons;
-- The `root_block_size` is the amount of storage on your EC2 instance. This value can be adjusted by how frequently logs are rotated. Logs are located in `/opt/app/logs` of your EC2 instance;
-- The `pool_size` defines the number of connections allowed by the RDS instance;
-- `secret_key_base` is a random password used for BlockScout internally. It is highly recommended to gernerate your own `secret_key_base` before the deployment. For instance, you can do it via `openssl rand -base64 64 | tr -d '\n'` command;
-- `new_relic_app_name` and  `new_relic_license_key` should usually stay empty unless you want and know how to configure New Relic integration;
-
 ## Blockscout related variables
 
 - `blockscout_repo` - a direct link to the Blockscout repo;
@@ -119,11 +121,11 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 - Specify the `chain_merge_commit` variable if you want to merge any of the specified `chains` with the commit in the other branch. Usually may be used to update production branches with the releases from master branch;
 - `skip_fetch` - if this variable is set to `true` , BlockScout repo will not be cloned and the process will start from building the dependencies. Use this variable to prevent playbooks from overriding manual changes in cloned repo;
 - `ps_*` variables represents a connection details to the test Postgres database. This one will not be installed automatically, so make sure `ps_*` credentials are valid before starting the deployment;
-- `chain_custom_environment` - is a set of additional environment variables mapped with chains that needs to be set during the test deployment.
+- `chain_custom_environment` - is a map of variables that should be overrided when deploying the new version of Blockscout. Can be omitted.
 
 *Note*: `chain_custom_environment` variables will not be propagated to the Parameter Store at production  servers and need to be set there manually.
 
-# Database Storage Required
+## Database Storage Required
 
 The configuration variable `db_storage` can be used to define the amount of storage allocated to your RDS instance. The chart below shows an estimated amount of storage that is required to index individual chains. The `db_storage` can only be adjusted 1 time in a 24 hour period on AWS.
 
@@ -142,26 +144,35 @@ The configuration variable `db_storage` can be used to define the amount of stor
 
 2. Create the AWS access key and secret access key for user with [sufficient permissions](#AWS);
 
-3. Set the appropriate [infrastructure](#Infrastructure-related-variables) and [common](#Common-variables) variables as described at the [corresponding part of instruction](#Configuration);
+3. Merge `infrastructure` and `all` config template files into single config file:
+```bash
+cat group_vars/infrastructure.yml.example group_vars/all.yml.example > group_vars/all.yml
+```
 
-4. Run `ansible-playbook deploy_infra.yml`; 
+4. Set the variables at `group_vars/all.yml` config template file as described at the [corresponding part of instruction](#Configuration);
+
+5. Run `ansible-playbook deploy_infra.yml`; 
 
    - During the deployment the ["diffs didn't match"](#error-applying-plan-diffs-didnt-match) error may occur, it will be ignored automatically. If  Ansible play recap shows 0 failed plays, then the deployment was successful despite the error.
 
    - Optionally, you may want to check the variables the were uploaded to the [Parameter Store](https://console.aws.amazon.com/systems-manager/parameters) at AWS Console.
 
-5. Proceed to the [next part of instruction](#Deploying-Blockscout).
 
 # Deploying BlockScout
 
 1. Ensure all the [BlockScout prerequisites](#Prerequisites-for-deploying-blockscout) are installed and has the right version number;
-2. Set the all the variables as described at the [corresponding part of instruction](#Configuration);
-3. Run `ansible-playbook deploy_software.yml`; 
-4. When the prompt appears, check that server is running and there is no visual artifacts. The server will be launched at port 4000 at the same machine where you run the Ansible playbooks. If you face any errors you can either fix it or cancel the deployment by pressing **Ctrl+C** and then pressing **A** when additionally prompted.
-5. When server is ready to be deployed simply press enter and deployer will upload Blockscout to the appropriate S3.
-6. After that another prompt will ask you to confirm your will to deploy the BlockScout. Type **yes** or **true** to confirm the deployment.
-   - Deployment will update most of the Parameter Store variables except **DB**, **EXQ** and **New Relic** ones. Those you will have to update manually **before** the deployment
-7. Monitor and manage your deployment at [CodeDeploy](https://console.aws.amazon.com/codesuite/codedeploy/applications) service page at AWS Console.
+2. Merge `blockscout` and `all` config template files into single config file:
+```bash
+cat group_vars/blockscout.yml.example group_vars/all.yml.example > group_vars/all.yml
+```
+**Note!** All three configuration files are compatible to each other, so you can simply `cat group_vars/blockscout.yml.example >> group_vars/all.yml` if you already do have the `all.yml` file after the deploying of infrastructure.
+3. Set the variables at `group_vars/all.yml` config template file as described at the [corresponding part of instruction](#Configuration);
+  **Note!** Use `chain_custom_environment` to update the variables in each deployment. Map each deployed chain with variables as they should appear at the Parameter Store. Check the example at `group_vars/blockscout.yml.example` config file. `chain_*` variables will be ignored during BlockScout software deployment.
+4. Run `ansible-playbook deploy_software.yml`; 
+5. When the prompt appears, check that server is running and there is no visual artifacts. The server will be launched at port 4000 at the same machine where you run the Ansible playbooks. If you face any errors you can either fix it or cancel the deployment by pressing **Ctrl+C** and then pressing **A** when additionally prompted.
+6. When server is ready to be deployed simply press enter and deployer will upload Blockscout to the appropriate S3.
+7. Two other prompts will appear to ensure your will on updating the Parameter Store variables and deploying the BlockScout through the CodeDeploy. Both **yes** and **true** will be interpreted as the confirmation.
+8. Monitor and manage your deployment at [CodeDeploy](https://console.aws.amazon.com/codesuite/codedeploy/applications) service page at AWS Console.
 
 # Destroying Provisioned Infrastructure
 

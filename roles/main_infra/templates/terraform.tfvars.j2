@@ -151,7 +151,7 @@ chain_db_storage_type = {
 }
 
 chain_db_iops = {
-{% for key, value in chain_db_iops.iteritems() %}
+{% for key, value in db_iops.iteritems() %}
 {{ key }} = "{{ value }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }

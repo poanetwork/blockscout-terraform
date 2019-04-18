@@ -19,7 +19,10 @@ roles/main_infra/files/terraform.tfvars
 # Stack-specific information
 /PREFIX
 
-group_vars/*.yml
+group_vars/*
+!group_vars/all.yml.example
+!group_vars/blockscout.yml.example
+!group_vars/infrastructure.yml.example
 *.retry
 *.temp
 *.swp

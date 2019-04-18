@@ -50,7 +50,7 @@
     object: all.yml
     src: "{{ playbook_dir }}/group_vars/all.yml.temp"
     mode: put
-  when: stat_result.stat.exists == True and upload_config_to_s3|bool == True
+  when: upload_config_to_s3|bool == True and stat_result.stat.exists == True
 
 - name: Remove temp file
   file:
