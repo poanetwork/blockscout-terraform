@@ -34,9 +34,6 @@ pool_size: 30
 ## The following variable represents the elixir version that will be used to run BlockScout instance. Will be used to download the Elixir at the following link: https://github.com/elixir-lang/elixir/releases/download/{{ elixir_version }}/Precompiled.zip
 elixir_version: "v1.7.4"
 
-## Whether or not to use the placement group for the BlockScout instances.
-use_placement_group: false
-
 # DB related variables
 
 ## This value represents the name of the DB that will be created/attached. Must be unique. Will be prefixed with `prefix` variable.

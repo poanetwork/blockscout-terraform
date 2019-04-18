@@ -10,3 +10,4 @@
         - roles/main_infra/files/terraform.tfstate.d
         - roles/main_infra/files/main.tfvars
         - roles/main_infra/files/backend.tfvars
+        - roles/main_infra/files/terraform.tfplan

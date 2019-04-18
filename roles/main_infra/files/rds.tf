@@ -5,6 +5,34 @@ resource "aws_ssm_parameter" "db_host" {
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "db_port" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(var.chains,count.index)}/db_port"
+  value = "${aws_db_instance.default.*.port[count.index]}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "db_name" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(var.chains,count.index)}/db_name"
+  value = "${lookup(var.chain_db_name,element(var.chains,count.index))}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "db_username" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(var.chains,count.index)}/db_username"
+  value = "${lookup(var.chain_db_username,element(var.chains,count.index))}"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "db_password" {
+  count = "${length(var.chains)}"
+  name  = "/${var.prefix}/${element(var.chains,count.index)}/db_password"
+  value = "${lookup(var.chain_db_password,element(var.chains,count.index))}"
+  type  = "String"
+}
+
 resource "aws_db_instance" "default" {
   count                  = "${length(var.chains)}"
   name                   = "${lookup(var.chain_db_name,element(var.chains,count.index))}"

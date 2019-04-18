@@ -57,6 +57,7 @@ chain_custom_environment:
     TXS_COUNT_CACHE_PERIOD: 7200 # Interval in seconds to restart the task, which calculates the total txs count.
     ADDRESS_WITH_BALANCES_UPDATE_INTERVAL: 1800 #Interval in seconds to restart the task, which calculates addresses with balances
     LINK_TO_OTHER_EXPLORERS: "false" # If true, links to other explorers are added in the footer
+    USE_PLACEMENT_GROUP: "false" # If true, BlockScout instance will be created in the placement group
 
 ## Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
 region: "us-east-1"

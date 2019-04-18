@@ -17,7 +17,7 @@ resource "aws_codedeploy_deployment_group" "explorer" {
   app_name              = "${aws_codedeploy_app.explorer.name}"
   deployment_group_name = "${var.prefix}-explorer-dg${count.index}"
   service_role_arn      = "${aws_iam_role.deployer.arn}"
-  autoscaling_groups    = ["${aws_autoscaling_group.explorer.*.id[count.index]}"]
+  autoscaling_groups    = ["${aws_launch_configuration.explorer.name}-asg-${element(var.chains,count.index)}"]
 
   deployment_style {
     deployment_option = "WITH_TRAFFIC_CONTROL"

@@ -8,32 +8,31 @@ db_subnet_cidr        = "{{ db_subnet_cidr }}"
 dns_zone_name         = "{{ dns_zone_name }}"
 instance_type         = "{{ instance_type }}"
 root_block_size       = "{{ root_block_size }}"
-use_placement_group   = "{{ use_placement_group }}"
 alb_ssl_policy        = "{{ alb_ssl_policy }}"
 alb_certificate_arn   = "{{ alb_certificate_arn }}"
 elixir_version        = "{{ elixir_version }}"
 
 pool_size = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}={{ value['POOL_SIZE'] }}{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['POOL_SIZE'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 secret_key_base = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}={{ value['SECRET_KEY_BASE'] }}{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['SECRET_KEY_BASE'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 use_ssl = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}={{ value['ECTO_USE_SSL'] }}{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['ECTO_USE_SSL'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 chains = [
-{% for key in chain_custom_environment.iteritems() %}
-{{ key }}{% if not loop.last %},{% endif %}
+{% for key,value in chain_custom_environment.iteritems() %}
+"{{ key }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 ]
 
