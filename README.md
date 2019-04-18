@@ -2,7 +2,11 @@
 
 This repo contains scripts designed to automate [Blockscout](https://github.com/poanetwork/blockscout) deployment builds. Currently it supports only [AWS](#AWS) as a cloud provider. 
 
-In the root folder you can find an Ansible Playbooks that will create all necessary infrastructure and deploy BlockScout. Please, read this ReadMe for more information on configuring and executing this playbooks.
+In the root folder you can find an Ansible Playbooks that will create all necessary infrastructure and deploy BlockScout. Please refer to the following sections of the README for details:
+
+1. [Deploying the Infrastructure](#deploying-the-infrastructure). This section describes all the steps to deploy the virtual hardware that is required for production instance of BlockScout. Skip this section if you do have an infrastructure and simply want to install or update your BlockScout. 
+2. [Deploying BlockScout](#deploying-blockscout). Follow this section to install or update your BlockScout.
+3. [Destroying Provisioned Infrastructure](#destroying-provisioned-infrastructure). Refer to this section if you want to destroy your BlockScout installation.
 
 Also you may want to refer to the `lambda` folder which contains a set of scripts that may be useful in your BlockScout infrastructure.
 
@@ -121,7 +125,7 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 
 *Note*: `chain_custom_environment` variables will not be propagated to the Parameter Store at production  servers and need to be set there manually.
 
-# Database Storage Required
+## Database Storage Required
 
 The configuration variable `db_storage` can be used to define the amount of storage allocated to your RDS instance. The chart below shows an estimated amount of storage that is required to index individual chains. The `db_storage` can only be adjusted 1 time in a 24 hour period on AWS.
 
@@ -153,7 +157,6 @@ cat group_vars/infrastructure.yml.example group_vars/all.yml.example > group_var
 
    - Optionally, you may want to check the variables the were uploaded to the [Parameter Store](https://console.aws.amazon.com/systems-manager/parameters) at AWS Console.
 
-6. Proceed to the [next part of instruction](#Deploying-Blockscout).
 
 # Deploying BlockScout
 
@@ -162,13 +165,13 @@ cat group_vars/infrastructure.yml.example group_vars/all.yml.example > group_var
 ```bash
 cat group_vars/blockscout.yml.example group_vars/all.yml.example > group_vars/all.yml
 ```
+**Note!** All three configuration files are compatible to each other, so you can simply `cat group_vars/blockscout.yml.example >> group_vars/all.yml` if you already do have the `all.yml` file after the deploying of infrastructure.
 3. Set the variables at `group_vars/all.yml` config template file as described at the [corresponding part of instruction](#Configuration);
-**Note!** Use `chain_custom_environment` to update the variables in each deployment. Map each deployed chain with variables as they should appear at the Parameter Store. Check the example at `group_vars/blockscout.yml.example` config file.
+  **Note!** Use `chain_custom_environment` to update the variables in each deployment. Map each deployed chain with variables as they should appear at the Parameter Store. Check the example at `group_vars/blockscout.yml.example` config file. `chain_*` variables will be ignored during BlockScout software deployment.
 4. Run `ansible-playbook deploy_software.yml`; 
 5. When the prompt appears, check that server is running and there is no visual artifacts. The server will be launched at port 4000 at the same machine where you run the Ansible playbooks. If you face any errors you can either fix it or cancel the deployment by pressing **Ctrl+C** and then pressing **A** when additionally prompted.
 6. When server is ready to be deployed simply press enter and deployer will upload Blockscout to the appropriate S3.
-7. After that another prompt will ask you to confirm your will to deploy the BlockScout. Type **yes** or **true** to confirm the deployment.
-   - Deployment will update most of the Parameter Store variables except **DB**, **EXQ** and **New Relic** ones. Those you will have to update manually **before** the deployment
+7. Two other prompts will appear to ensure your will on updating the Parameter Store variables and deploying the BlockScout through the CodeDeploy. Both **yes** and **true** will be interpreted as the confirmation.
 8. Monitor and manage your deployment at [CodeDeploy](https://console.aws.amazon.com/codesuite/codedeploy/applications) service page at AWS Console.
 
 # Destroying Provisioned Infrastructure
