@@ -7,45 +7,19 @@ variable "db_subnet_cidr" {}
 variable "dns_zone_name" {}
 variable "instance_type" {}
 variable "root_block_size" {}
-variable "pool_size" {}
+variable "pool_size" {
+  default = {} 
+}
 variable "elixir_version" {}
-
+variable "use_placement_group" {
+  default = {}
+}
 variable "key_content" {
   default = ""
 }
 
-variable "chain_jsonrpc_variant" {
-  default = {}
-}
 variable "chains" {
-  default = {}
-}
-variable "chain_trace_endpoint" {
-  default = {}
-}
-variable "chain_ws_endpoint" {
-  default = {}
-}
-variable "chain_logo" {
-  default = {}
-}
-variable "chain_coin" {
-  default = {}
-}
-variable "chain_network" {
-  default = {}
-}
-variable "chain_subnetwork" {
-  default = {}
-}
-variable "chain_network_path" {
-  default = {}
-}
-variable "chain_network_icon" {
-  default = {}
-}
-variable "chain_graphiql_transaction" {
-  default = {}
+  default = []
 }
 
 variable "chain_db_id" {
@@ -84,25 +58,18 @@ variable "chain_db_version" {
   default = {}
 }
 
-variable "new_relic_app_name" {}
-variable "new_relic_license_key" {}
-variable "secret_key_base" {}
-variable "alb_ssl_policy" {}
-variable "alb_certificate_arn" {}
-variable "use_ssl" {}
+variable "secret_key_base" {
+  default = {} 
+}
 
-variable "chain_block_transformer" {
+variable "alb_ssl_policy" {
   default = {}
 }
 
-variable "chain_heart_beat_timeout" {
+variable "alb_certificate_arn" {
   default = {}
 }
 
-variable "chain_heart_command" {
-  default = {}
-}
-
-variable "chain_blockscout_version" {
-  default = {}
+variable "use_ssl" {
+  default = {} 
 }

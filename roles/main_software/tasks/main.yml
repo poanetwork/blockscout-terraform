@@ -75,12 +75,18 @@
   vars:
     path: "/{{ prefix }}/{{ chain }}"
 
+- name: Make config variables lowercase
+  set_fact:
+    chain_lower_env: "{{ chain_lower_env | combine ({item.key|lower : item.value})  }}"
+  with_dict: "{{ chain_custom_environment_chain }}"
+  vars:
+    chain_lower_env: {}
+    chain_custom_environment_chain: "{{ chain_cec[chain] | default({}) }}"
+    chain_cec: "{{ chain_custom_environment | default ({}) }}"
+
 - name: Override env variables
   set_fact:
-    chain_env: "{{ chain_env | combine(chain_custom_environment_chain) }}"
-  vars:
-    chain_custom_environment_chain: "{{ chain_cec[chain] | default({}) }}"
-    chain_cec: "{{ chain_custom_environment | default ({}) }}"    
+    chain_env: "{{ chain_env | combine(chain_lower_env) }}"
 
 - name: Uppercase chain 
   set_fact:
@@ -122,7 +128,7 @@
 
 - name: User prompt
   pause:
-    prompt: "Would you like to remove staging dependencies? [Yes/No] Default: No"
+    prompt: "Would you like to remove staging dependencies? [Yes/No] Default: Yes"
   register: user_answer
 
 - name: Remove dev dependencies
@@ -135,7 +141,14 @@
     - "blockscout-{{ chain }}/apps/block_scout_web/assets/node_modules/"
     - "blockscout-{{ chain }}/apps/explorer/node_modules/"
     - "blockscout-{{ chain }}/logs/dev/"
-  when: user_answer.user_input|bool == true 
+  when: user_answer.user_input|lower != "false" and user_answer.user_input|lower != "no"  
+
+- name: Fix bug with favicon 
+  copy:
+    src: "{{ item }}"
+    dest: "blockscout-{{ chain }}/apps/block_scout_web/priv/static/images/"
+  with_fileglob:
+    - "blockscout-{{ chain }}/apps/block_scout_web/priv/static/favicon*"
 
 - name: Upload Blockscout to S3
   command: "aws deploy push --application-name={{ prefix }}-explorer --s3-location s3://{{ prefix }}-explorer-codedeploy-releases/blockscout-{{ chain }}.zip --source=blockscout-{{ chain }}"
@@ -151,7 +164,7 @@
 
 - name: User prompt
   pause:
-    prompt: "Do you want to update the Parameter Store variables? [Yes/No] Default: No"
+    prompt: "Do you want to update the Parameter Store variables? [Yes/No] Default: Yes"
   register: user_answer
 
 - name: Update chain variables
@@ -163,16 +176,16 @@
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
     AWS_REGION: "{{ region }}"
-  when: user_answer.user_input|bool == true
+  when: user_answer.user_input|lower != "false" and user_answer.user_input|lower != "no"
 
 - name: User prompt
   pause:
-    prompt: "Do you want to deploy BlockScout? [Yes/No] Default: No"
+    prompt: "Do you want to deploy BlockScout? [Yes/No] Default: Yes"
   register: user_answer
 
 - name: Deploy Blockscout
-  command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_env['blockscout_version']  }}'" 
-  when: user_answer.user_input|bool == true
+  command: "{{ push_output.stdout_lines[1] }} --deployment-group-name {{ prefix }}-explorer-dg{{ index }} --deployment-config-name CodeDeployDefault.OneAtATime --description '{{ chain_upper_env['BLOCKSCOUT_VERSION']  }}'" 
+  when: user_answer.user_input|lower != "false" and user_answer.user_input|lower != "no"
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"

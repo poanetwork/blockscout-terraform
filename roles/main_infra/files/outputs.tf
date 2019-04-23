@@ -25,7 +25,7 @@ To deploy a new version of the application manually:
 
     4) Once the deployment is complete, you can access each chain explorer from its respective url:
 
-        - ${join("\n        - ", formatlist("%s: %s", keys(zipmap(keys(var.chains), aws_lb.explorer.*.dns_name)), values(zipmap(keys(var.chains), aws_lb.explorer.*.dns_name))))}
+        - ${join("\n        - ", formatlist("%s: %s", keys(zipmap(var.chains, aws_lb.explorer.*.dns_name)), values(zipmap(var.chains, aws_lb.explorer.*.dns_name))))}
 OUTPUT
 }
 

@@ -35,6 +35,12 @@
     path: roles/main_infra/files/.terraform/
     state: absent
   when: stat_result.stat.exists == True
+
+- name: Generate Terraform files
+  template:
+    src: "{{ item.key }}"
+    dest: "{{ item.value }}"
+  with_dict: {hosts.tf.j2: roles/main_infra/files/hosts.tf,routing.tf.j2: roles/main_infra/files/routing.tf}
     
 #Workaround since terraform module return unexpected error.
 - name: Terraform plan construct
@@ -44,32 +50,41 @@
     chdir: "roles/main_infra/files"
   with_items:
     - "init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
-    - plan
+    - plan -out terraform.tfplan
+    - show terraform.tfplan -no-color
 
 - name: Show Terraform plan
   debug:
-    var: tf_plan.results[1].stdout_lines
+    var: tf_plan.results[2].stdout_lines
 
 - name: User prompt
   pause:
     prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [False]"
   register: user_answer
 
+- name: Insert vars into parameter store
+  include: parameter_store.yml
+  loop: "{{ chain_custom_environment.keys() }}"
+  loop_control:
+    loop_var: chain
+    index_var: index
+  when: user_answer.user_input|bool == True
+
 - name: Terraform provisioning
-  shell: "echo yes | {{ terraform_location }} apply" 
+  shell: "echo yes | {{ terraform_location }} apply terraform.tfplan" 
   args:
     chdir: "roles/main_infra/files"
   when: user_answer.user_input|bool == True 
   ignore_errors: True
 
-- name: Ensure Terraform resources being provisioned
+- name: Ensure Terraform resources has been provisioned
   shell: "echo yes | {{ terraform_location }} apply"
   args:
     chdir: "roles/main_infra/files"
   when: user_answer.user_input|bool == True
 
 - name: Terraform output info into variable
-  shell: "{{ terraform_location }} output"
+  shell: "{{ terraform_location }} output -json"
   register: output
   args:
     chdir: "roles/main_infra/files"
