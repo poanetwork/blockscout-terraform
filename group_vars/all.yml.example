@@ -51,7 +51,7 @@ chain_custom_environment:
     #SPANDEX_SYNC_THRESHOLD: # 	Spandex and Datadog configuration setting.
     HEART_BEAT_TIMEOUT: 30 # Heartbeat is an Erlang monitoring service that will restart BlockScout if it becomes unresponsive. This variables configures the timeout before Blockscout will be restarted.
     HEART_COMMAND: "sudo systemctl restart explorer.service" # This variable represents a command that is used to restart the service
-    BLOCKSCOUT_VERSION: "v1.3.9" # Added to the footer to signify the current BlockScout version
+    BLOCKSCOUT_VERSION: "v1.3.9-beta" # Added to the footer to signify the current BlockScout version
     RELEASE_LINK: "https://github.com/poanetwork/blockscout/releases/tag/v1.3.9-beta" # The link to Blockscout release notes in the footer.
     ELIXIR_VERSION: "v1.8.1" # Elixir version to install on the node before Blockscout deploy
     BLOCK_TRANSFORMER: "base" # Transformer for blocks: base or clique.
