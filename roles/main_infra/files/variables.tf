@@ -1,4 +1,3 @@
-variable "region" {}
 variable "prefix" {}
 variable "key_name" {}
 variable "vpc_cidr" {}
