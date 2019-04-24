@@ -40,10 +40,12 @@ resource "aws_launch_configuration" "explorer" {
 }
 
 {% for key, value in chain_custom_environment.iteritems() %}
+{% if value['USE_PLACEMENT_GROUP'] == "true" %}
 resource "aws_placement_group" "explorer-{{key}}" {
   name     = "${var.prefix}-{{key}}-explorer-pg"
   strategy = "cluster"
 }
+{% endif %}
 {% endfor %}
 
 {% for key, value in chain_custom_environment.iteritems() %}

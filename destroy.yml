@@ -6,7 +6,3 @@
     - name: "confirmation"
       prompt: "Are you sure you want to destroy all the infra?"
       default: False
-  environment:
-    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
-    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
-    AWS_REGION: "{{ region }}"

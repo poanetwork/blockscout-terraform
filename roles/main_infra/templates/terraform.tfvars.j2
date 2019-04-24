@@ -1,14 +1,12 @@
-region                = "{{ ansible_env.AWS_REGION }}"
-prefix                = "{{ prefix }}"
-key_name              = "{{ ec2_ssh_key_name }}"
-key_content           = "{{ ec2_ssh_key_content }}"
-vpc_cidr              = "{{ vpc_cidr }}"
-public_subnet_cidr    = "{{ public_subnet_cidr  }}"
-db_subnet_cidr        = "{{ db_subnet_cidr }}"
-dns_zone_name         = "{{ dns_zone_name }}"
-instance_type         = "{{ instance_type }}"
-root_block_size       = "{{ root_block_size }}"
-elixir_version        = "{{ elixir_version }}"
+prefix             = "{{ prefix }}"
+key_name           = "{{ ec2_ssh_key_name }}"
+key_content        = "{{ ec2_ssh_key_content }}"
+vpc_cidr           = "{{ vpc_cidr }}"
+public_subnet_cidr = "{{ public_subnet_cidr  }}"
+db_subnet_cidr     = "{{ db_subnet_cidr }}"
+dns_zone_name      = "{{ dns_zone_name }}"
+instance_type      = "{{ instance_type }}"
+root_block_size    = "{{ root_block_size }}"
 
 pool_size = {
 {% for key, value in chain_custom_environment.iteritems() %}
@@ -28,15 +26,16 @@ use_ssl = {
 {% endfor %}
 }
 
+
 alb_ssl_policy = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['ALB_SSL_POLICY'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['ALB_SSL_POLICY']|default('') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 alb_certificate_arn = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['ALB_CERTIFICATE_ARN'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['ALB_CERTIFICATE_ARN']|default('') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 

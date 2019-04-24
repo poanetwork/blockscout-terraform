@@ -9,8 +9,13 @@
   aws_ssm_parameter_store:
     name: "/{{ prefix }}/{{ chain }}/{{ item.key }}"
     value: "{{ item.value }}"
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
   with_dict: "{{ chain_ps_env }}"
-  environment:
-    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
-    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
-    AWS_REGION: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"

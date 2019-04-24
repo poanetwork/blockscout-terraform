@@ -40,7 +40,7 @@
   template:
     src: "{{ item.key }}"
     dest: "{{ item.value }}"
-  with_dict: {hosts.tf.j2: roles/main_infra/files/hosts.tf,routing.tf.j2: roles/main_infra/files/routing.tf}
+  with_dict: {hosts.tf.j2: roles/main_infra/files/hosts.tf,routing.tf.j2: roles/main_infra/files/routing.tf,provider.tf.j2: roles/main_infra/files/provider.tf}
     
 #Workaround since terraform module return unexpected error.
 - name: Terraform plan construct

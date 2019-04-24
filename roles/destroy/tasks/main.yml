@@ -16,12 +16,20 @@
   template:
     src: roles/main_infra/templates/terraform.tfvars.j2
     dest: roles/main_infra/files/terraform.tfvars
+  vars:
+    db_iops: "{{ chain_db_iops | default({}) }}"
 
 - name: Generating backend file
   template:
     src: roles/main_infra/templates/backend.tfvars.j2
     dest: roles/main_infra/files/backend.tfvars
   when: backend|bool == true
+
+- name: Generate Terraform files
+  template:
+    src: "{{ item.key }}"
+    dest: "{{ item.value }}"
+  with_dict: {roles/main_infra/templates/hosts.tf.j2: roles/main_infra/files/hosts.tf,roles/main_infra/templates/routing.tf.j2: roles/main_infra/files/routing.tf,roles/main_infra/templates/provider.tf.j2: roles/main_infra/files/provider.tf}
 
 # This is due to the TF0.11 bug which do not allow to completely destroy resources if interpolation syntax is used in outputs.tf at edge cases
 - name: Check if outputs.tf exists
@@ -39,6 +47,13 @@
   with_items:
     - "init {{ '-backend-config=backend.tfvars' if backend|bool == true else '' }}"
     - destroy
+
+- name: Delete vars from parameter store
+  include: parameter_store.yml
+  loop: "{{ chain_custom_environment.keys() }}"
+  loop_control:
+    loop_var: chain
+    index_var: index
 
 - name: Check if outputs.tf.backup exists
   stat: path=roles/main_infra/files/outputs.tf.backup
@@ -58,9 +73,27 @@
     name: "{{ prefix }}-{{ bucket }}"
     state: absent
     force: yes
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
   when: user_answer.user_input|bool == True
 
 - dynamodb_table:
     name: "{{ prefix }}-{{ dynamodb_table }}"
     state: absent
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
   when: user_answer.user_input|bool == True

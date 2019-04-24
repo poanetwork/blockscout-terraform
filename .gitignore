@@ -7,6 +7,7 @@ roles/main_infra/files/remote-backend-selector.tf
 roles/main_infra/files/terraform.tfvars
 roles/main_infra/files/hosts.tf
 roles/main_infra/files/routing.tf
+roles/main_infra/files/provider.tf
 *.backup
 
 # Sensitive information

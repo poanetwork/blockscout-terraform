@@ -3,9 +3,11 @@ ansible_python_interpreter: "/usr/bin/python3"
 
 # Common variables
 
-## Credentials to connect to AWS
-aws_access_key: ""
-aws_secret_key: ""
+## Credentials to connect to AWS. Either keypair or CLI profile name should be specified. If nothing is specified, the default AWS keypair is used. Region must be specified in all the cases.
+#aws_access_key: ""
+#aws_secret_key: ""
+#aws_profile: ""
+aws_region: "us-east-1"
 
 ## If set to true backend will be uploaded and stored at S3 bucket, so you can easily manage your deployment from any machine. It is highly recommended to do not change this variable
 backend: true
@@ -61,9 +63,6 @@ chain_custom_environment:
     ADDRESS_WITH_BALANCES_UPDATE_INTERVAL: 1800 #Interval in seconds to restart the task, which calculates addresses with balances
     LINK_TO_OTHER_EXPLORERS: "false" # If true, links to other explorers are added in the footer
     USE_PLACEMENT_GROUP: "false" # If true, BlockScout instance will be created in the placement group
-    EXQ_BLOCKS_CONCURRENCY="1"
-    EXQ_INTERNAL_TRANSACTIONS_CONCURRENCY="1"
-    EXQ_TRANSACTIONS_CONCURRENCY="1"
-
-## Region. It is recommended to deploy to us-east-1 as some of the other regions fails due to varied reasons
-region: "us-east-1"
+    EXQ_BLOCKS_CONCURRENCY: "1"
+    EXQ_INTERNAL_TRANSACTIONS_CONCURRENCY: "1"
+    EXQ_TRANSACTIONS_CONCURRENCY: "1"
