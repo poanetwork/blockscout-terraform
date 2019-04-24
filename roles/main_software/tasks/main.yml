@@ -175,7 +175,7 @@
 
 - name: Upload output
   debug:
-    msg: "If deployment will fail, you can try to deploy blockscout manually using the following commands: {{ push_output.stdout_lines }}" 
+    msg: "If deployment will fail, you can try to deploy blockscout manually using the following commands: {{ 'AWS_ACCESS_KEY=XXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXX AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines }} {{ '--profile='~aws_profile if aws_profile is defined else '' }}" 
 
 - name: User prompt
   pause:

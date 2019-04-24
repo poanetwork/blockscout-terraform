@@ -10,19 +10,19 @@ root_block_size    = "{{ root_block_size }}"
 
 pool_size = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['POOL_SIZE'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['POOL_SIZE']|default('30') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 secret_key_base = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['SECRET_KEY_BASE'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['SECRET_KEY_BASE']|default('TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ==') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 use_ssl = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['ECTO_USE_SSL'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['ECTO_USE_SSL']|default('false') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
