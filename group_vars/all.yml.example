@@ -37,6 +37,7 @@ chain_custom_environment:
     #CHECK_ORIGIN: "false" # Used to check the origin of requests when the origin header is present
     PORT: 4000 # Port the application runs on
     COIN: "POA" # Coin name at the Coinmarketcap, used to display current exchange rate
+    #COINMARKETCAP_PAGES: 10 # Sets the number of pages at Coinmarketcap to search coin at. Defaults to 10
     #METADATA_CONTRACT: # Address of metadata smart contract. Used by POA Network to obtain Validators information to display in the UI
     #VALIDATORS_CONTRACT: #Address of the EMission Fund smart contract
     #SUPPLY_MODULE: "false" # Used by the xDai Chain to calculate the total supply of the chain
@@ -65,4 +66,4 @@ chain_custom_environment:
     USE_PLACEMENT_GROUP: "false" # If true, BlockScout instance will be created in the placement group
     EXQ_BLOCKS_CONCURRENCY: "1"
     EXQ_INTERNAL_TRANSACTIONS_CONCURRENCY: "1"
-    EXQ_TRANSACTIONS_CONCURRENCY: "1"
+    EXQ_TRANSACTIONS_CONCURRENCY: "1" 
