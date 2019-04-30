@@ -3,6 +3,15 @@
     bucket: "{{ prefix }}-{{ bucket }}" 
     mode: create
     permission: private
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
 
 - name: Apply tags and versioning to create S3 bucket
   s3_bucket:
@@ -11,6 +20,15 @@
     tags:
       origin: terraform
       prefix: "{{ prefix }}"
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
 
 - name: Add lifecycle management policy to created S3 bucket
   s3_lifecycle:
@@ -19,6 +37,15 @@
     noncurrent_version_expiration_days: 90
     status: enabled
     state: present
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
 
 - name: Check if config file exists 
   stat:
@@ -50,6 +77,15 @@
     object: all.yml
     src: "{{ playbook_dir }}/group_vars/all.yml.temp"
     mode: put
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
   when: upload_config_to_s3|bool == True and stat_result.stat.exists == True
 
 - name: Remove temp file

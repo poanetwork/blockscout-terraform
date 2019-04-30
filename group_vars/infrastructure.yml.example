@@ -24,9 +24,6 @@ dns_zone_name: "poa.internal"
 ## Size of the EC2 instance EBS root volume
 root_block_size: 120
 
-## The following variable represents the elixir version that will be used to run BlockScout instance. Will be used to download the Elixir at the following link: https://github.com/elixir-lang/elixir/releases/download/{{ elixir_version }}/Precompiled.zip
-elixir_version: "v1.7.4"
-
 # DB related variables
 
 ## This value represents the name of the DB that will be created/attached. Must be unique. Will be prefixed with `prefix` variable.

@@ -16,12 +16,20 @@
   template:
     src: roles/main_infra/templates/terraform.tfvars.j2
     dest: roles/main_infra/files/terraform.tfvars
+  vars:
+    db_iops: "{{ chain_db_iops | default({}) }}"
 
 - name: Generating backend file
   template:
     src: roles/main_infra/templates/backend.tfvars.j2
     dest: roles/main_infra/files/backend.tfvars
   when: backend|bool == true
+
+- name: Generate Terraform files
+  template:
+    src: "{{ item.key }}"
+    dest: "{{ item.value }}"
+  with_dict: {roles/main_infra/templates/hosts.tf.j2: roles/main_infra/files/hosts.tf,roles/main_infra/templates/routing.tf.j2: roles/main_infra/files/routing.tf,roles/main_infra/templates/provider.tf.j2: roles/main_infra/files/provider.tf}
 
 #Workaround since terraform module return unexpected error.
 - name: Initialize Terraform

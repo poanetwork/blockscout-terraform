@@ -40,10 +40,12 @@ resource "aws_launch_configuration" "explorer" {
 }
 
 {% for key, value in chain_custom_environment.iteritems() %}
+{% if value['USE_PLACEMENT_GROUP']|default('true') == "true" %}
 resource "aws_placement_group" "explorer-{{key}}" {
   name     = "${var.prefix}-{{key}}-explorer-pg"
   strategy = "cluster"
 }
+{% endif %}
 {% endfor %}
 
 {% for key, value in chain_custom_environment.iteritems() %}
@@ -52,7 +54,7 @@ resource "aws_autoscaling_group" "explorer-{{key}}" {
   max_size             = "4"
   min_size             = "1"
   desired_capacity     = "1"
-{% if value['USE_PLACEMENT_GROUP'] == "true" %}  placement_group      = "${var.prefix}-{{key}}-explorer-pg" {% endif %}
+{% if value['USE_PLACEMENT_GROUP']|default('true') == "true" %}  placement_group      = "${var.prefix}-{{key}}-explorer-pg" {% endif %}
   launch_configuration = "${aws_launch_configuration.explorer.name}"
   vpc_zone_identifier  = ["${aws_subnet.default.id}"]
   availability_zones   = ["${data.aws_availability_zones.available.names}"]
@@ -90,6 +92,12 @@ resource "aws_autoscaling_group" "explorer-{{key}}" {
   tag {
     key                 = "chain"
     value               = "{{ key }}"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Name"
+    value               = "{{ key }} Application"
     propagate_at_launch = true
   }
 }

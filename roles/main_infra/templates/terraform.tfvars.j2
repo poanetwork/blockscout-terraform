@@ -1,42 +1,41 @@
-region                = "{{ ansible_env.AWS_REGION }}"
-prefix                = "{{ prefix }}"
-key_name              = "{{ ec2_ssh_key_name }}"
-key_content           = "{{ ec2_ssh_key_content }}"
-vpc_cidr              = "{{ vpc_cidr }}"
-public_subnet_cidr    = "{{ public_subnet_cidr  }}"
-db_subnet_cidr        = "{{ db_subnet_cidr }}"
-dns_zone_name         = "{{ dns_zone_name }}"
-instance_type         = "{{ instance_type }}"
-root_block_size       = "{{ root_block_size }}"
-elixir_version        = "{{ elixir_version }}"
+prefix             = "{{ prefix }}"
+key_name           = "{{ ec2_ssh_key_name }}"
+key_content        = "{{ ec2_ssh_key_content }}"
+vpc_cidr           = "{{ vpc_cidr }}"
+public_subnet_cidr = "{{ public_subnet_cidr  }}"
+db_subnet_cidr     = "{{ db_subnet_cidr }}"
+dns_zone_name      = "{{ dns_zone_name }}"
+instance_type      = "{{ instance_type }}"
+root_block_size    = "{{ root_block_size }}"
 
 pool_size = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['POOL_SIZE'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['POOL_SIZE']|default('30') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 secret_key_base = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['SECRET_KEY_BASE'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['SECRET_KEY_BASE']|default('TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ==') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 use_ssl = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['ECTO_USE_SSL'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['ECTO_USE_SSL']|default('false') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
+
 alb_ssl_policy = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['ALB_SSL_POLICY'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['ALB_SSL_POLICY']|default('') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
 alb_certificate_arn = {
 {% for key, value in chain_custom_environment.iteritems() %}
-{{ key }}="{{ value['ALB_CERTIFICATE_ARN'] }}"{% if not loop.last %},{% endif %}
+{{ key }}="{{ value['ALB_CERTIFICATE_ARN']|default('') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 

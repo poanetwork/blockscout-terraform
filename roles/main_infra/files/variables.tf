@@ -1,4 +1,3 @@
-variable "region" {}
 variable "prefix" {}
 variable "key_name" {}
 variable "vpc_cidr" {}
@@ -7,13 +6,15 @@ variable "db_subnet_cidr" {}
 variable "dns_zone_name" {}
 variable "instance_type" {}
 variable "root_block_size" {}
+
 variable "pool_size" {
   default = {} 
 }
-variable "elixir_version" {}
+
 variable "use_placement_group" {
   default = {}
 }
+
 variable "key_content" {
   default = ""
 }
