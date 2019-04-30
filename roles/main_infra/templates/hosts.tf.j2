@@ -94,6 +94,12 @@ resource "aws_autoscaling_group" "explorer-{{key}}" {
     value               = "{{ key }}"
     propagate_at_launch = true
   }
+
+  tag {
+    key                 = "Name"
+    value               = "{{ key }} Application"
+    propagate_at_launch = true
+  }
 }
 
 # TODO: These autoscaling policies are not currently wired up to any triggers

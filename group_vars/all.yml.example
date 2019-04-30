@@ -64,6 +64,3 @@ chain_custom_environment:
     ADDRESS_WITH_BALANCES_UPDATE_INTERVAL: 1800 #Interval in seconds to restart the task, which calculates addresses with balances
     LINK_TO_OTHER_EXPLORERS: "false" # If true, links to other explorers are added in the footer
     USE_PLACEMENT_GROUP: "false" # If true, BlockScout instance will be created in the placement group
-    EXQ_BLOCKS_CONCURRENCY: "1"
-    EXQ_INTERNAL_TRANSACTIONS_CONCURRENCY: "1"
-    EXQ_TRANSACTIONS_CONCURRENCY: "1" 

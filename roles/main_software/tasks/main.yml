@@ -163,11 +163,10 @@
   when: user_answer.user_input|lower != "false" and user_answer.user_input|lower != "no"  
 
 - name: Fix bug with favicon 
-  copy:
-    src: "{{ item }}"
-    dest: "blockscout-{{ chain }}/apps/block_scout_web/priv/static/images/"
-  with_fileglob:
-    - "blockscout-{{ chain }}/apps/block_scout_web/priv/static/favicon*"
+  replace:
+    regexp: 'favicon-[a-z0-9]+?\.ico'
+    replace: "favicon.ico"
+    path: "blockscout-{{ chain }}/apps/block_scout_web/priv/static/cache_manifest.json"
 
 - name: Upload Blockscout to S3
   command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} aws deploy push --application-name={{ prefix }}-explorer --s3-location s3://{{ prefix }}-explorer-codedeploy-releases/blockscout-{{ chain }}.zip --source=blockscout-{{ chain }} {{ '--profile='~aws_profile if aws_profile is defined else '' }}"
