@@ -88,7 +88,7 @@
     chain_env: "{{ lookup('aws_ssm', path, aws_profile=aws_profile, shortnames=true, bypath=true, recursive=true  ) }}"
   vars:
     path: "/{{ prefix }}/{{ chain }}"
-  when: aws_profile is defined
+  when: aws_access_key is undefined
 
 - name: Make config variables lowercase
   set_fact:
@@ -165,7 +165,7 @@
 - name: Fix bug with favicon 
   replace:
     regexp: 'favicon-[a-z0-9]+?\.ico'
-    replace: "favicon.ico"
+    replace: "images/favicon.ico"
     path: "blockscout-{{ chain }}/apps/block_scout_web/priv/static/cache_manifest.json"
 
 - name: Upload Blockscout to S3
