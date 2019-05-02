@@ -164,8 +164,8 @@
 
 - name: Fix bug with favicon 
   replace:
-    regexp: 'favicon-[a-z0-9]+?\.ico'
-    replace: "images/favicon.ico"
+    regexp: '\"favicon\.ico\"\:\"favicon-[a-z0-9]+?\.ico\"'
+    replace: '"images/favicon.ico":"favicon.ico"'
     path: "blockscout-{{ chain }}/apps/block_scout_web/priv/static/cache_manifest.json"
 
 - name: Upload Blockscout to S3
