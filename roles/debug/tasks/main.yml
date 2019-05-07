@@ -1,0 +1,67 @@
+- name: Check log file exists
+  stat:
+    path: "{{ playbook_dir }}/log.txt"
+  register: stat_result
+
+- name: Upload logs to s3
+  aws_s3:
+    bucket: "{{ prefix }}-{{ bucket }}"
+    object: log.txt
+    src: "{{ playbook_dir }}/log.txt"
+    mode: put
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
+  when: stat_result.stat.exists == true
+
+- name: Check if config file exists 
+  stat:
+    path: "{{ playbook_dir }}/group_vars/all.yml"
+  register: stat_result
+
+- name: Copy temporary file to be uploaded
+  command: "cp {{ playbook_dir }}/group_vars/all.yml {{ playbook_dir }}/group_vars/all.yml.temp"
+  when: stat_result.stat.exists == True
+
+- name: Remove insecure AWS variables
+  replace:
+    path: "{{ playbook_dir }}/group_vars/all.yml.temp"
+    regexp: 'aws_.*'
+    replace: '<There was an aws-related insecure variable to keep at S3. Removed>'
+  when: stat_result.stat.exists == True
+
+- name: Remove other insecure variables
+  replace:
+    path: "{{ playbook_dir }}/group_vars/all.yml.temp"
+    regexp: 'secret_.*'
+    replace: '<There was an insecure variable to keep at S3. Removed>'
+  when: stat_result.stat.exists == True
+
+- name: Upload config to S3 bucket
+  aws_s3:
+    bucket: "{{ prefix }}-{{ bucket }}"
+    object: all.yml
+    src: "{{ playbook_dir }}/group_vars/all.yml.temp"
+    mode: put
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
+  when: stat_result.stat.exists == True
+
+- name: Remove temp file
+  file:
+    path: "{{ playbook_dir }}/group_vars/all.yml.temp"
+    state: absent
+  when: stat_result.stat.exists == True

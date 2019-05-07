@@ -70,7 +70,7 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 
 - `aws_access_key` and `aws_secret_key` is a credentials pair that provides access to AWS for the deployer;
 - `backend` variable defines whether deployer should keep state files remote or locally. Set `backend` variable to `true` if you want to save state file to the remote S3 bucket;
-- `upload_config_to_s3` - set to `true` if you want to upload config`all.yml` file to the S3 bucket automatically during deployment. Will not work if `backend` is set to false;
+- `upload_debug_info_to_s3` - set to `true` if you want to upload debug info such as config `all.yml` file and full log output to the S3 bucket automatically after the deployment. Will not work if `backend` is set to false;
 - `bucket` represents a globally unique name of the bucket where your configs and state will be stored. It will be created automatically during the deployment;
 - `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
 - `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;
@@ -209,7 +209,7 @@ Despite the fact that Terraform cache is automatically cleared automatically bef
 
 ## Migrating deployer to another machine
 
-You can easily manipulate your deployment from any machine with sufficient prerequisites. If  `upload_config_to_s3` variable is set to true, the deployer will automatically upload your `all.yml` file to the s3 bucket, so you can easily download it to any other machine. Simply download this file to your `group_vars` folder and your new deployer will pick up the current deployment instead of creating a new one.
+You can easily manipulate your deployment from any machine with sufficient prerequisites. If  `upload_debug_info_to_s3` variable is set to true, the deployer will automatically upload your `all.yml` file to the s3 bucket, so you can easily download it to any other machine. Simply download this file to your `group_vars` folder and your new deployer will pick up the current deployment instead of creating a new one.
 
 
 ## Attaching the existing RDS instance to the current deployment
@@ -219,9 +219,13 @@ In some cases you may want not to create a new database, but to add the existing
 **Note 1**:  while executing `ansible-playbook attach_existing_rds.yml` the S3 and DynamoDB will be automatically created (if `backend` variable is set to `true`) to store Terraform state files. 
 
 **Note 2**: the actual name of your resource must include prefix that you will use in this deployment.
+
 Example:
+
   Real resource: tf-poa
+
   `prefix` variable: tf
+
   `chain_db_id` variable: poa
 
 **Note 3**: make sure MultiAZ is disabled on your database.

@@ -11,8 +11,8 @@ aws_region: "us-east-1"
 
 ## If set to true backend will be uploaded and stored at S3 bucket, so you can easily manage your deployment from any machine. It is highly recommended to do not change this variable
 backend: true
-## If this is set to true along with backend variable, this config file will be saved to s3 bucket. Please, make sure to name it as all.yml. Otherwise, no upload will be performed
-upload_config_to_s3: true
+## If this is set to true along with backend variable, this config file and the log output will be saved to s3 bucket. Please, make sure to name it as all.yml. Otherwise, no upload will be performed
+upload_debug_info_to_s3: true
 
 ## The bucket and dynamodb_table variables will be used only when backend variable is set to true
 ## Name of the bucket where TF state files will be stored

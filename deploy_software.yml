@@ -1,8 +1,3 @@
-- name: Save config file
-  hosts: localhost
-  roles:
-    - { role: s3, when: "backend|bool == true" }
-
 - name: Deploy BlockScout
   hosts: localhost
   tasks:
@@ -13,3 +8,9 @@
      loop_control:
        loop_var: chain
        index_var: index
+
+- name: Save debug files
+  hosts: localhost
+  roles:
+    - { role: s3, when: "backend|bool == true and upload_debug_info_to_s3|bool == true" }
+    - { role: debug, when: "backend|bool == true and upload_debug_info_to_s3|bool == true" }

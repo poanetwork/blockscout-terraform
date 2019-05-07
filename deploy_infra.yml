@@ -5,3 +5,4 @@
     - { role: s3, when: "backend|bool == true" }
     - { role: dynamodb, when: "backend|bool == true" }
     - { role: main_infra }
+    - { role: debug, when: "backend|bool == true and upload_debug_info_to_s3|bool == true" }
