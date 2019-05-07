@@ -31,6 +31,17 @@
     dest: "{{ item.value }}"
   with_dict: {roles/main_infra/templates/hosts.tf.j2: roles/main_infra/files/hosts.tf,roles/main_infra/templates/routing.tf.j2: roles/main_infra/files/routing.tf,roles/main_infra/templates/provider.tf.j2: roles/main_infra/files/provider.tf}
 
+- name: Check if .terraform folder exists
+  stat:
+    path: "roles/main_infra/files/.terraform/"
+  register: stat_result
+
+- name: Remove .terraform folder
+  file:
+    path: roles/main_infra/files/.terraform/
+    state: absent
+  when: stat_result.stat.exists == True
+
 #Workaround since terraform module return unexpected error.
 - name: Initialize Terraform
   shell: "echo yes | {{ terraform_location }} init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
