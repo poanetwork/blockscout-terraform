@@ -65,3 +65,4 @@ chain_custom_environment:
     #DATADOG_PORT: # Port configuration variable for Datadog integration
     #SPANDEX_BATCH_SIZE: # Spandex and Datadog configuration setting.
     #SPANDEX_SYNC_THRESHOLD: # 	Spandex and Datadog configuration setting.
+    #BLOCK_COUNT_CACHE_TTL: #Time to live of block count cache in milliseconds
