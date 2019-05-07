@@ -78,7 +78,7 @@
 
 - name: Fetch environment variables (via access key)
   set_fact: 
-    chain_env: "{{ lookup('aws_ssm', path, aws_access_key=aws_access_key, aws_secret_key=aws_secret_key, region=region, shortnames=true, bypath=true, recursive=true  ) }}"
+    chain_env: "{{ lookup('aws_ssm', path, aws_access_key=aws_access_key, aws_secret_key=aws_secret_key, region=aws_region|default('us-east-1'), shortnames=true, bypath=true, recursive=true  ) }}"
   vars:
     path: "/{{ prefix }}/{{ chain }}"
   when: aws_access_key is defined
