@@ -70,7 +70,8 @@ The single point of configuration in this script is a `group_vars/all.yml` file.
 
 - `aws_access_key` and `aws_secret_key` is a credentials pair that provides access to AWS for the deployer;
 - `backend` variable defines whether deployer should keep state files remote or locally. Set `backend` variable to `true` if you want to save state file to the remote S3 bucket;
-- `upload_debug_info_to_s3` - set to `true` if you want to upload debug info such as config `all.yml` file and full log output to the S3 bucket automatically after the deployment. Will not work if `backend` is set to false;
+- `upload_config_to_s3` - set to `true` if you want to upload config `all.yml` file to the S3 bucket automatically after the deployment. Will not work if `backend` is set to false;
+- `upload_debug_info_to_s3` - set to `true` if you want to upload full log output to the S3 bucket automatically after the deployment. Will not work if `backend` is set to false. *IMPORTANT*: Locally logs are stored at `log.txt` which is not cleaned automatically. Please, do not forget to clean it manually or using the `clean.yml` playbook;
 - `bucket` represents a globally unique name of the bucket where your configs and state will be stored. It will be created automatically during the deployment;
 - `prefix` - is a unique tag to use for provisioned resources (5 alphanumeric chars or less);
 - `chains` - maps chains to the URLs of HTTP RPC endpoints, an ordinary blockchain node can be used;

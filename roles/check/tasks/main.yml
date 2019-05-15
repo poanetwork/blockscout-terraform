@@ -1,8 +1,3 @@
-- name: Clean log file
-  file:
-    state: absent
-    path: "log.txt"
-
 - name: Check prefix
   fail:
     msg: "The prefix '{{ prefix }}' is invalid. It must consist only of the lowercase characters a-z and digits 0-9, and must be between 3 and 5 characters long."

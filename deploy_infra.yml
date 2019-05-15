@@ -1,9 +1,21 @@
 - name: Prepare infrastructure
   hosts: localhost
-  roles:
-    - { role: check }
-    - { role: s3, when: "backend|bool == true" }
-    - { role: dynamodb, when: "backend|bool == true" }
-    - { role: main_infra }
-    - { role: s3_config, when: "backend|bool == true and upload_config_to_s3|bool == true" }
-    - { role: s3_debug, when: "backend|bool == true and upload_debug_info_to_s3|bool == true" }
+  tasks:
+    - block:
+        - include_role:
+            name: check
+        - include_role:
+            name: "{{ item }}"
+          with_items:
+            - s3
+            - dynamodb
+          when: backend|bool == true
+        - include_role:
+            name: main_infra
+      always:
+        - include_role:
+            name: s3_config
+          when: backend|bool == true and upload_config_to_s3|bool == true
+        - include_role:
+            name: s3_debug
+          when: backend|bool == true and upload_debug_info_to_s3|bool == true
