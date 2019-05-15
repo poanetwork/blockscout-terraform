@@ -1,5 +1,8 @@
 # BlockScout related variables
 
+## Exact path to the TF binary on your local machine
+terraform_location: "/usr/local/bin/terraform"
+
 ## An address of BlockScout repo to download
 blockscout_repo: https://github.com/poanetwork/blockscout
 
