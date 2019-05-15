@@ -12,5 +12,6 @@
 - name: Save debug files
   hosts: localhost
   roles:
-    - { role: s3, when: "backend|bool == true and upload_debug_info_to_s3|bool == true" }
-    - { role: debug, when: "backend|bool == true and upload_debug_info_to_s3|bool == true" }
+    - { role: s3, when: "backend|bool == true and (upload_debug_info_to_s3|bool == true or upload_config_to_s3|bool ==true)" }
+    - { role: s3_config, when: "backend|bool == true and upload_config_to_s3|bool == true" }
+    - { role: s3_debug, when: "backend|bool == true and upload_debug_info_to_s3|bool == true" }
