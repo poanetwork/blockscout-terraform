@@ -11,3 +11,4 @@
         - roles/main_infra/files/main.tfvars
         - roles/main_infra/files/backend.tfvars
         - roles/main_infra/files/terraform.tfplan
+        - log.txt
