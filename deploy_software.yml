@@ -1,14 +1,10 @@
 - name: Deploy BlockScout
-  hosts: localhost
+  hosts: all
   tasks:
    - block:
-       - name: Use role in loop
+       - name: Deploy
          include_role:
            name: main_software
-         loop: "{{ chain_custom_environment.keys() }}"  
-         loop_control:
-           loop_var: chain
-           index_var: index
      always:
        - include_role:
            name: s3 

@@ -20,6 +20,10 @@ roles/main_infra/files/provider.tf
 /PREFIX
 
 group_vars/*
+host_vars/*
+!host_vars/all.yml.example
+!host_vars/blockscout.yml.example
+!host_vars/infrastructure.yml.example
 !group_vars/all.yml.example
 !group_vars/blockscout.yml.example
 !group_vars/infrastructure.yml.example
@@ -29,3 +33,5 @@ group_vars/*
 .*.swp
 
 blockscout-*/
+
+hosts

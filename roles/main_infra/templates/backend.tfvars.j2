@@ -1,3 +1,3 @@
-bucket         = "{{ prefix }}-{{ bucket }}"
-dynamodb_table = "{{ prefix }}-{{ dynamodb_table }}"
+bucket         = "{{ group_names[0] }}-{{ bucket }}"
+dynamodb_table = "{{ group_names[0] }}-{{ dynamodb_table }}"
 key            = "terraform.tfstate"

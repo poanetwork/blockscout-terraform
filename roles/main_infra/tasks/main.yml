@@ -3,27 +3,27 @@
     src: remote-backend-selector.tf.j2 
     dest: roles/main_infra/files/remote-backend-selector.tf
   when: 
-    - backend|bool == true
+    - backend|bool
 
 - name: Local or remote backend selector (local)
   file:
     state: absent
     dest: roles/main_infra/files/remote-backend-selector.tf
   when: 
-    - backend | default ('false') | bool != true
+    - backend | default('false') | bool
 
 - name: Generating variables file
   template:
     src: terraform.tfvars.j2
     dest: roles/main_infra/files/terraform.tfvars
   vars:
-    db_iops: "{{ chain_db_iops | default({}) }}"
+    db_iops: "{{ db_iops | default({}) }}"
 
 - name: Generating backend file
   template:
     src: backend.tfvars.j2
     dest: roles/main_infra/files/backend.tfvars
-  when: backend|bool == true
+  when: backend | default('false') | bool
 
 - name: Check if .terraform folder exists
   stat:
@@ -34,13 +34,13 @@
   file:
     path: roles/main_infra/files/.terraform/
     state: absent
-  when: stat_result.stat.exists == True
+  when: stat_result.stat.exists
 
 - name: Generate Terraform files
   template:
     src: "{{ item.key }}"
     dest: "{{ item.value }}"
-  with_dict: {hosts.tf.j2: roles/main_infra/files/hosts.tf,routing.tf.j2: roles/main_infra/files/routing.tf,provider.tf.j2: roles/main_infra/files/provider.tf}
+  with_dict: { hosts.tf.j2: roles/main_infra/files/hosts.tf, routing.tf.j2: roles/main_infra/files/routing.tf, provider.tf.j2: roles/main_infra/files/provider.tf }
     
 #Workaround since terraform module return unexpected error.
 - name: Terraform plan construct
@@ -61,36 +61,35 @@
   pause:
     prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [False]"
   register: user_answer
+  until: user_answer.user_input | lower != "false" and user_answer.user_input | lower != "no" and user_answer.user_input | lower != "true" and user_answer.user_input | lower != "yes"
+  retries: 10000
+  delay: 1
 
 - name: Insert vars into parameter store
   include: parameter_store.yml
-  loop: "{{ chain_custom_environment.keys() }}"
-  loop_control:
-    loop_var: chain
-    index_var: index
-  when: user_answer.user_input|bool == True
+  when: user_answer.user_input | bool
 
 - name: Terraform provisioning
   shell: "echo yes | {{ terraform_location }} apply terraform.tfplan" 
   args:
     chdir: "roles/main_infra/files"
-  when: user_answer.user_input|bool == True 
+  when: user_answer.user_input | bool
   ignore_errors: True
 
 - name: Ensure Terraform resources has been provisioned
   shell: "echo yes | {{ terraform_location }} apply"
   args:
     chdir: "roles/main_infra/files"
-  when: user_answer.user_input|bool == True
+  when: user_answer.user_input | bool
 
 - name: Terraform output info into variable
   shell: "{{ terraform_location }} output -json"
   register: output
   args:
     chdir: "roles/main_infra/files"
-  when: user_answer.user_input|bool == True
+  when: user_answer.user_input | bool
 
 - name: Output info from Terraform
   debug:
     var: output.stdout_lines
-  when: user_answer.user_input|bool == True
+  when: user_answer.user_input | bool

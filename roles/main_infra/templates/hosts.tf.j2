@@ -39,7 +39,7 @@ resource "aws_launch_configuration" "explorer" {
   }
 }
 
-{% for key, value in chain_custom_environment.iteritems() %}
+{% for key, value in env_vars.iteritems() %}
 {% if value['USE_PLACEMENT_GROUP']|default('true') == "true" %}
 resource "aws_placement_group" "explorer-{{key}}" {
   name     = "${var.prefix}-{{key}}-explorer-pg"
@@ -48,13 +48,13 @@ resource "aws_placement_group" "explorer-{{key}}" {
 {% endif %}
 {% endfor %}
 
-{% for key, value in chain_custom_environment.iteritems() %}
+{% for key, value in env_vars.iteritems() %}
 resource "aws_autoscaling_group" "explorer-{{key}}" {
   name                 = "${aws_launch_configuration.explorer.name}-asg-{{key}}"
   max_size             = "4"
   min_size             = "1"
   desired_capacity     = "1"
-{% if value['USE_PLACEMENT_GROUP']|default('true') == "true" %}  placement_group      = "${var.prefix}-{{key}}-explorer-pg"
+{% if use_placement_group | default('false') == "true" %}  placement_group      = "${var.prefix}-{{key}}-explorer-pg"
 {% endif %}
   launch_configuration = "${aws_launch_configuration.explorer.name}"
   vpc_zone_identifier  = ["${aws_subnet.default.id}"]

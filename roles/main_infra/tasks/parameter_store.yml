@@ -1,7 +1,7 @@
 - name: Prepare variables for Parameter Store
   set_fact:
     chain_ps_env: "{{ chain_ps_env | combine ({item.key|lower : item.value})  }}"
-  with_dict: "{{ chain_custom_environment[chain] }}"
+  with_dict: "{{ hostvars[inventory_hostname]['env_vars'] }}"
   vars:
     chain_ps_env: {}
 

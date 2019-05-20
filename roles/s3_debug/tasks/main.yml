@@ -5,7 +5,7 @@
 
 - name: Upload logs to s3
   aws_s3:
-    bucket: "{{ prefix }}-{{ bucket }}"
+    bucket: "{{ group_names[0] }}-{{ bucket }}"
     object: log.txt
     src: "{{ playbook_dir }}/log.txt"
     mode: put

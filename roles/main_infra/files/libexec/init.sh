@@ -103,6 +103,21 @@ log "Setting up application environment.."
 mkdir -p /opt/app
 chown -R ec2-user /opt/app
 
+log "Creating logrotate config"
+
+cat <<EOF > /etc/logrotate.d/blockscout
+
+/var/log/messages* {
+  rotate 5
+  size 1G
+  compress
+  missingok
+  delaycompress
+  copytruncate
+}
+
+EOF
+
 log "Creating explorer systemd service.."
 
 cat <<EOF > /lib/systemd/system/explorer.service
