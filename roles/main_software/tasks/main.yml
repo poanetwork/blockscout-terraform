@@ -135,8 +135,7 @@
       command: "pkill -f {{ item }}"
       with_items:
         - beam.smp
-        - node
-        - erlang
+        - webpack.js
       failed_when: false  
       when: 
  
