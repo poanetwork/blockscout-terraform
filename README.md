@@ -66,16 +66,16 @@ The deployment process goes in two stages. First, Ansible creates S3 bucket and 
 There are three groups of variables required to build BlockScout. Furst is required to create infrastructure, second is required to build BlockScout instances and the third is the one that is required both for infra and BS itself.
 For your convenience we have divided variable templates into three files accordingly - `infrastructure.yml.example`, `blockscout.yml.example` and `all.yml.example` . Also we have divided those files to place them in `group_vars` and in `host_vars` folder, so you will not have to repeat some of the variables for each host/group. 
 
-In order to deploy BlockScout, you will have to setup the following set of files for each BlockScout instance:
+In order to deploy BlockScout, you will have to setup the following set of files for each instance:
 
 ```
 /
 | - group_vars
 |   | - group.yml (combination of [blockscout+infrastructure+all].yml.example)
-|   | - all.yml (optional)
+|   | - all.yml (optional, one for all instances)
 | - host_vars
 |   | - host.yml (combination of [blockscout+infrastructure+all].yml.example)
-| - hosts
+| - hosts (one for all instances)
 ```
 
 ## Common variables
@@ -283,7 +283,3 @@ This is due to a bug in Terraform, however the fix is to just rerun `ansible-pla
 ### Server doesn't start during deployment
 
 Even if server is configured correctly, sometimes it may not bind the appropriate 4000 port due to unknown reason. If so, simply go to the appropriate nested blockscout folder, kill and rerun server. For example, you can use the following command: `pkill beam.smp && pkill node && sleep 10 && mix phx.server`.
-
-```
-
-```
