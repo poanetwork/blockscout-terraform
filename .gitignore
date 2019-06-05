@@ -2,6 +2,7 @@ log.txt
 
 # Terraform State
 *.terraform*
+*.tfstate
 *terraform.tfstate.d*
 *tfplan*
 roles/main_infra/files/backend.tfvars
@@ -33,5 +34,6 @@ host_vars/*
 .*.swp
 
 blockscout-*/
+roles/main_infra/files-*
 
 hosts

@@ -16,8 +16,6 @@
   template:
     src: roles/main_infra/templates/terraform.tfvars.j2
     dest: roles/main_infra/files/terraform.tfvars
-  vars:
-    db_iops: "{{ chain_db_iops | default({}) }}"
 
 - name: Generating backend file
   template:

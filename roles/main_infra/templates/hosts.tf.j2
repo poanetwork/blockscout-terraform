@@ -39,22 +39,22 @@ resource "aws_launch_configuration" "explorer" {
   }
 }
 
-{% for key, value in env_vars.iteritems() %}
-{% if value['USE_PLACEMENT_GROUP']|default('true') == "true" %}
-resource "aws_placement_group" "explorer-{{key}}" {
-  name     = "${var.prefix}-{{key}}-explorer-pg"
+{% for key in groups[group_names[0]] %}
+{% if use_placement_group | default('true') == "true" %}
+resource "aws_placement_group" "explorer-{{ hostvars[key]['chain'] }}" {
+  name     = "${var.prefix}-{{ hostvars[key]['chain'] }}-explorer-pg"
   strategy = "cluster"
 }
 {% endif %}
 {% endfor %}
 
-{% for key, value in env_vars.iteritems() %}
-resource "aws_autoscaling_group" "explorer-{{key}}" {
-  name                 = "${aws_launch_configuration.explorer.name}-asg-{{key}}"
+{% for key in groups[group_names[0]] %}
+resource "aws_autoscaling_group" "explorer-{{ hostvars[key]['chain'] }}" {
+  name                 = "${aws_launch_configuration.explorer.name}-asg-{{ hostvars[key]['chain'] }}"
   max_size             = "4"
   min_size             = "1"
   desired_capacity     = "1"
-{% if use_placement_group | default('false') == "true" %}  placement_group      = "${var.prefix}-{{key}}-explorer-pg"
+{% if use_placement_group | default('false') == "true" %}  placement_group      = "${var.prefix}-{{ hostvars[key]['chain'] }}-explorer-pg"
 {% endif %}
   launch_configuration = "${aws_launch_configuration.explorer.name}"
   vpc_zone_identifier  = ["${aws_subnet.default.id}"]
@@ -92,29 +92,29 @@ resource "aws_autoscaling_group" "explorer-{{key}}" {
 
   tag {
     key                 = "chain"
-    value               = "{{ key }}"
+    value               = "{{ hostvars[key]['chain'] }}"
     propagate_at_launch = true
   }
 
   tag {
     key                 = "Name"
-    value               = "{{ key }} Application"
+    value               = "{{ hostvars[key]['chain'] }} Application"
     propagate_at_launch = true
   }
 }
 
 # TODO: These autoscaling policies are not currently wired up to any triggers
-resource "aws_autoscaling_policy" "explorer-up" {
-  name                   = "${var.prefix}-{{key}}-explorer-autoscaling-policy-up"
-  autoscaling_group_name = "${aws_autoscaling_group.explorer-{{key}}.name}"
+resource "aws_autoscaling_policy" "explorer-up-{{ hostvars[key]['chain'] }}" {
+  name                   = "${var.prefix}-{{ hostvars[key]['chain'] }}-explorer-autoscaling-policy-up"
+  autoscaling_group_name = "${aws_autoscaling_group.explorer-{{ hostvars[key]['chain'] }}.name}"
   adjustment_type        = "ChangeInCapacity"
   scaling_adjustment     = 1
   cooldown               = 300
 }
 
-resource "aws_autoscaling_policy" "explorer-down" {
-  name                   = "${var.prefix}-{{key}}-explorer-autoscaling-policy-down"
-  autoscaling_group_name = "${aws_autoscaling_group.explorer-{{key}}.name}"
+resource "aws_autoscaling_policy" "explorer-down-{{ hostvars[key]['chain'] }}" {
+  name                   = "${var.prefix}-{{ hostvars[key]['chain'] }}-explorer-autoscaling-policy-down"
+  autoscaling_group_name = "${aws_autoscaling_group.explorer-{{ hostvars[key]['chain'] }}.name}"
   adjustment_type        = "ChangeInCapacity"
   scaling_adjustment     = -1
   cooldown               = 300

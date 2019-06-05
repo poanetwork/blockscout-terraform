@@ -1,5 +1,5 @@
 - name: "Loop over config files"
-  include: subtasks.yml file={{item}}
+  include: config.yml file={{item}}
   with_items:
     - "group_vars/all.yml"
     - "group_vars/{{ group_names[0] }}"

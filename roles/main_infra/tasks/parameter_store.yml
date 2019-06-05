@@ -7,7 +7,7 @@
 
 - name: Insert variables in PS
   aws_ssm_parameter_store:
-    name: "/{{ prefix }}/{{ chain }}/{{ item.key }}"
+    name: "/{{ group_names[0] }}/{{ chain }}/{{ item.key }}"
     value: "{{ item.value }}"
     profile: "{{ profile }}"
     aws_access_key: "{{ access_key }}"

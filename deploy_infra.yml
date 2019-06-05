@@ -1,5 +1,5 @@
 - name: Prepare infrastructure
-  hosts: localhost
+  hosts: all
   tasks:
     - block:
         - include_role:
@@ -9,9 +9,10 @@
           with_items:
             - s3
             - dynamodb
-          when: backend|bool == true
+          when: backend | bool 
         - include_role:
             name: main_infra
+      when: inventory_hostname == groups[group_names[0]][0]
       always:
         - include_role:
             name: s3_config

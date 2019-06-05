@@ -1,53 +1,68 @@
+- name: Ansible delete file glob
+  find:
+    paths: /tmp/
+    file_type: directory
+    patterns: "files-{{ group_names[0] }}"
+  register: files_to_delete
+
+- name: Ansible remove file glob
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ files_to_delete.files }}"
+
+- name: Copy files
+  copy:
+    src: "roles/main_infra/files/"
+    dest: "/tmp/files-{{ group_names[0] }}/"
+
 - name: Local or remote backend selector (remote)
   template: 
     src: remote-backend-selector.tf.j2 
-    dest: roles/main_infra/files/remote-backend-selector.tf
+    dest: "/tmp/files-{{ group_names[0] }}/remote-backend-selector.tf"
   when: 
-    - backend|bool
+    - backend | bool
 
 - name: Local or remote backend selector (local)
   file:
     state: absent
-    dest: roles/main_infra/files/remote-backend-selector.tf
+    dest: "/tmp/files-{{ group_names[0] }}/remote-backend-selector.tf"
   when: 
-    - backend | default('false') | bool
+    - not backend | default('false') | bool
 
 - name: Generating variables file
   template:
     src: terraform.tfvars.j2
-    dest: roles/main_infra/files/terraform.tfvars
-  vars:
-    db_iops: "{{ db_iops | default({}) }}"
+    dest: "/tmp/files-{{ group_names[0] }}/terraform.tfvars"
 
 - name: Generating backend file
   template:
     src: backend.tfvars.j2
-    dest: roles/main_infra/files/backend.tfvars
+    dest: "/tmp/files-{{ group_names[0] }}/backend.tfvars"
   when: backend | default('false') | bool
 
-- name: Check if .terraform folder exists
-  stat:
-    path: "roles/main_infra/files/.terraform/"
-  register: stat_result  
-
-- name: Remove .terraform folder 
+- name: Remove Terraform state
   file:
-    path: roles/main_infra/files/.terraform/
+    path: "{{ item }}"
     state: absent
-  when: stat_result.stat.exists
+  with_items:
+    - "/tmp/files-{{ group_names[0] }}/.terraform/"
+    - "/tmp/files-{{ group_names[0] }}/terraform.tfstate"
+    - "/tmp/files-{{ group_names[0] }}/terraform.tfstate.backup"
+    - "/tmp/files-{{ group_names[0] }}/terraform.tfplan"
 
 - name: Generate Terraform files
   template:
     src: "{{ item.key }}"
     dest: "{{ item.value }}"
-  with_dict: { hosts.tf.j2: roles/main_infra/files/hosts.tf, routing.tf.j2: roles/main_infra/files/routing.tf, provider.tf.j2: roles/main_infra/files/provider.tf }
+  with_dict: { hosts.tf.j2: "/tmp/files-{{ group_names[0] }}/hosts.tf", routing.tf.j2: "/tmp/files-{{ group_names[0] }}/routing.tf", provider.tf.j2: "/tmp/files-{{ group_names[0] }}/provider.tf" }
     
 #Workaround since terraform module return unexpected error.
 - name: Terraform plan construct
   shell: "echo yes | {{ terraform_location }} {{ item }}"
   register: tf_plan
   args:
-    chdir: "roles/main_infra/files"
+    chdir: "/tmp/files-{{ group_names[0] }}"
   with_items:
     - "init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
     - plan -out terraform.tfplan
@@ -61,35 +76,51 @@
   pause:
     prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [False]"
   register: user_answer
-  until: user_answer.user_input | lower != "false" and user_answer.user_input | lower != "no" and user_answer.user_input | lower != "true" and user_answer.user_input | lower != "yes"
+  until: user_answer.user_input | lower in conditional 
   retries: 10000
   delay: 1
+  vars:
+    conditional: ['yes','no','true','false']
+  when: inventory_hostname == groups['all'][0]
 
 - name: Insert vars into parameter store
   include: parameter_store.yml
-  when: user_answer.user_input | bool
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
 
 - name: Terraform provisioning
   shell: "echo yes | {{ terraform_location }} apply terraform.tfplan" 
   args:
-    chdir: "roles/main_infra/files"
-  when: user_answer.user_input | bool
+    chdir: "/tmp/files-{{ group_names[0] }}"
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
   ignore_errors: True
 
 - name: Ensure Terraform resources has been provisioned
   shell: "echo yes | {{ terraform_location }} apply"
   args:
-    chdir: "roles/main_infra/files"
-  when: user_answer.user_input | bool
+    chdir: "/tmp/files-{{ group_names[0] }}"
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
 
 - name: Terraform output info into variable
   shell: "{{ terraform_location }} output -json"
   register: output
   args:
-    chdir: "roles/main_infra/files"
-  when: user_answer.user_input | bool
+    chdir: "/tmp/files-{{ group_names[0] }}"
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
 
 - name: Output info from Terraform
   debug:
     var: output.stdout_lines
-  when: user_answer.user_input | bool
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
+
+- name: Ansible delete file glob
+  find:
+    paths: /tmp/
+    file_type: directory
+    patterns: "files-{{ group_names[0] }}"
+  register: files_to_delete
+
+- name: Ansible remove file glob
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ files_to_delete.files }}"

@@ -45,55 +45,55 @@ chains = [
 {% endfor %}
 ]
 
-db_id = {
+chain_db_id = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_id'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-db_name = {
+chain_db_name = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_name'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-db_username = {
+chain_db_username = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_username'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-db_password = {
+chain_db_password = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_password'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-db_instance_class = {
+chain_db_instance_class = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_instance_class'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-db_storage = {
+chain_db_storage = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_storage'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-db_storage_type = {
+chain_db_storage_type = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_storage_type'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-db_iops = {
+chain_db_iops = {
 {% for host in groups[group_names[0]] %}
-{{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_iops'] }}"{% if not loop.last %},{% endif %}
+{{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_iops']|default('0') }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
 
-db_version = {
+chain_db_version = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_version'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}

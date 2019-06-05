@@ -9,3 +9,4 @@ db_subnet_cidr: "10.0.2.0/16"
 dns_zone_name: "poa.internal"
 instance_type: "m5.large"
 root_block_size: 8
+db_iops: {}

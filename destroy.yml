@@ -1,5 +1,6 @@
 - name: Destroy infrastructure
-  hosts: localhost
+  hosts: all
+  serial: 1
   roles:
     - { role: destroy, when: "confirmation|bool == True" } 
   vars_prompt:

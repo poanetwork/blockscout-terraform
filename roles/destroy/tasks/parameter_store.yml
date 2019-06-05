@@ -2,19 +2,19 @@
   set_fact:
     chain_env: "{{ lookup('aws_ssm', path, aws_access_key=aws_access_key, aws_secret_key=aws_secret_key, region=region, shortnames=true, bypath=true, recursive=true  ) }}"
   vars:
-    path: "/{{ prefix }}/{{ chain }}"
+    path: "/{{ group_names[0] }}/{{ chain }}"
   when: aws_access_key is defined
 
 - name: Fetch environment variables (via profile)
   set_fact:
     chain_env: "{{ lookup('aws_ssm', path, aws_profile=aws_profile, shortnames=true, bypath=true, recursive=true  ) }}"
   vars:
-    path: "/{{ prefix }}/{{ chain }}"
+    path: "/{{ group_names[0] }}/{{ chain }}"
   when: aws_profile is defined
 
 - name: Remove chain variables
   aws_ssm_parameter_store:
-    name: "/{{ prefix }}/{{ chain }}/{{ item.key }}"    
+    name: "/{{ group_names[0] }}/{{ chain }}/{{ item.key }}"    
     value: "{{ item.value }}"
     state: absent
     profile: "{{ profile }}"

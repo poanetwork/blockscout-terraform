@@ -1,13 +1,13 @@
 - name: Create DynamoDB table
   dynamodb_table:
-    name: "{{ prefix }}-{{ dynamodb_table }}"
+    name: "{{ group_names[0] }}-{{ dynamodb_table }}"
     hash_key_name: LockID
     hash_key_type: STRING
     read_capacity: 1 
     write_capacity: 1
     tags:
       origin: terraform
-      prefix: "{{ prefix }}"
+      prefix: "{{ group_names[0] }}"
     profile: "{{ profile }}"
     aws_access_key: "{{ access_key }}"
     aws_secret_key: "{{ secret_key }}"
