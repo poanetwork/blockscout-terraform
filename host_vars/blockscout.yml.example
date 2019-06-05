@@ -3,3 +3,4 @@ skip_fetch: true
 blockscout_repo: https://github.com/poanetwork/blockscout
 branch: "production-core"
 #merge_commit: "2cdead1"
+ps_db: mydb # The name of the test DB to store data in;
