@@ -1,6 +1,6 @@
 {
   "_readme": [
-    "base_ami should be latest Amazon Linux",
+    "base_ami should be latest Amazon Linux"
   ],
   "builders": [
     {

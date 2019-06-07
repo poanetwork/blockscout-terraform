@@ -27,19 +27,15 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
+      - validate
       - approve:
           type: approval
-      - validate:
-          requires:
-            - approve
       - build-base:
           requires:
             - approve
             - validate
             
 workflow_filters: &workflow_filters
-  requires:
-    - approve
   filters:
     branches:
       only:
