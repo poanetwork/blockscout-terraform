@@ -61,6 +61,6 @@
     "ami_base": "ami-0c6b1d09930fac512",
     "ami_sha":  "{{env `SHA`}}",
 	"elixir_version": "v1.8.1",
-	"bs_release": "v1.3.15-beta"
+	"bs_release": "v2.0.0-beta"
   }
 }
