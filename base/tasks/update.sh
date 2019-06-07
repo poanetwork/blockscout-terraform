@@ -4,10 +4,6 @@
 set -e -x
 
 LOG=/var/log/user_data.log
-METADATA_URL="http://169.254.169.254/latest/meta-data"
-DYNDATA_URL="http://169.254.169.254/latest/dynamic"
-INSTANCE_ID="$(curl -s $METADATA_URL/instance-id)"
-HOSTNAME="$(curl -s $METADATA_URL/local-hostname)"
 
 function log() {
     ts=$(date '+%Y-%m-%dT%H:%M:%SZ')
@@ -52,18 +48,6 @@ if ! which gmp-devel >/dev/null; then
     log "Installing gmp-devel.."
     yum --enablerepo=epel install -y gmp-devel >"$LOG"
 fi
-
-log "Determining region this instance is in.."
-REGION="$(curl -s $DYNDATA_URL/instance-identity/document | jq -r '.region')"
-log "Region is: $REGION"
-
-log "Installing CodeDeploy agent.."
-pushd /home/ec2-user
-aws s3 cp "s3://aws-codedeploy-$REGION/latest/install" . --region="$REGION" >"$LOG"
-chmod +x ./install
-./install auto >"$LOG"
-service codedeploy-agent stop >"$LOG"
-log "CodeDeploy agent installed successfully!"
 
 if ! which git >/dev/null; then
     log "Installing git.."
@@ -121,9 +105,6 @@ log "Installing gcc for NIF compilation during code deploy"
 yum install -y --enablerepo=epel gcc  >"$LOG"
 
 log "Preinstalled software is ready!"
-
-log "Starting CodeDeploy agent.."
-service codedeploy-agent start >"$LOG"
 
 mkdir /opt > /dev/null
 
