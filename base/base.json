@@ -1,7 +1,5 @@
 {
-  "_readme": [
-    "base_ami should be latest Amazon Linux"
-  ],
+  "_readme": "base_ami should be latest Amazon Linux",
   "builders": [
     {
       "ami_description": "{{user `ami_name`}} AMI",
