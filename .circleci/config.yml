@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  validate:
+    docker:
+      - image: hashicorp/packer:latest
+    working_directory: ~/packer
+    steps:
+      - checkout
+      - run:
+          name: Validate base
+          command: packer validate ./base/base.json
+  build-base:
+    docker:
+      - image: hashicorp/packer:latest
+    working_directory: ~/packer
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/packer
+      - run:
+          name: Build base
+          command: ./scripts/build.sh base ./base/base.json
+          no_output_timeout: 10m
+      - store_artifacts:
+          path: manifest-base.json
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - validate
+      - build-base:
+          requires:
+            - validate

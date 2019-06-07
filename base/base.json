@@ -1,0 +1,59 @@
+{
+  "_readme": [
+    "base_ami should be latest Amazon Linux",
+  ],
+  "builders": [
+    {
+      "ami_description": "{{user `ami_name`}} AMI",
+      "ami_name": "{{user `ami_name`}} {{timestamp}}",
+      "ami_regions": [
+        "us-east-1"
+      ],
+      "instance_type": "t2.micro",
+      "region": "us-east-1",
+      "run_tags": {
+        "ami-create": "{{user `ami_name`}}"
+      },
+      "source_ami": "{{user `ami_base`}}",
+      "ssh_username": "ec2-user",
+      "tags": {
+        "OS_Name": "Amazon Linux",
+        "SHA": "{{user `ami_sha`}}",
+        "AMI": "{{user `ami_name`}}"
+      },
+      "type": "amazon-ebs"
+    }
+  ],
+  "post-processors": [
+    {
+      "output": "manifest-base.json",
+      "strip_path": true,
+      "type": "manifest"
+    }
+  ],
+  "provisioners": [
+    {
+      "inline": [
+        "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 1; done"
+      ],
+      "type": "shell"
+    },
+    {
+      "scripts": [
+        "./base/tasks/update.sh"
+      ],
+	  "environment_vars": [
+        "ELIXIR_VERSION={{user `elixir_version`}}",
+        "BS_RELEASE={{user `bs_release`}}"
+      ],
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "ami_name": "blockscout-packer",
+    "ami_base": "ami-0ff8a91507f77f867",
+    "ami_sha":  "{{env `SHA`}}",
+	"elixir_version": "v1.8.1",
+	"bs_release": "v1.3.15-beta"
+  }
+}

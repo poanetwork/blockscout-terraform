@@ -1,9 +1,0 @@
-- name: Destroy infrastructure
-  hosts: all
-  serial: 1
-  roles:
-    - { role: destroy, when: "confirmation|bool == True" } 
-  vars_prompt:
-    - name: "confirmation"
-      prompt: "Are you sure you want to destroy all the infra?"
-      default: False
