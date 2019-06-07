@@ -37,7 +37,7 @@
       "type": "shell"
     },
     {
-	  "execute_command": "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}"
+	  "execute_command": "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}",
       "scripts": [
         "./base/tasks/update.sh"
       ],
