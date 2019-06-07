@@ -43,6 +43,7 @@ get_base_ami () {
 }
 
 package_check () {
+    command -v pip3 > /dev/null || (echo "python-pip must be installed" && exit 1)
     command -v aws > /dev/null || (echo "aws cli must be installed" && exit 1)
     command -v packer > /dev/null || (echo "packer must be installed" && exit 1)
     command -v git > /dev/null || (echo "git must be installed" && exit 1)

@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+apk add --update python3
+apk add --update py-pip
+apk add --update jq
+pip3 install awscli
+
 # load our helper functions
 source scripts/common.sh
 
