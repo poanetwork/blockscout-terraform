@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #ELIXIR_VERSION and BS_RELEASE should be defined as environment variables
-set -e
+set -e -x
 
 LOG=/var/log/user_data.log
 
@@ -66,13 +66,6 @@ if ! which git >/dev/null; then
     yum install -y git >"$LOG"
 fi
 
-mkdir /opt > /dev/null
-
-git clone https://github.com/poanetwork/blockscout -b ${BS_RELEASE} /opt/app
-
-mkdir -p /opt/app
-chown -R ec2-user /opt/app
-
 log "Creating explorer systemd service.."
 
 cat <<EOF > /lib/systemd/system/explorer.service
@@ -127,5 +120,16 @@ log "Preinstalled software is ready!"
 
 log "Starting CodeDeploy agent.."
 service codedeploy-agent start >"$LOG"
+
+mkdir /opt > /dev/null
+
+git clone https://github.com/poanetwork/blockscout -b ${BS_RELEASE} /opt/app
+
+/opt/app/bin/deployment/stop
+/opt/app/bin/deployment/build
+/opt/app/bin/deployment/migrate
+
+mkdir -p /opt/app
+chown -R ec2-user /opt/app
 
 exit 0
