@@ -4,6 +4,10 @@
 set -e -x
 
 LOG=/var/log/user_data.log
+METADATA_URL="http://169.254.169.254/latest/meta-data"
+DYNDATA_URL="http://169.254.169.254/latest/dynamic"
+INSTANCE_ID="$(curl -s $METADATA_URL/instance-id)"
+HOSTNAME="$(curl -s $METADATA_URL/local-hostname)"
 
 function log() {
     ts=$(date '+%Y-%m-%dT%H:%M:%SZ')
@@ -89,6 +93,23 @@ mkdir -p /opt/elixir
 wget https://github.com/elixir-lang/elixir/releases/download/${ELIXIR_VERSION}/Precompiled.zip >"$LOG"
 unzip Precompiled.zip -d /opt/elixir >"$LOG"
 log "Elixir installed successfully!"
+
+# Need to map the Parameter Store response to a set of NAME="<value>" entries,
+# one per line, which will then be written to /etc/environment so that they are
+# set for all users on the system
+old_env="$(cat /etc/environment)"
+{
+    echo "$old_env"
+    # shellcheck disable=SC2016
+    echo 'PATH=/opt/elixir/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$PATH'
+    # shellcheck disable=SC1117
+    echo "DYNO=\"$HOSTNAME\""
+    echo "HOSTNAME=\"$HOSTNAME\""
+    echo "LANG=en_US.UTF-8"
+    echo "LANGUAGE=en_US"
+    echo "LC_ALL=en_US.UTF-8"
+    echo "LC_CTYPE=en_US.UTF-8"
+} > /etc/environment
 
 if ! which psql >/dev/null; then
     log "Installing psql.."
