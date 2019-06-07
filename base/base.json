@@ -46,6 +46,14 @@
         "BS_RELEASE={{user `bs_release`}}"
       ],
       "type": "shell"
+    },
+	{
+      "inline": [
+        "/opt/app/bin/deployment/stop",
+        "/opt/app/bin/deployment/build",
+        "/opt/app/bin/deployment/migrate"
+      ],
+      "type": "shell"
     }
   ],
   "variables": {

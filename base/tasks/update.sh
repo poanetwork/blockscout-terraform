@@ -110,11 +110,6 @@ mkdir -p /opt >"$LOG"
 
 git clone https://github.com/poanetwork/blockscout -b ${BS_RELEASE} /opt/app
 
-/opt/app/bin/deployment/stop
-/opt/app/bin/deployment/build
-/opt/app/bin/deployment/migrate
-
-mkdir -p /opt/app
 chown -R ec2-user /opt/app
 
 exit 0
