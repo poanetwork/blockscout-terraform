@@ -1,5 +1,5 @@
 {
-  "_readme": "base_ami should be latest CentOS 7",
+  "_readme": "base_ami should be latest Amazon2 HVM gp2",
   "builders": [
     {
       "ami_description": "{{user `ami_name`}} AMI",
@@ -50,7 +50,7 @@
   ],
   "variables": {
     "ami_name": "blockscout-packer",
-    "ami_base": "ami-02eac2c0129f6376b",
+    "ami_base": "ami-0c6b1d09930fac512",
     "ami_sha":  "{{env `SHA`}}",
 	"elixir_version": "v1.8.1",
 	"bs_release": "v1.3.15-beta"
