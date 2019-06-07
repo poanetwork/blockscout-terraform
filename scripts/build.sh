@@ -41,7 +41,7 @@ SHA=$(git ls-tree HEAD "$DIR" | cut -d" " -f3 | cut -f1)
 TAG_EXISTS=$(tag_exists $SHA)
 
 if [ "$TAG_EXISTS" = "false" ]; then
-    packer build ${DIR}/$NAME.json
+    packer build ${DIR}/$NAME
 else
-    touch manifest-${NAME}.json
+    touch manifest-${NAME}
 fi

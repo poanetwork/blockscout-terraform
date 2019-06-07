@@ -19,7 +19,7 @@ jobs:
           at: ~/packer
       - run:
           name: Build base
-          command: ./scripts/build.sh base ./base/base.json
+          command: ./scripts/build.sh base base.json
           no_output_timeout: 10m
       - store_artifacts:
           path: manifest-base.json
