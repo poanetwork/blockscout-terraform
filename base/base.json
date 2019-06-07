@@ -51,8 +51,7 @@
       "inline": [
 	    ". /etc/environment",
         "/opt/app/bin/deployment/stop",
-        "/opt/app/bin/deployment/build",
-        "/opt/app/bin/deployment/migrate"
+        "/opt/app/bin/deployment/build"
       ],
       "type": "shell"
     }
