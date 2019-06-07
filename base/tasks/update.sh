@@ -4,6 +4,10 @@
 set -e -x
 
 LOG=/var/log/user_data.log
+METADATA_URL="http://169.254.169.254/latest/meta-data"
+DYNDATA_URL="http://169.254.169.254/latest/dynamic"
+INSTANCE_ID="$(curl -s $METADATA_URL/instance-id)"
+HOSTNAME="$(curl -s $METADATA_URL/local-hostname)"
 
 function log() {
     ts=$(date '+%Y-%m-%dT%H:%M:%SZ')
