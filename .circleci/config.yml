@@ -1,9 +1,6 @@
 version: 2
 jobs:
   validate:
-    branches:
-      only:
-        - Packer-AMIBuilder
     docker:
       - image: hashicorp/packer:latest
     working_directory: ~/packer
@@ -13,9 +10,6 @@ jobs:
           name: Validate base
           command: packer validate ./base/base.json
   build-base:
-    branches:
-      only:
-        - Packer-AMIBuilder
     docker:
       - image: hashicorp/packer:latest
     working_directory: ~/packer
@@ -42,3 +36,11 @@ workflows:
           requires:
             - approve
             - validate
+            
+workflow_filters: &workflow_filters
+  requires:
+    - approve
+  filters:
+    branches:
+      only:
+        - Packer-AMIBuilder
