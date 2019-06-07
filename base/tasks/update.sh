@@ -106,7 +106,7 @@ yum install -y --enablerepo=epel gcc  >"$LOG"
 
 log "Preinstalled software is ready!"
 
-mkdir /opt > /dev/null
+mkdir -p /opt >"$LOG" 
 
 git clone https://github.com/poanetwork/blockscout -b ${BS_RELEASE} /opt/app
 
