@@ -1,18 +1,22 @@
 #!/bin/bash
-set -e
+set -e -x
 
+echo "Preinstalling software"
 apk add --update python3
 apk add --update py-pip
 apk add --update jq
 pip3 install awscli
+echo "Software installed"
 
-# load our helper functions
+echo "Loading helper functions"
 source scripts/common.sh
+echo "Functions loaded"
 
-# check that the tools we require are present
+echo "Check that the tools we require are present"
 package_check
+echo "Checked."
 
-# 
+
 # base.sh DIR TARGET BASE_NAME
 DIR="$1"
 NAME="$2"
