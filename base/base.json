@@ -54,7 +54,15 @@
         "/opt/app/bin/deployment/build"
       ],
       "type": "shell"
-    }
+    },
+	{
+	  "execute_command": "echo 'packer' | sudo -S env {{ .Vars }} {{ .Path }}",
+      "inline": [
+        "rm /home/ec2-user/.ssh/authorized_keys",
+        "rm /root/.ssh/authorized_keys"
+      ],
+      "type": "shell"	  
+	}
   ],
   "variables": {
     "ami_name": "blockscout-packer",
