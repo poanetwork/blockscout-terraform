@@ -1,5 +1,8 @@
 # Infrastructure related group variables
 
+## Exact path to the TF binary on your local machine
+terraform_location: "/usr/local/bin/terraform"
+
 ## Name of the DynamoDB table where current lease of TF state file will be stored
 dynamodb_table: "poa-terraform-lock"
 

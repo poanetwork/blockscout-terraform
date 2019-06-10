@@ -1,3 +1,6 @@
+# BlockScout related variables
+
+## An address of BlockScout repo to download
 blockscout_repo: https://github.com/poanetwork/blockscout
 
 # Please, specify the credentials for the test Postgres installation
