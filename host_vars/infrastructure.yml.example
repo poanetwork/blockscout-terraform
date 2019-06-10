@@ -14,3 +14,4 @@ db_version: "10.6" #Blockscout uses Postgres as the DB engine. This variable des
 
 instance_type: "m5.large" # EC2 BlockScout Instance will have this type
 use_placement_group: false # Choose wheter or not to group BlockScout instances into group
+

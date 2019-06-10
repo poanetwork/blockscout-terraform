@@ -1,3 +1,9 @@
+blockscout_repo: https://github.com/poanetwork/blockscout
+
+ps_host: localhost
+ps_user: myuser
+ps_password: mypass
+
 # System variables
 ansible_python_interpreter: "/usr/bin/python3"
 
@@ -18,3 +24,4 @@ upload_debug_info_to_s3: true
 ## The bucket and dynamodb_table variables will be used only when backend variable is set to true
 ## Name of the bucket where TF state files will be stored
 bucket: "poa-terraform-state"
+

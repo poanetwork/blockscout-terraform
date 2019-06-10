@@ -32,6 +32,7 @@ env_vars:
   #LINK_TO_OTHER_EXPLORERS: "false" # If true, links to other explorers are added in the footer
   #USE_PLACEMENT_GROUP: "false" # If true, BlockScout instance will be created in the placement group
  ##The following variables are optional
+  #SUPPORTED_CHAINS: '[{ "title": "POA Core", "url": "https://blockscout.com/poa/core" }]' # JSON array with links to other exporers
   #FIRST_BLOCK: 0 # The block number, where indexing begins from.
   #COINMARKETCAP_PAGES: 10 # Sets the number of pages at Coinmarketcap to search coin at. Defaults to 10
   #METADATA_CONTRACT: # Address of metadata smart contract. Used by POA Network to obtain Validators information to display in the UI
@@ -44,4 +45,6 @@ env_vars:
   #DATADOG_PORT: # Port configuration variable for Datadog integration
   #SPANDEX_BATCH_SIZE: # Spandex and Datadog configuration setting.
   #SPANDEX_SYNC_THRESHOLD: # Spandex and Datadog configuration setting.
-  #BLOCK_COUNT_CACHE_TTL: #Time to live of block count cache in milliseconds
+  #BLOCK_COUNT_CACHE_PERIOD: 600 #Time to live of block count cache in milliseconds
+  #ALLOWED_EVM_VERSIONS: "homestead, tangerineWhistle, spuriousDragon, byzantium, constantinople, petersburg" #	the comma-separated list of allowed EVM versions for contracts verification
+

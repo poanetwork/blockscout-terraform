@@ -249,7 +249,7 @@ Example:
 
   `prefix` variable: tf
 
-  `chain_db_id` variable: poa
+  `db_id` variable: poa
 
 **Note 3**: make sure MultiAZ is disabled on your database.
 

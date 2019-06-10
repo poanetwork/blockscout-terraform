@@ -185,8 +185,7 @@ old_env="$(cat /etc/environment)"
     # shellcheck disable=SC2016
     echo 'PATH=/opt/elixir/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:$PATH'
     # shellcheck disable=SC1117
-    echo "$parameters_json" | \
-        jq ".Parameters[] as \$ps | \"\(\$ps[\"Name\"] | gsub(\"-\"; \"_\") | ltrimstr(\"/$PREFIX/$CHAIN/\") | ascii_upcase)=\\\"\(\$ps[\"Value\"])\\\"\"" --raw-output
+    echo "$parameters_json" | echo "$parameters_json" | jq ".Parameters[] as \$ps | \"\(\$ps[\"Name\"] | gsub(\"-\"; \"_\") | ltrimstr(\"/$PREFIX/$CHAIN/\") | ascii_upcase)='\(\$ps[\"Value\"])'\"" --raw-output
     echo "DYNO=\"$HOSTNAME\""
     echo "HOSTNAME=\"$HOSTNAME\""
     echo "DATABASE_URL=\"$DATABASE_URL/$DB_NAME\""

@@ -4,3 +4,4 @@ blockscout_repo: https://github.com/poanetwork/blockscout
 ps_host: localhost
 ps_user: myuser
 ps_password: mypass
+

@@ -20,3 +20,4 @@ dns_zone_name: "poa.internal"
 
 ## Size of the EC2 instance EBS root volume
 root_block_size: 120
+
