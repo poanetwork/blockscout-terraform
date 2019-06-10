@@ -132,7 +132,7 @@ EOF
 
 log "Installing Erlang.."
 
-wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_21.1-1~centos~7_amd64.rpm
+wget https://packages.erlang-solutions.com/erlang/rpm/centos/7/x86_64/esl-erlang_21.1-1~centos~7_amd64.rpm
 yum localinstall -y wxGTK-devel unixODBC-devel >"$LOG"
 yum localinstall -y esl-erlang_21.1-1~centos~7_amd64.rpm >"$LOG"
 
