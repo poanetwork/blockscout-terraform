@@ -6,7 +6,9 @@
          include_role:
            name: main_software
          tags:
-           - chain_vars_update
+           - update_vars
+           - build
+           - deploy
      always:
        - include_role:
            name: s3 

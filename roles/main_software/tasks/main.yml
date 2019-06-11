@@ -5,12 +5,16 @@
     version: "{{ branch }}"
     force: true
   when: skip_fetch | bool != true
+  tags:
+    - build
 
 - name: Git clean
   command: "git clean -fdx"
   args:
     chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}"
   when: skip_fetch | bool != true
+  tags:
+    - build
 
 - name: Merge branches
   command: "git merge {{ merge_commit_item }}" 
@@ -19,28 +23,38 @@
   when: merge_commit_item and not skip_fetch | bool
   vars:
     merge_commit_item: "{{ merge_commit | default(false) }}"
+  tags:
+    - build
 
 - name: Copy web config files
   copy:
     src: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/config/dev.secret.exs.example"
     dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/config/dev.secret.exs" 
+  tags:
+    - build
 
 - name: Template explorer config files 
   template:
     src: dev.secret.exs.j2 
     dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs" 
   when: ps_user is defined 
+  tags:
+    - build
 
 - name: Copy default explorer config files
   copy:
     src: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs.example"
     dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs"
   when: ps_user is undefined or ps_user == ""
+  tags:
+    - build
 
 - name: Remove static assets from previous deployment, if any
   file:
     path: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/priv/static"
     state: absent 
+  tags:
+    - build
 
 - name: Fetch environment variables (via access key)
   set_fact: 
@@ -49,7 +63,8 @@
     path: "/{{ group_names[0] }}/{{ chain }}"
   when: aws_access_key is defined
   tags:
-    - chain_vars_update
+    - update_vars
+    - build
 
 - name: Fetch environment variables (via profile)
   set_fact:
@@ -58,7 +73,8 @@
     path: "/{{ group_names[0] }}/{{ chain }}"
   when: aws_access_key is undefined
   tags:
-    - chain_vars_update
+    - update_vars
+    - build
 
 - name: Make config variables lowercase
   set_fact:
@@ -69,12 +85,15 @@
     lower_env: {}
     custom_environment_chain: "{{ env_vars | default({}) if env_vars>0 else {} }}"
   tags:
-    - chain_vars_update
+    - update_vars
+    - build
 
 - name: Override env variables
   set_fact:
     env_compiled: "{{ env_compiled | combine(lower_env) }}"
   when: lower_env is defined
+  tags:
+    - build
 
 - name: Uppercase chain 
   set_fact:
@@ -82,18 +101,20 @@
   with_dict: "{{ env_compiled }}"
   vars:
     upper_env: {}
-
+  tags:
+    - build
+ 
 - name: Add server port
   set_fact:
     server_port: "{{ 65535|random(seed=inventory_hostname,start=1024)  }}"
+  tags:
+    - build
 
 - name: Combine server env
   set_fact:
     server_env: "{{ upper_env | combine({'NETWORK_PATH':'/','PORT':server_port}) }}"
-
-- name: Debug
-  debug:
-    var: server_env
+  tags:
+    - build
 
 - name: Compile BlockScout
   command: "mix do {{ item }}"
@@ -108,32 +129,44 @@
     - ecto.drop
     - ecto.create
     - ecto.migrate 
+  tags:
+    - build
 
 - name: Install Node modules at apps/block_scout_web/assets
   environment: "{{ server_env }}"
   command: npm install 
   args:
     chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/assets" 
-
+  tags:
+    - build
+  
 - name: Execute webpack.js at apps/block_scout_web/assets/node_modules/webpack/bin 
   environment: "{{ server_env }}"
   command: node_modules/webpack/bin/webpack.js --mode production
   args:
     chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/assets"
+  tags:
+    - build
 
 - name: Instal Node modules at apps/explorer
   environment: "{{ server_env }}"
   command: npm install
   args:
     chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer" 
+  tags:
+    - build
 
 - name: Install SSL certificates
   environment: "{{ server_env }}"
   command: mix phx.gen.cert blockscout blockscout.local
   args:
     chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web"
+  tags:
+    - build
 
 - name: Start server
+  tags:
+    - build
   block:
     - name: Start server
       command: "mix phx.server"
@@ -167,12 +200,16 @@
   fail:
     msg: "Execution aborted"
   when: prompt is failed
+  tags:
+    - build
  
 - name: Build static assets
   environment: "{{ server_env }}"
   command: mix phx.digest
   args:
     chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}"
+  tags:
+    - build
 
 - name: User prompt
   pause:
@@ -184,6 +221,8 @@
   vars:
     conditional: ['yes','no','true','false']
   when: inventory_hostname == groups['all'][0]
+  tags:
+    - build
 
 - name: Remove dev dependencies
   file:
@@ -196,20 +235,28 @@
     - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/node_modules/"
     - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/logs/dev/"
   when: hostvars[groups['all'][0]].user_answer.user_input | lower | bool
+  tags:
+    - build
 
 - name: Fix bug with favicon 
   replace:
     regexp: '\"favicon\.ico\"\:\"favicon-[a-z0-9]+?\.ico\"'
     replace: '"images/favicon.ico":"favicon.ico"'
     path: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/priv/static/cache_manifest.json"
+  tags:
+    - build
 
 - name: Upload Blockscout to S3
   command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} aws deploy push --application-name={{ group_names[0] }}-explorer --s3-location s3://{{ group_names[0] }}-explorer-codedeploy-releases/blockscout-{{ group_names[0] }}-{{ chain }}.zip --source=/tmp/blockscout-{{ group_names[0] }}-{{ chain }} {{ '--profile='~aws_profile if aws_profile is defined else '' }}"
   register: push_output
+  tags:
+    - deploy 
 
 - name: Upload output
   debug:
     msg: "If deployment will fail, you can try to deploy blockscout manually using the following commands: {{ 'AWS_ACCESS_KEY=XXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXX AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines }} {{ '--profile='~aws_profile if aws_profile is defined else '' }}" 
+  tags:
+    - deploy
 
 - name: User prompt
   pause:
@@ -222,7 +269,7 @@
     conditional: ['yes','no','true','false']
   when: inventory_hostname == groups['all'][0]
   tags:
-    - chain_vars_update
+    - update_vars
 
 - name: Update chain variables
   aws_ssm_parameter_store:
@@ -240,7 +287,7 @@
   with_dict: "{{ lower_env }}"
   when: hostvars[groups['all'][0]].user_answer.user_input | lower | bool
   tags:
-    - chain_vars_update
+    - update_vars
 
 - name: User prompt
   pause:
@@ -252,7 +299,12 @@
   vars:
     conditional: ['yes','no','true','false']
   when: inventory_hostname == groups['all'][0]
+  tags:
+    - deploy
 
 - name: Deploy Blockscout
-  command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines[1] }} --deployment-group-name {{ group_names[0] }}-explorer-dg{{ groups[group_names[0]].index(inventory_hostname) }} --deployment-config-name CodeDeployDefault.OneAtATime {{ '--profile='~aws_profile if aws_profile is defined else '' }}" 
+  command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines[1] }} --deployment-group-name {{ group_names[0] }}-explorer-dg{{ groups[group_names[0]].index(inventory_hostname) }} --deployment-config-name CodeDeployDefault.OneAtATime {{ '--profile='~aws_profile if aws_profile is defined else '' }}"
   when: hostvars[groups['all'][0]].user_answer.user_input | lower | bool
+  tags:
+    - deploy
+
