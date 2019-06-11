@@ -22,8 +22,7 @@ env_vars:
   #ALB_CERTIFICATE_ARN: "arn:aws:acm:us-east-1:290379793816:certificate/6d1bab74-fb46-4244-aab2-832bf519ab24" #ARN of the certificate to attach to the LB. Required if ECTO_USE_SSL is set to true
   #HEART_BEAT_TIMEOUT: 30 # Heartbeat is an Erlang monitoring service that will restart BlockScout if it becomes unresponsive. This variables configures the timeout before Blockscout will be restarted.
   #HEART_COMMAND: "sudo systemctl restart explorer.service" # This variable represents a command that is used to restart the service
-  #BLOCKSCOUT_VERSION: "v1.3.13-beta" # Added to the footer to signify the current BlockScout version
-  #RELEASE_LINK: "https://github.com/poanetwork/blockscout/releases/tag/v1.3.13-beta" # The link to Blockscout release notes in the footer.
+  #BLOCKSCOUT_VERSION: "v2.0.0-beta" # Added to the footer to signify the current BlockScout version
   #ELIXIR_VERSION: "v1.8.1" # Elixir version to install on the node before Blockscout deploy
   #BLOCK_TRANSFORMER: "base" # Transformer for blocks: base or clique.
   #GRAPHIQL_TRANSACTION: "0xbc426b4792c48d8ca31ec9786e403866e14e7f3e4d39c7f2852e518fae529ab4" # Random tx hash on the network, used as default for graphiql tx.
