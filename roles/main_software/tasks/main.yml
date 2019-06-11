@@ -227,7 +227,7 @@
 - name: Update chain variables
   aws_ssm_parameter_store:
     name: "/{{ group_names[0] }}/{{ chain }}/{{ item.key }}" 
-    value: !unsafe '{{ item.value }}'
+    value: "{{ item.value }}"
     profile: "{{ profile }}"
     aws_access_key: "{{ access_key }}"
     aws_secret_key: "{{ secret_key }}"
