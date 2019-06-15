@@ -49,9 +49,11 @@
     },
 	{
       "inline": [
-	    ". /etc/environment",
+        "cd /opt/app",
+        ". /etc/environment",
         "/opt/app/bin/deployment/stop",
-        "/opt/app/bin/deployment/build"
+        "/opt/app/bin/deployment/build",
+        "mix phx.digest"
       ],
       "type": "shell"
     },
