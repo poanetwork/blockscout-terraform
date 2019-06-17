@@ -42,7 +42,8 @@ if ! which libtool >/dev/null; then
 fi
 if ! which node >/dev/null; then
     log "Installing nodejs.."
-    yum --enablerepo=epel install -y nodejs >"$LOG"
+    curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+    yum install -y nodejs
 fi
 if ! which gcc >/dev/null; then
     log "Installing C compiling tools.."
