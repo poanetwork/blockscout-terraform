@@ -51,7 +51,9 @@
       "inline": [
         ". /etc/environment",
         "/opt/app/bin/deployment/stop",
-        "/opt/app/bin/deployment/build"
+        "/opt/app/bin/deployment/build",
+	"cd /opt/app",
+	"MIX_ENV=prod HOME=/home/ec2-user /opt/elixir/bin/mix deps.compile"
       ],
       "type": "shell"
     },
