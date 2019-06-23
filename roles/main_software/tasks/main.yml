@@ -115,6 +115,13 @@
     server_env: "{{ upper_env | combine({'NETWORK_PATH':'/','PORT':server_port}) }}"
   tags:
     - build
+    
+- name: Override build variables
+  set_fact:
+    server_env: "{{ server_env | combine({item.key|regex_replace('BUILD_'):item.value}) if item.key | search('BUILD_') else server_env  }}"
+  with_dict: "{{ server_env }}"
+  tags:
+    - build
 
 - name: Compile BlockScout
   command: "mix do {{ item }}"

@@ -47,4 +47,4 @@ env_vars:
   #SPANDEX_SYNC_THRESHOLD: # Spandex and Datadog configuration setting.
   #BLOCK_COUNT_CACHE_PERIOD: 600 #Time to live of block count cache in milliseconds
   #ALLOWED_EVM_VERSIONS: "homestead, tangerineWhistle, spuriousDragon, byzantium, constantinople, petersburg" #	the comma-separated list of allowed EVM versions for contracts verification
-
+  #BUILD_* - redefine variables with BUILD_ prefix to override parameters used for building the dev server
