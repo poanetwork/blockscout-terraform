@@ -215,7 +215,11 @@ Also, if you need to **distribute variables accross all the hosts/groups**, you 
 8. When the prompt appears, check that server is running and there is no visual artifacts. The server will be launched at port 4000 at the same machine where you run the Ansible playbooks. If you face any errors you can either fix it or cancel the deployment by pressing **Ctrl+C** and then pressing **A** when additionally prompted.
 9. When server is ready to be deployed simply press enter and deployer will upload Blockscout to the appropriate S3.
 10. Two other prompts will appear to ensure your will on updating the Parameter Store variables and deploying the BlockScout through the CodeDeploy. Both **yes** and **true** will be interpreted as the confirmation.
-11. Monitor and manage your deployment at [CodeDeploy](https://console.aws.amazon.com/codesuite/codedeploy/applications) service page at AWS Console.
+11. (optional) If the deployment fails, you can use the following tags to repeat the particular steps of the deployment:
+- build
+- update_vars
+- deploy
+12. Monitor and manage your deployment at [CodeDeploy](https://console.aws.amazon.com/codesuite/codedeploy/applications) service page at AWS Console.
 
 # Destroying Provisioned Infrastructure
 
