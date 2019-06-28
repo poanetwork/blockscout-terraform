@@ -1,9 +1,3 @@
-blockscout_repo: https://github.com/poanetwork/blockscout
-
-ps_host: localhost
-ps_user: myuser
-ps_password: mypass
-
 # System variables
 ansible_python_interpreter: "/usr/bin/python3"
 
