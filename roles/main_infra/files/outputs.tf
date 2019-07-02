@@ -11,7 +11,13 @@ To deploy a new version of the application manually:
     2) Follow the instructions in the output from the `aws deploy push` command
        to deploy the uploaded application. Use the deployment group names shown below:
 
-        - ${join("\n        - ", formatlist("%s", aws_codedeploy_deployment_group.explorer.*.deployment_group_name))}
+        - ${join(
+"\n        - ",
+formatlist(
+"%s",
+aws_codedeploy_deployment_group.explorer.*.deployment_group_name,
+),
+)}
 
        You will also need to specify a deployment config name. Example:
 
@@ -25,7 +31,15 @@ To deploy a new version of the application manually:
 
     4) Once the deployment is complete, you can access each chain explorer from its respective url:
 
-        - ${join("\n        - ", formatlist("%s: %s", keys(zipmap(var.chains, aws_lb.explorer.*.dns_name)), values(zipmap(var.chains, aws_lb.explorer.*.dns_name))))}
+        - ${join(
+"\n        - ",
+formatlist(
+"%s: %s",
+keys(zipmap(var.chains, aws_lb.explorer.*.dns_name)),
+values(zipmap(var.chains, aws_lb.explorer.*.dns_name)),
+),
+)}
 OUTPUT
-}
+
+    }
 

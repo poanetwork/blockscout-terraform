@@ -51,12 +51,6 @@
     - "/tmp/files-{{ group_names[0] }}/terraform.tfstate.backup"
     - "/tmp/files-{{ group_names[0] }}/terraform.tfplan"
 
-- name: Generate Terraform files
-  template:
-    src: "{{ item.key }}"
-    dest: "{{ item.value }}"
-  with_dict: { hosts.tf.j2: "/tmp/files-{{ group_names[0] }}/hosts.tf", routing.tf.j2: "/tmp/files-{{ group_names[0] }}/routing.tf", provider.tf.j2: "/tmp/files-{{ group_names[0] }}/provider.tf" }
-    
 #Workaround since terraform module return unexpected error.
 - name: Terraform plan construct
   shell: "echo yes | {{ terraform_location }} {{ item }}"
@@ -66,7 +60,7 @@
   with_items:
     - "init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
     - plan -out terraform.tfplan
-    - show terraform.tfplan -no-color
+    - show terraform.tfplan -json -no-color
 
 - name: Show Terraform plan
   debug:

@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "explorer_releases" {
-  bucket = "${var.prefix}-explorer-codedeploy-releases"
-  acl    = "private"
+  bucket        = "${var.prefix}-explorer-codedeploy-releases"
+  acl           = "private"
   force_destroy = "true"
 
   versioning {
@@ -13,11 +13,11 @@ resource "aws_codedeploy_app" "explorer" {
 }
 
 resource "aws_codedeploy_deployment_group" "explorer" {
-  count                 = "${length(var.chains)}"
-  app_name              = "${aws_codedeploy_app.explorer.name}"
+  count                 = length(var.chains)
+  app_name              = aws_codedeploy_app.explorer.name
   deployment_group_name = "${var.prefix}-explorer-dg${count.index}"
-  service_role_arn      = "${aws_iam_role.deployer.arn}"
-  autoscaling_groups    = ["${aws_launch_configuration.explorer.name}-asg-${element(var.chains,count.index)}"]
+  service_role_arn      = aws_iam_role.deployer.arn
+  autoscaling_groups    = ["${aws_launch_configuration.explorer.name}-asg-${element(var.chains, count.index)}"]
 
   deployment_style {
     deployment_option = "WITH_TRAFFIC_CONTROL"
@@ -26,7 +26,7 @@ resource "aws_codedeploy_deployment_group" "explorer" {
 
   load_balancer_info {
     target_group_info {
-      name = "${aws_lb_target_group.explorer.*.name[count.index]}"
+      name = aws_lb_target_group.explorer[count.index].name
     }
   }
 
@@ -46,3 +46,4 @@ resource "aws_codedeploy_deployment_group" "explorer" {
     }
   }
 }
+
