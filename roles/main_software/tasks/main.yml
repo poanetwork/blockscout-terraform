@@ -79,11 +79,10 @@
 - name: Make config variables lowercase
   set_fact:
     lower_env: "{{ lower_env | combine ({item.key|lower : item.value})  }}"
-  with_dict: "{{ custom_environment_chain }}"
-  when: custom_environment_chain|length > 0
+  with_dict: "{{ env_vars }}"
+  when: env_vars|length > 0
   vars:
     lower_env: {}
-    custom_environment_chain: "{{ env_vars | default({}) if env_vars>0 else {} }}"
   tags:
     - update_vars
     - build
@@ -122,6 +121,10 @@
   with_dict: "{{ server_env }}"
   tags:
     - build
+
+- name: Show Server environment variables
+  debug:
+    var: server_env
 
 - name: Compile BlockScout
   command: "mix do {{ item }}"
@@ -288,7 +291,7 @@
   pause:
     prompt: "Do you want to deploy BlockScout? [Yes/No]"
   register: user_answer
-  until: user_answer.user_input | lower in conditional                                                          
+  until: user_answer.user_input | lower in conditional 
   retries: 10000
   delay: 1
   vars:
