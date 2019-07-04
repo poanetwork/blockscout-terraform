@@ -1,9 +1,17 @@
 variable "aws_profile" {
-  default = "null"
+  default = null
 }
 
 variable "aws_region" {
-  default = "null"
+  default = null
+}
+
+variable "aws_access_key" {
+  default = null
+}
+
+variable "aws_secret_key" {
+  default = null
 }
 
 variable "prefix" {

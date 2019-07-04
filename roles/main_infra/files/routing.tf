@@ -59,7 +59,7 @@ resource "aws_lb_target_group" "explorer" {
 }
 
 resource "aws_alb_listener" "alb_listener" {
-  count             = "length(var.chains)" 
+  count             = length(var.chains) 
   load_balancer_arn = aws_lb.explorer[count.index].arn
   port              = var.use_ssl[element(var.chains, count.index)] ? "443" : "80"
   protocol          = var.use_ssl[element(var.chains, count.index)] ? "HTTPS" : "HTTP"

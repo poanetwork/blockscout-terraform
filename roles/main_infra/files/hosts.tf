@@ -1,5 +1,6 @@
 data "aws_ami" "explorer" {
   most_recent = true
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
@@ -9,11 +10,6 @@ data "aws_ami" "explorer" {
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
-  }
-
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
   }
 }
 
@@ -40,13 +36,13 @@ resource "aws_launch_configuration" "explorer" {
 }
 
 resource "aws_placement_group" "explorer" {
-  count    = "var.use_placement_group[var.chains[count.index]] ? 1 : 0"
+  count    = length(matchkeys(keys(var.use_placement_group),values(var.use_placement_group),["True"])) 
   name     = "${var.prefix}-${var.chains[count.index]}-explorer-pg"
   strategy = "cluster"
 }
 
 resource "aws_autoscaling_group" "explorer" {
-  count                = "length(var.chains)"
+  count                = length(var.chains)
   name                 = "${var.prefix}-${var.chains[count.index]}-asg"
   max_size             = "4"
   min_size             = "1"
@@ -55,7 +51,7 @@ resource "aws_autoscaling_group" "explorer" {
   vpc_zone_identifier  = [aws_subnet.default.id]
   availability_zones   = data.aws_availability_zones.available.names
   target_group_arns    = [aws_lb_target_group.explorer[0].arn]
-  placement_group      = "${var.prefix}-${var.chains[count.index]}-explorer-pg : null"
+  placement_group      = var.use_placement_group[var.chains[count.index]] == "True" ? "${var.prefix}-${var.chains[count.index]}-explorer-pg" : null
 
   # Health checks are performed by CodeDeploy hooks
   health_check_type = "EC2"
@@ -102,7 +98,7 @@ resource "aws_autoscaling_group" "explorer" {
 
 # TODO: These autoscaling policies are not currently wired up to any triggers
 resource "aws_autoscaling_policy" "explorer-up" {
-  count                  = "length(var.chains)"
+  count                  = length(var.chains)
   name                   = "${var.prefix}-${var.chains[count.index]}-explorer-autoscaling-policy-up"
   autoscaling_group_name = aws_autoscaling_group.explorer[count.index].name
   adjustment_type        = "ChangeInCapacity"
@@ -111,6 +107,7 @@ resource "aws_autoscaling_policy" "explorer-up" {
 }
 
 resource "aws_autoscaling_policy" "explorer-down" {
+  count                  = length(var.chains)
   name                   = "${var.prefix}-${var.chains[count.index]}-explorer-autoscaling-policy-down"
   autoscaling_group_name = aws_autoscaling_group.explorer[count.index].name
   adjustment_type        = "ChangeInCapacity"
