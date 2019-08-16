@@ -203,12 +203,14 @@ Where `[group]` is a group name, which will be interpreted as a `prefix` for all
 cat host_vars/blockscout.yml.example host_vars/all.yml.example > host_vars/host.yml
 ```
 If you have already merged `infrastructure.yml.example` and `all.yml` while deploying the BlockScout infrastructure, you can simply add the `blockscout.yml.example` to the merged file: `cat host_vars/blockscout.yml.example >> host_vars/host.yml`
+
 5. For each group merge `blockscout.yml.example` and `all.yml.example` config template files in `group_vars` folder into single config file with the same name as group name in `hosts` file:
 
 ```bash
 cat group_vars/blockscout.yml.example group_vars/all.yml.example > group_vars/group.yml
 ```
 If you have already merged `infrastructure.yml.example` and `all.yml` while deploying the BlockScout infrastructure, you can simply add the `blockscout.yml.example` to the merged file: `cat group_vars/blockscout.yml.example >> group_vars/host.yml`
+
 6. Adjust the variables at `group_vars` and `host_vars`. Note - you can move variables between host and group vars depending on if variable should be applied to the host or to the entire group. The list of the variables you can find at the [corresponding part of instruction](#Configuration);
 Also, if you need to **distribute variables accross all the hosts/groups**, you can add these variables to the `group_vars/all.yml` file. Note about variable precedence => [Official Ansible Docs](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
   
