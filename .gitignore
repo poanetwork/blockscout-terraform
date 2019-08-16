@@ -29,3 +29,6 @@ group_vars/*
 .*.swp
 
 blockscout-*/
+
+# osx 
+.DS_Store
