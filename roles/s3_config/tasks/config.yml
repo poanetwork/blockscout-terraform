@@ -1,0 +1,38 @@
+- name: Check if config file exists 
+  stat:
+    path: "{{ playbook_dir }}/{{ file }}"
+  register: stat_result
+
+- name: Copy temporary file to be uploaded
+  command: "cp {{ playbook_dir }}/{{ file }} {{ playbook_dir }}/{{ file }}.temp"
+  when: stat_result.stat.exists
+
+- name: Remove insecure AWS variables
+  replace:
+    path: "{{ playbook_dir }}/{{ file }}.temp"
+    regexp: 'aws_.*'
+    replace: '<There was an insecure variable to keep at S3. Removed>'
+  when: stat_result.stat.exists
+
+- name: Upload config to S3 bucket
+  aws_s3:
+    bucket: "{{ group_names[0] }}-{{ bucket }}"
+    object: all.yml
+    src: "{{ playbook_dir }}/{{ file }}.temp"
+    mode: put
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
+  when: stat_result.stat.exists
+
+- name: Remove temp file
+  file:
+    path: "{{ playbook_dir }}/{{ file }}.temp"
+    state: absent
+  when: stat_result.stat.exists

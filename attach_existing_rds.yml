@@ -9,7 +9,7 @@
           with_items:
             - s3
             - dynamodb
-          when: backend|bool == true
+          when: backend | bool
         - include_role:
             name: attach_existing_rds
       always:

@@ -1,4 +1,4 @@
-# Infrastructure related variables
+# Infrastructure related group variables
 
 ## Exact path to the TF binary on your local machine
 terraform_location: "/usr/local/bin/terraform"
@@ -9,9 +9,6 @@ dynamodb_table: "poa-terraform-lock"
 ## If ec2_ssh_key_content is empty all the virtual machines will be created with ec2_ssh_key_name key. Otherwise, playbooks will upload ec2_ssh_key_content with the name of ec2_ssh_key_name and launch virtual machines with that key
 ec2_ssh_key_name: "sokol-test"
 ec2_ssh_key_content: ""
-
-## EC2 Instance will have the following size:
-instance_type: "m5.large"
 
 ## VPC containing Blockscout resources will be created as following:
 vpc_cidr: "10.0.0.0/16"
@@ -27,47 +24,3 @@ dns_zone_name: "poa.internal"
 ## Size of the EC2 instance EBS root volume
 root_block_size: 120
 
-# DB related variables
-
-## This value represents the name of the DB that will be created/attached. Must be unique. Will be prefixed with `prefix` variable.
-chain_db_id:
-  core: "core"
-  sokol: "sokol"
-
-## Each network should have it's own DB. This variable maps chain to DB name. Should not be messed with db_id variable, which represents the RDS instance ID.
-chain_db_name:
-  core: "core"
-  sokol: "sokol"
-
-## The following variables describes the DB configurations for each network including usernames, password, instance class, etc.
-chain_db_username:
-  core: "core"
-  sokol: "sokol"
-
-chain_db_password:
-  core: "fkowfjpoi309021"
-  sokol: "kopsdOPpa9213K"
- 
-chain_db_instance_class:
-  core: "db.m4.xlarge"
-  sokol: "db.m4.large"
-
-## Size of storage in GiB.
-chain_db_storage:
-  core: "200"
-  sokol: "100"
-
-## Type of disk to be used for the DB.
-chain_db_storage_type:
-  core: "io1"
-  sokol: "gp2"
-
-## This should be set only if chain_db_storage is set to io1
-#chain_db_iops:
-#  core: "1000"
-#  sokol: "1500"
-
-## Blockscout uses Postgres as the DB engine. This variable describes the Postgres version used in each particular chain.
-chain_db_version:
-  core: "10.5"
-  sokol: "10.6"  

@@ -1,33 +1,27 @@
 - name: Check prefix
   fail:
-    msg: "The prefix '{{ prefix }}' is invalid. It must consist only of the lowercase characters a-z and digits 0-9, and must be between 3 and 5 characters long."
-  when: prefix|length < 3 or prefix|length > 5 or prefix is not match("^[a-z0-9]+$")
+    msg: "The prefix '{{ group_names[0] }}' is invalid. It must consist only of the lowercase characters a-z and digits 0-9, and must be between 3 and 5 characters long."
+  when: group_names[0] | length < 3 or group_names[0] | length > 5 or group_names[0] is not match("^[a-z0-9]+$")
 
 - name: Check chain names
   fail:
-    msg: "The prefix '{{ item }}' is invalid. It must consist only of the lowercase characters a-z and digits 0-9, and must not more than 5 characters long."
-  when: item.key|length > 5 or item.key is not match("^[a-z0-9]+$")
-  with_dict: "{{ chain_custom_environment }}"
+    msg: "The chain '{{ item }}' is invalid. It must consist only of the lowercase characters a-z and digits 0-9, and must not more than 5 characters long."
+  when: (item.key | length > 5 or item.key is not match("^[a-z0-9]+$")) and item.key != "all" and item.key != "ungrouped"
+  with_dict: "{{ groups }}"
 
 - name: Check if terraform is installed
-  command: which terraform
+  command: "{{ terraform_location }} --version"
   register: terraform_status
   changed_when: false
 
-- name: Terraform check result
-  fail:
-    msg: "Terraform is not installed"
-  when: terraform_status.stdout == ""
-
 - name: Check if python is installed
-  command: which python
-  register: python_status
+  command: "{{ ansible_python_interpreter }} --version"
   changed_when: false
 
 - name: Python check result
   fail:
-    msg: "Python either is not installed or is too old. Please install python version 2.6 or higher"
-  when: python_status.stdout == "" or python_int_version|int < 260
+    msg: "Python is too old. Please install python version 2.6 or higher"
+  when:  python_int_version | int < 260
   vars:
     python_int_version: "{{ ansible_python_version.split('.')[0]|int * 100 + ansible_python_version.split('.')[1]|int * 10 + ansible_python_version.split('.')[2]|int  }}" 
 

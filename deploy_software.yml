@@ -1,21 +1,21 @@
 - name: Deploy BlockScout
-  hosts: localhost
+  hosts: all
   tasks:
    - block:
-       - name: Use role in loop
+       - name: Deploy
          include_role:
            name: main_software
-         loop: "{{ chain_custom_environment.keys() }}"  
-         loop_control:
-           loop_var: chain
-           index_var: index
+         tags:
+           - update_vars
+           - build
+           - deploy
      always:
        - include_role:
            name: s3 
-         when: backend|bool == true and (upload_debug_info_to_s3|bool == true or upload_config_to_s3|bool ==true)
+         when: backend|bool and (upload_debug_info_to_s3|bool or upload_config_to_s3|bool)
        - include_role:
            name: s3_config
-         when: backend|bool == true and upload_config_to_s3|bool == true
+         when: backend|bool and upload_config_to_s3|bool 
        - include_role:
            name: s3_debug
-         when: backend|bool == true and upload_debug_info_to_s3|bool == true
+         when: backend|bool and upload_debug_info_to_s3|bool 

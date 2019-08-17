@@ -1,14 +1,45 @@
-variable "prefix" {}
-variable "key_name" {}
-variable "vpc_cidr" {}
-variable "public_subnet_cidr" {}
-variable "db_subnet_cidr" {}
-variable "dns_zone_name" {}
-variable "instance_type" {}
-variable "root_block_size" {}
+variable "aws_profile" {
+  default = null
+}
+
+variable "aws_region" {
+  default = null
+}
+
+variable "aws_access_key" {
+  default = null
+}
+
+variable "aws_secret_key" {
+  default = null
+}
+
+variable "prefix" {
+}
+
+variable "key_name" {
+}
+
+variable "vpc_cidr" {
+}
+
+variable "public_subnet_cidr" {
+}
+
+variable "db_subnet_cidr" {
+}
+
+variable "dns_zone_name" {
+}
+
+variable "instance_type" {
+}
+
+variable "root_block_size" {
+}
 
 variable "pool_size" {
-  default = {} 
+  default = {}
 }
 
 variable "use_placement_group" {
@@ -60,7 +91,7 @@ variable "chain_db_version" {
 }
 
 variable "secret_key_base" {
-  default = {} 
+  default = {}
 }
 
 variable "alb_ssl_policy" {
@@ -72,5 +103,6 @@ variable "alb_certificate_arn" {
 }
 
 variable "use_ssl" {
-  default = {} 
+  default = {}
 }
+

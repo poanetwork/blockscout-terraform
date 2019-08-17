@@ -3,21 +3,8 @@
 ## An address of BlockScout repo to download
 blockscout_repo: https://github.com/poanetwork/blockscout
 
-## A branch at `blockscout_repo` with ready-to-deploy version of BlockScout 
-chain_branch:
-  core: "production-core"
-  sokol: "production-sokol"
-
-## Usually you don't want to merge branches, so it is commented out by default
-#chain_merge_commit:
-#  core: "2cdead1"
-#  sokol: "2cdead1"
-
-## If you want you can download and configure repo on your own. It should has the following name - blockscout-{{ chain_name }} and exist inside root playbook folder. Use the following variable to prevent playbooks from overriding
-skip_fetch: false
-
-## Login data for the test database. Please, use postgres database with the version specified at BlockScout repo prerequisites
+# Please, specify the credentials for the test Postgres installation
 ps_host: localhost
 ps_user: myuser
 ps_password: mypass
-ps_db: mydb
+

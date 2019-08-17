@@ -1,14 +1,16 @@
 - name: Clean TF cache
-  hosts: localhost
+  hosts: localhost,all
   tasks:
     - name: Clean TF cache
       file:
         state: absent
         path: "{{ item }}"
-      with_items:
-        - roles/main_infra/files/.terraform
-        - roles/main_infra/files/terraform.tfstate.d
-        - roles/main_infra/files/main.tfvars
-        - roles/main_infra/files/backend.tfvars
-        - roles/main_infra/files/terraform.tfplan
-        - log.txt
+      with_fileglob:
+        - "roles/main_infra/files/.terraform"
+        - "roles/main_infra/files/terraform.tfstate.d"
+        - "roles/main_infra/files/main.tfvars"
+        - "roles/main_infra/files/backend.tfvars"
+        - "roles/main_infra/files/terraform.tfplan"
+        - "log.txt"
+        - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}"
+        - "/tmp/files-{{ group_names[0] }}"

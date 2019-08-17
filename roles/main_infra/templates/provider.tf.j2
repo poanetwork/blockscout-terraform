@@ -1,7 +1,0 @@
-provider "aws" {
-  version  = "~> 1.15"
-{% if aws_access_key is undefined %}
-  profile  = "{{ aws_profile|default("default") }}"
-{% endif %}
-  region   = "{{ aws_region|default("us-east-1") }}"
-}

@@ -1,7 +1,7 @@
 - name: Destroy infrastructure
-  hosts: localhost
+  hosts: all
   roles:
-    - { role: destroy, when: "confirmation|bool == True" } 
+    - { role: destroy, when: "confirmation|bool == True and inventory_hostname == groups[group_names[0]][0]" } 
   vars_prompt:
     - name: "confirmation"
       prompt: "Are you sure you want to destroy all the infra?"
