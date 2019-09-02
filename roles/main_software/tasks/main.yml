@@ -223,13 +223,13 @@
 
 - name: User prompt
   pause:
-    prompt: "Would you like to remove staging dependencies? [Yes/No]"
+    prompt: "Would you like to remove staging dependencies? [Yes[Enter]/No]"
   register: user_answer
   until: user_answer.user_input | lower in conditional                                                          
   retries: 10000
   delay: 1
   vars:
-    conditional: ['yes','no','true','false']
+    conditional: ["",'yes','no','true','false']
   when: inventory_hostname == groups['all'][0]
   tags:
     - build
@@ -258,7 +258,7 @@
 
 - name: User prompt
   pause:
-    prompt: "Do you want to update the Parameter Store variables? [Yes/No]"
+    prompt: "Do you want to update the Parameter Store variables? [Yes[Enter]/No]"
   register: user_answer
   until: user_answer.user_input | lower in conditional                                                          
   retries: 10000
@@ -282,14 +282,14 @@
     secret_key: "{{ aws_secret_key|default(omit) }}"
     profile: "{{ aws_profile|default(omit) }}"
     region: "{{ aws_region|default(omit) }}"
-  with_dict: "{{ lower_env }}"
+  with_dict: "{{ lower_env | default({}) }}"
   when: hostvars[groups['all'][0]].user_answer.user_input | lower | bool and lower_env is defined
   tags:
     - update_vars
 
 - name: User prompt
   pause:
-    prompt: "Do you want to deploy BlockScout? [Yes/No]"
+    prompt: "Do you want to deploy BlockScout? [Yes[Enter]/No]"
   register: user_answer
   until: user_answer.user_input | lower in conditional 
   retries: 10000
