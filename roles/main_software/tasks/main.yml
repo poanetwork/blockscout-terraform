@@ -80,7 +80,6 @@
   set_fact:
     lower_env: "{{ lower_env | combine ({item.key|lower : item.value})  }}"
   with_dict: "{{ env_vars }}"
-#  when: env_vars|length > 0
   when: env_vars is defined
   vars:
     lower_env: {}
@@ -226,7 +225,7 @@
   pause:
     prompt: "Would you like to remove staging dependencies? [Yes/No]"
   register: user_answer
-  until: user_answer.user_input | lower in conditional                                                          
+  until: user_answer.user_input | lower in conditional
   retries: 10000
   delay: 1
   vars:

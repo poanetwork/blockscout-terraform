@@ -1,4 +1,4 @@
-skip_fetch: true
+skip_fetch: false
 
 blockscout_repo: https://github.com/poanetwork/blockscout
 branch: "production-core"
