@@ -20,7 +20,7 @@ This version of playbooks supports the multi-hosts deployment, which means that 
 
 | Dependency name                        | Installation method                                          |
 | -------------------------------------- | ------------------------------------------------------------ |
-| Terraform >=0.11.11                    | [Installation guide](https://learn.hashicorp.com/terraform/getting-started/install.html) |
+| Terraform >=0.12                       | [Installation guide](https://learn.hashicorp.com/terraform/getting-started/install.html) |
 | Python >=2.6.0                         | `apt install python`                                         |
 | Python-pip                             | `apt install python-pip`                                     |
 | boto & boto3 & botocore python modules | `pip install boto boto3 botocore`                            |
@@ -29,12 +29,12 @@ This version of playbooks supports the multi-hosts deployment, which means that 
 
 | Dependency name                        | Installation method                                          |
 | -------------------------------------- | ------------------------------------------------------------ |
-| Terraform >=0.11.11                    | [Installation guide](https://learn.hashicorp.com/terraform/getting-started/install.html) |
+| Terraform >=0.12                       | [Installation guide](https://learn.hashicorp.com/terraform/getting-started/install.html) |
 | Python >=2.6.0                         | `apt install python`                                         |
 | Python-pip                             | `apt install python-pip`                                     |
 | boto & boto3 & botocore python modules | `pip install boto boto3 botocore`                            |
 | AWS CLI                                | `pip install awscli`                                         |
-| All BlockScout prerequisites           | [Check it here](https://github.com/poanetwork/blockscout#requirements) |
+| All BlockScout prerequisites           | [Check it here](https://poanetwork.github.io/blockscout/#/requirements) |
 
 
 # AWS permissions
@@ -168,7 +168,7 @@ Also, if you need to **distribute variables accross all the hosts/groups**, you 
 
 # Deploying BlockScout
 
-0. (optional) This step is for mac OS users. Please skip it, if this is not your case.
+<details>0. (optional) <summary>This step is for mac OS users. Please skip it, if this is not your case.</summary>
 
 To avoid the error
 ```
@@ -183,6 +183,7 @@ error and crashing of Python follow the next steps:
 - Save, exit, close terminal and re-open the terminal. Check to see that the environment variable is now set: `env`
 
 (source: https://stackoverflow.com/questions/50168647/multiprocessing-causes-python-to-crash-and-gives-an-error-may-have-been-in-progr);
+</details>
 
 1. Ensure all the [BlockScout prerequisites](#Prerequisites-for-deploying-blockscout) are installed and has the right version number;
 2. Create the AWS access key and secret access key for user with [sufficient permissions](#AWS);
