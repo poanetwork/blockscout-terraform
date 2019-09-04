@@ -82,7 +82,7 @@ In order to deploy BlockScout, you will have to setup the following set of files
 
 - `ansible_host` - is an address where BlockScout will be built. If this variable is set to localhost, also set `ansible_connection` to `local` for better performance.
 - `chain` variable set the name of the network (Kovan, Core, xDAI, etc.). Will be used as part of the infrastructure resource names.
-- `env_vars` represents a set of environment variables used by BlockScout. You can see the description of this variables at [POA Forum](https://forum.poa.network/t/faq-blockscout-environment-variables/1814).
+- `env_vars` represents a set of environment variables used by BlockScout. You can see the description of this variables at [BlockScout official documentation](https://poanetwork.github.io/blockscout/#/env-variables).
   - Also One can define `BULD_*` set of the variables, where asterisk stands for any environment variables. All variables defined with `BUILD_*` will override default variables while building the dev server.
 - `aws_access_key` and `aws_secret_key` is a credentials pair that provides access to AWS for the deployer; You can use the `aws_profile` instead. In that case, AWS CLI profile will be used. Also, if none of the access key and profile provided, the `default` AWS profile will be used. The `aws_region` should be left at `us-east-1` as some of the other regions fail for different reasons;
 - `backend` variable defines whether deployer should keep state files remote or locally. Set `backend` variable to `true` if you want to save state file to the remote S3 bucket;
