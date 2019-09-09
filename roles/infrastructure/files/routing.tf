@@ -71,3 +71,4 @@ resource "aws_alb_listener" "alb_listener" {
   }
 }
 
+#TODO Modify listener and add another target group
