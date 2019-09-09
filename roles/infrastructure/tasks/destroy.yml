@@ -1,0 +1,67 @@
+- name: Pre-Cleanup
+  import_tasks: cleanup.yml
+
+- name: Prepare Terraform for deployment
+  import_tasks: common.yml 
+
+# This is due to the TF0.11-12 bug which do not allow to completely destroy resources if interpolation syntax is used in outputs.tf at edge cases
+- name: Check if outputs.tf exists
+  stat: 
+    path: "/tmp/files-{{ group_names[0] }}/outputs.tf"
+  register: outputs_stat
+
+- name: Temporarily remove outputs.tf file
+  command: "mv /tmp/files-{{ group_names[0] }}/outputs.tf /tmp/files-{{ group_names[0] }}/outputs.tf.backup"
+  when: outputs_stat.stat.exists
+
+- name: Terraform plan to destroy main infra
+  shell: "echo yes | {{ terraform_location }} {{ item }}"
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}/"
+  with_items:
+    - "init {{ '-backend-config=backend.tfvars' if backend|bool else '' }}"
+    - plan -destroy -out terraform.tfplan
+    - show -no-color terraform.tfplan
+  register: tf_plan
+
+- name: Terraform show destroy plan
+  debug:
+    var: tf_plan.results[2].stdout_lines
+
+- name: User prompt
+  pause:
+    prompt: "Are you absolutely sure you want to execute the destruction plan shown above? [False]"
+  register: user_answer
+  until: user_answer.user_input | lower in conditional
+  retries: 10000
+  delay: 1
+  vars:
+    conditional: ['yes','no','true','false']
+  when: inventory_hostname == groups['all'][0]
+
+- name: Terraform destroy
+  shell: "{{ terraform_location }} destroy -auto-approve" 
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}"
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
+
+- name: Delete vars from parameter store
+  include: parameter_store.yml
+
+- name: S3 and DynamoDB cleanup
+  block:
+    - pause:
+        prompt: "Do you want to delete S3 bucket with state file and DynamoDB attached to it also? [Yes/No] Default: No"
+      register: user_answer
+      until: user_answer.user_input | lower in conditional 
+      retries: 10000
+      delay: 1
+      vars:
+        conditional: ['yes','no','true','false']
+      when: inventory_hostname == groups['all'][0]
+    - import_role:
+        name: s3
+        tasks_from: delete.yml
+    - import_rol:
+        name: dynamodb
+        tasks_from: delete.yml

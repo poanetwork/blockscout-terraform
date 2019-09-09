@@ -1,0 +1,11 @@
+terraform {
+  backend "s3" {
+    {% if aws_access_key is undefined or aws_access_key == '' %}
+      profile    = "{{ aws_profile|default("default") }}"
+    {% else %}
+      access_key = "{{ aws_access_key }}"
+      secret_key = "{{ aws_secret_key }}"
+    {% endif %}
+      region     = "{{ aws_region }}"
+  }
+}

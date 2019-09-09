@@ -1,0 +1,33 @@
+- name: Make config variables lowercase to upload them to AWS SSM
+  set_fact:
+    lower_env: "{{ lower_env | combine ({item.key|lower : item.value})  }}"
+  with_dict: "{{ env_vars }}"
+  vars:
+    lower_env: {}
+
+- name: User prompt
+  pause:
+    prompt: "Do you want to update the Parameter Store variables? [Yes[Enter]/No]"
+  register: user_answer
+  until: user_answer.user_input | lower in conditional
+  retries: 10000
+  delay: 1
+  vars:
+    conditional: ["",'yes','no','true','false']
+  when: inventory_hostname == groups['all'][0]
+
+- name: Upload new variables to AWS SSM
+  aws_ssm_parameter_store:
+    name: "/{{ group_names[0] }}/{{ chain }}/{{ item.key }}" 
+    value: "{{ item.value }}"
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
+  with_dict: "{{ lower_env | default({}) }}"
+  when: hostvars[groups['all'][0]].user_answer.user_input == "" or hostvars[groups['all'][0]].user_answer.user_input | lower | bool

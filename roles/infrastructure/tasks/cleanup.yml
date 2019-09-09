@@ -1,0 +1,12 @@
+- name: Ansible delete file glob
+  find:
+    paths: /tmp/
+    file_type: directory
+    patterns: "files-{{ group_names[0] }}"
+  register: files_to_delete
+
+- name: Ansible remove file glob
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ files_to_delete.files }}"

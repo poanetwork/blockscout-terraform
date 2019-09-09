@@ -1,0 +1,21 @@
+- name: Copy files
+  copy:
+    src: "roles/main_infra/files/"
+    dest: "/tmp/files-{{ group_names[0] }}/"
+
+- name: Generate remote state configuration file
+  template: 
+    src: remote-backend-selector.tf.j2 
+    dest: "/tmp/files-{{ group_names[0] }}/remote-backend-selector.tf"
+  when: backend | bool
+
+- name: Generate remote state variables file
+  template:
+    src: backend.tfvars.j2
+    dest: "/tmp/files-{{ group_names[0] }}/backend.tfvars"
+  when: backend | default('false') | bool
+
+- name: Generate regular variables file
+  template:
+    src: terraform.tfvars.j2
+    dest: "/tmp/files-{{ group_names[0] }}/terraform.tfvars"

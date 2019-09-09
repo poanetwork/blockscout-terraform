@@ -1,0 +1,12 @@
+aws_profile: "default"
+dynamodb_table: "poa-terraform-lock"
+bucket: "poa-terraform-state"
+terraform_location: "/usr/local/bin/terraform"
+prefix: "test"
+vpc_cidr: "10.0.0.0/16"
+public_subnet_cidr: "10.0.0.0/24"
+db_subnet_cidr: "10.0.2.0/16"
+dns_zone_name: "poa.internal"
+instance_type: "m5.large"
+root_block_size: 8
+db_iops: {}
