@@ -2,20 +2,29 @@
   hosts: all
   tasks:
    - block:
-       - name: Deploy
-         include_role:
-           name: main_software
-         tags:
-           - update_vars
-           - build
-           - deploy
+     - name: Generate local variables
+       import_role: 
+         name: ssm_vars
+         tasks_from: dev.yml
+       tags:
+         - build
+     - name: Build the local BlockScout instance first
+       import_role:
+         name: build
+       tags:
+         - build
+     - name: Update the production variables
+       import_role:
+         name: ssm_vars
+         tasks_from: prod.yml
+       when: env_vars is defined
+       tags:
+         - update_vars
+     - name: Deploy the production BlockScout instance
+       import_role:
+         name: deploy
      always:
-       - include_role:
-           name: s3 
-         when: backend|bool and (upload_debug_info_to_s3|bool or upload_config_to_s3|bool)
-       - include_role:
-           name: s3_config
-         when: backend|bool and upload_config_to_s3|bool 
-       - include_role:
-           name: s3_debug
-         when: backend|bool and upload_debug_info_to_s3|bool 
+     - import_role:
+         name: s3
+         tasks_from: remote-files.yml
+       when: backend | bool

@@ -1,7 +1,10 @@
 - name: Destroy infrastructure
   hosts: all
-  roles:
-    - { role: destroy, when: "confirmation|bool == True and inventory_hostname == groups[group_names[0]][0]" } 
+  tasks:
+    - import_role:
+        role: infrastructure
+        tasks_from: destroy.yml
+      when: "confirmation | bool and inventory_hostname == groups[group_names[0]][0]"
   vars_prompt:
     - name: "confirmation"
       prompt: "Are you sure you want to destroy all the infra?"

@@ -2,21 +2,16 @@
   hosts: all
   tasks:
     - block:
-        - include_role:
-            name: check
-        - include_role:
-            name: "{{ item }}"
+        - import_role: "{{ item }}"
           with_items:
-            - s3
-            - dynamodb
-          when: backend | bool 
-        - include_role:
-            name: main_infra
+            - { item: "check" }
+            - { item: "s3", when: "backend | bool" }
+            - { item: "dynamodb", when: "backend | bool" }
+            - { item: "infrastructure" }
       when: inventory_hostname == groups[group_names[0]][0]
       always:
-        - include_role:
-            name: s3_config
-          when: backend|bool == true and upload_config_to_s3|bool == true
-        - include_role:
-            name: s3_debug
-          when: backend|bool == true and upload_debug_info_to_s3|bool == true
+      - import_role:
+          name: s3
+          tasks_from: remote-files.yml
+        when: backend | bool
+

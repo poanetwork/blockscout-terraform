@@ -168,7 +168,7 @@ Also, if you need to **distribute variables accross all the hosts/groups**, you 
 
 # Deploying BlockScout
 
-<details>0. (optional) <summary>This step is for mac OS users. Please skip it, if this is not your case.</summary>
+<details><summary>0. (optional) This step is for mac OS users. Please skip it, if this is not your case.</summary>
 
 To avoid the error
 ```
@@ -212,9 +212,14 @@ cat group_vars/blockscout.yml.example group_vars/all.yml.example > group_vars/gr
 ```
 If you have already merged `infrastructure.yml.example` and `all.yml` while deploying the BlockScout infrastructure, you can simply add the `blockscout.yml.example` to the merged file: `cat group_vars/blockscout.yml.example >> group_vars/host.yml`
 
-6. Adjust the variables at `group_vars` and `host_vars`. Note - you can move variables between host and group vars depending on if variable should be applied to the host or to the entire group. The list of the variables you can find at the [corresponding part of instruction](#Configuration);
-Also, if you need to **distribute variables accross all the hosts/groups**, you can add these variables to the `group_vars/all.yml` file. Note about variable precedence => [Official Ansible Docs](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
-  
+6. Adjust the variables at `group_vars` and `host_vars`. 
+
+**Note 1**: You can move variables between host and group vars depending on if variable should be applied to the host or to the entire group. The list of the variables you can find at the [corresponding part of instruction](#Configuration);
+
+**Note 2**: If you need to **distribute variables accross all the hosts/groups**, you can add these variables to the `group_vars/all.yml` file. Note about variable precedence => [Official Ansible Docs](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
+
+**Note 3**: Splitting BlockScout instances into WEB and API is supported through the `regular_servers`, `web_servers` and `api_servers` variables, and not through the `env_vars` as for many other configurations.   
+
 7. Run `ansible-playbook deploy_software.yml`; 
 8. When the prompt appears, check that server is running and there is no visual artifacts. The server will be launched at port 4000 at the same machine where you run the Ansible playbooks. If you face any errors you can either fix it or cancel the deployment by pressing **Ctrl+C** and then pressing **A** when additionally prompted.
 9. When server is ready to be deployed simply press enter and deployer will upload Blockscout to the appropriate S3.
