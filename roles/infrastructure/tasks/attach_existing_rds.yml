@@ -1,0 +1,19 @@
+- name: Pre-Cleanup
+  import_tasks: cleanup.yml
+
+- name: Prepare Terraform for attaching DB
+  import_tasks: common.yml
+
+#Workaround since terraform module return unexpected error.
+- name: Initialize Terraform
+  shell: "echo yes | {{ terraform_location }} init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
+  args:
+    chdir: "roles/infrastructure/files"
+
+- name: Attach existing DB instances
+  shell: "echo yes | {{ terraform_location }} import aws_db_instance.default[{{ index }}] {{ prefix }}-{{ item.value }}"
+  args:
+    chdir: "roles/infrastructure/files"
+  loop: "{{ chain_db_id|dict2items }}"
+  loop_control:
+    index_var: index
