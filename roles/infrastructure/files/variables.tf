@@ -38,6 +38,18 @@ variable "instance_type" {
 variable "root_block_size" {
 }
 
+variable "regular_servers" {
+  default = {}
+}
+
+variable "web_servers" {
+  default = {}
+}
+
+variable "api_servers" {
+  default = {}
+}
+
 variable "pool_size" {
   default = {}
 }

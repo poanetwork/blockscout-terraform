@@ -32,43 +32,20 @@ resource "aws_lb" "explorer" {
   }
 }
 
-# The Target Group for the ALB
-resource "aws_lb_target_group" "explorer" {
-  count    = length(var.chains)
-  name     = "${var.prefix}-explorer-${element(var.chains, count.index)}-alb-target"
-  port     = 4000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.vpc.id
-  tags = {
-    prefix = var.prefix
-    origin = "terraform"
-  }
-  stickiness {
-    type            = "lb_cookie"
-    cookie_duration = 600
-    enabled         = true
-  }
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 15
-    interval            = 30
-    path                = "/blocks"
-    port                = 4000
-  }
-}
-
 resource "aws_alb_listener" "alb_listener" {
-  count             = length(var.chains) 
-  load_balancer_arn = aws_lb.explorer[count.index].arn
+  count             = var.instance_number > 0 ? 1 : 0
+  load_balancer_arn = aws_lb.explorer[var.chains[count.index]].arn
   port              = var.use_ssl[element(var.chains, count.index)] ? "443" : "80"
   protocol          = var.use_ssl[element(var.chains, count.index)] ? "HTTPS" : "HTTP"
   ssl_policy        = var.use_ssl[element(var.chains, count.index)] ? var.alb_ssl_policy[element(var.chains, count.index)] : null
   certificate_arn   = var.use_ssl[element(var.chains, count.index)] ? var.alb_certificate_arn[element(var.chains, count.index)] : null
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.explorer[count.index].arn
-  }
-}
+  
+  type = "fixed-response"
 
-#TODO Modify listener and add another target group
+  fixed_response {
+    content_type = "text/plain"
+    message_body = "BACKEND NOT FOUND"
+    status_code  = "404"
+  }
+
+}

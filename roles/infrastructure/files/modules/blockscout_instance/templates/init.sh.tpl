@@ -193,7 +193,17 @@ old_env="$(cat /etc/environment)"
     echo "LANGUAGE=en_US"
     echo "LC_ALL=en_US.UTF-8"
     echo "LC_CTYPE=en_US.UTF-8"
-# TODO: add specific variables depending on instance type
+  %{ if type == "web" }
+    echo "DISABLE_READ_API=true"
+    echo "API_URL=${loadbalancer}/api"   
+  %{ else }
+    %{ if type == "api" }
+    echo "DISABLE_WEBAPP=true"
+    echo "DISABLE_WRITE_API=true"
+    echo "DISABLE_INDEXER=true"
+    echo "WEB_URL=${loadbalancer}"
+    %{ endif }
+  %{ endif }
 } > /etc/environment
 
 log "Parameters have been written to /etc/environment successfully!"

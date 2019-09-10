@@ -16,6 +16,22 @@ dns_zone_name      = "{{ dns_zone_name }}"
 instance_type      = "{{ instance_type }}"
 root_block_size    = "{{ root_block_size }}"
 
+regular_servers    = {
+{% for host in groups[group_names[0]] %}
+{{ hostvars[host]['chain'] }}="{{ hostvars[host]['regular_servers'] | default('0') }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+web_servers    = {
+{% for host in groups[group_names[0]] %}{{ hostvars[host]['chain'] }}="{{ hostvars[host]['web_servers'] | default('0') }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
+api_servers    = {
+{% for host in groups[group_names[0]] %}{{ hostvars[host]['chain'] }}="{{ hostvars[host]['api_servers'] | default('0') }}"{% if not loop.last %},{% endif %}
+{% endfor %}
+}
+
 use_placement_group = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }}="{{ hostvars[host]['use_placement_group'] | default('false') }}"{% if not loop.last %},{% endif %}

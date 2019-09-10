@@ -15,7 +15,7 @@ To deploy a new version of the application manually:
 "\n        - ",
 formatlist(
 "%s",
-aws_codedeploy_deployment_group.explorer.*.deployment_group_name,
+concat(module.regular.*.deployment_group,module.web.*.deployment_group,module.api.*.deployment_group),
 ),
 )}
 
