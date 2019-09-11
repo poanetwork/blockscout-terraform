@@ -33,19 +33,20 @@ resource "aws_lb" "explorer" {
 }
 
 resource "aws_alb_listener" "alb_listener" {
-  count             = var.instance_number > 0 ? 1 : 0
-  load_balancer_arn = aws_lb.explorer[var.chains[count.index]].arn
+  count             = length(var.chains)
+  load_balancer_arn = aws_lb.explorer[count.index].arn
   port              = var.use_ssl[element(var.chains, count.index)] ? "443" : "80"
   protocol          = var.use_ssl[element(var.chains, count.index)] ? "HTTPS" : "HTTP"
   ssl_policy        = var.use_ssl[element(var.chains, count.index)] ? var.alb_ssl_policy[element(var.chains, count.index)] : null
   certificate_arn   = var.use_ssl[element(var.chains, count.index)] ? var.alb_certificate_arn[element(var.chains, count.index)] : null
-  
-  type = "fixed-response"
+ 
+  default_action {
+    type = "fixed-response"
 
-  fixed_response {
-    content_type = "text/plain"
-    message_body = "BACKEND NOT FOUND"
-    status_code  = "404"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "BACKEND NOT FOUND"
+      status_code  = "404"
+    }
   }
-
 }

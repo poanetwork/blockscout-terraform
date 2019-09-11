@@ -1,0 +1,91 @@
+{% for host in groups[group_names[0]] %}
+module "regular_{{ hostvars[host]['chain'] }}" {
+  source = "./modules/blockscout_instance" 
+
+  prefix              = var.prefix
+  chain               = "{{ hostvars[host]['chain'] }}"
+  instance_number     = var.regular_servers["{{ hostvars[host]['chain'] }}"]
+  instance_type       = var.instance_type
+  key_name            = var.key_name
+  iam_profile         = aws_iam_instance_profile.explorer.id
+  iam_deployer        = aws_iam_role.deployer.arn
+  root_block_size     = var.root_block_size
+  use_placement_group = var.use_placement_group["{{ hostvars[host]['chain'] }}"]
+  alb_listener        = aws_alb_listener.alb_listener[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn
+  security_app        = aws_security_group.app.id
+  codedeploy_app      = aws_codedeploy_app.explorer.name
+  aws_vpc             = aws_vpc.vpc.id
+  aws_subnet          = aws_subnet.default.id
+
+  type = "regular"
+
+  depends = [
+    aws_db_instance.default[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_host[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_name[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_port[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_username[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_password[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+  ]
+}
+
+module "api_{{ hostvars[host]['chain'] }}" {
+  source = "./modules/blockscout_instance" 
+
+  prefix              = var.prefix
+  chain               = "{{ hostvars[host]['chain'] }}"
+  instance_number     = var.regular_servers["{{ hostvars[host]['chain'] }}"]
+  instance_type       = var.instance_type
+  key_name            = var.key_name
+  iam_profile         = aws_iam_instance_profile.explorer.id
+  iam_deployer        = aws_iam_role.deployer.arn
+  root_block_size     = var.root_block_size
+  use_placement_group = var.use_placement_group["{{ hostvars[host]['chain'] }}"]
+  alb_listener        = aws_alb_listener.alb_listener[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn 
+  security_app        = aws_security_group.app.id
+  codedeploy_app      = aws_codedeploy_app.explorer.name
+  aws_vpc             = aws_vpc.vpc.id
+  aws_subnet          = aws_subnet.default.id
+
+  type = "api"
+
+  depends = [
+    aws_db_instance.default[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_host[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_name[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_port[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_username[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_password[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+  ]
+}
+
+module "web_{{ hostvars[host]['chain'] }}" {
+  source = "./modules/blockscout_instance" 
+
+  prefix              = var.prefix
+  chain               = "{{ hostvars[host]['chain'] }}"
+  instance_number     = var.regular_servers["{{ hostvars[host]['chain'] }}"]
+  instance_type       = var.instance_type
+  key_name            = var.key_name
+  iam_profile         = aws_iam_instance_profile.explorer.id
+  iam_deployer        = aws_iam_role.deployer.arn
+  root_block_size     = var.root_block_size
+  use_placement_group = var.use_placement_group["{{ hostvars[host]['chain'] }}"]
+  alb_listener        = aws_alb_listener.alb_listener[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn
+  security_app        = aws_security_group.app.id
+  codedeploy_app      = aws_codedeploy_app.explorer.name
+  aws_vpc             = aws_vpc.vpc.id
+  aws_subnet          = aws_subnet.default.id
+
+  type = "web"
+
+  depends = [
+    aws_db_instance.default[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_host[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_name[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_port[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_username[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_ssm_parameter.db_password[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+  ]
+}
+{% endfor %}

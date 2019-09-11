@@ -165,7 +165,7 @@ function get_param() {
 ELIXIR_VERSION="$(get_param 'elixir_version')"
 log "Installing Elixir to /opt/elixir.."
 mkdir -p /opt/elixir
-wget https://github.com/elixir-lang/elixir/releases/download/${ELIXIR_VERSION}/Precompiled.zip >"$LOG"
+wget https://github.com/elixir-lang/elixir/releases/download/$${ELIXIR_VERSION}/Precompiled.zip >"$LOG"
 unzip Precompiled.zip -d /opt/elixir >"$LOG"
 log "Elixir installed successfully!"
 
@@ -195,13 +195,11 @@ old_env="$(cat /etc/environment)"
     echo "LC_CTYPE=en_US.UTF-8"
   %{ if type == "web" }
     echo "DISABLE_READ_API=true"
-    echo "API_URL=${loadbalancer}/api"   
   %{ else }
     %{ if type == "api" }
     echo "DISABLE_WEBAPP=true"
     echo "DISABLE_WRITE_API=true"
     echo "DISABLE_INDEXER=true"
-    echo "WEB_URL=${loadbalancer}"
     %{ endif }
   %{ endif }
 } > /etc/environment

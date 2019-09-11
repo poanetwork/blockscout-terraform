@@ -1,59 +1,7 @@
-locals {
-  route_patterns = {
-    "regular" = [],
-    "api" = [
-      {
-        "priority" = "5"
-        "block" = {
-          "path_pattern" = ["/api"]
-        }
-      },
-      {
-        "priority" = "3"
-        "block" = {
-          "path_pattern" = ["/api/ethrpc"]
-        }
-      },
-      {
-        "priority" = "4"
-        "block" = {
-          "path_pattern" = ["/graphiql"]
-        }
-      }
-    ],
-    "web" = [
-      {
-        "priority" = "6"
-        "block" = { 
-          "path_pattern" = ["/"]
-        }
-      },
-      {
-        "priority" = "1",
-        "block" = {
-          "query_string" = {
-            "key"        = "action",
-            "value"      = "verify",
-          }
-        }
-      },
-      {
-        "priority" = "2",
-        "block" = {
-          "query_string" = {
-            "key"        = "action",
-            "value"      = "eth_block_number",
-          }
-        }
-      }
-    ]
-  }
-}
-
 # The Target Group for the ALB
 resource "aws_lb_target_group" "common" {
   count    = var.instance_number > 0 ? 1 : 0
-  name     = "${var.prefix}-explorer-${var.type}-${var.chain}-alb-target"
+  name     = "${var.prefix}-${var.type}-${var.chain}-bs-tg"
   port     = 4000
   protocol = "HTTP"
   vpc_id   = var.aws_vpc
@@ -76,15 +24,113 @@ resource "aws_lb_target_group" "common" {
   }
 }
 
-resource "aws_lb_listener_rule" "host_based_routing" {
-  count        = length(local.route_patterns[var.type])
+resource "aws_lb_listener_rule" "regular" {
+  count        = var.instance_number > 0 ? var.instance_type == "regular" ? 1 : 0 : 0
   listener_arn = var.alb_listener
-  priority     = local.route_patterns[var.type][count.index].priority
+  priority     = "7"
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.common.arn
+    target_group_arn = aws_lb_target_group.common[0].arn
   }
 
-  condition = local.route_patterns[var.type][count.index].block
+  condition {
+    path_pattern = ["/*"]
+  }
+}
+
+resource "aws_lb_listener_rule" "verify_api" {
+  count        = var.instance_number > 0 ? var.instance_type == "web" ? 1 : 0 : 0
+  listener_arn = var.alb_listener
+  priority     = 1
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.common[0].arn
+  }
+
+  condition {
+    query_string {
+      key   = "action"
+      value = "verify"
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "eth_block_number_api" {
+  count        = var.instance_number > 0 ? var.instance_type == "web" ? 1 : 0 : 0
+  listener_arn = var.alb_listener
+  priority     = 2
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.common[0].arn
+  }
+
+  condition {
+    query_string {
+      key   = "action"
+      value = "eth_block_number"
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "api_ethrpc" {
+  count        = var.instance_number > 0 ? var.instance_type == "api" ? 1 : 0 : 0
+  listener_arn = var.alb_listener
+  priority     = 3
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.common[0].arn
+  }
+
+  condition {
+    path_pattern = ["/api/ethrpc"]
+  }
+}
+
+resource "aws_lb_listener_rule" "api" {
+  count        = var.instance_number > 0 ? var.instance_type == "api" ? 1 : 0 : 0
+  listener_arn = var.alb_listener
+  priority     = 4
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.common[0].arn
+  }
+
+  condition {
+    path_pattern = ["/api"]
+  }
+}
+
+resource "aws_lb_listener_rule" "graphiql" {
+  count        = var.instance_number > 0 ? var.instance_type == "api" ? 1 : 0 : 0
+  listener_arn = var.alb_listener
+  priority     = 5
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.common[0].arn
+  }
+
+  condition {
+    path_pattern = ["/graphiql"]
+  }
+}
+
+resource "aws_lb_listener_rule" "web" {
+  count        = var.instance_number > 0 ? var.instance_type == "web" ? 1 : 0 : 0
+  listener_arn = var.alb_listener
+  priority     = 6
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.common[0].arn
+  }
+
+  condition {
+    path_pattern = ["/*"]
+  }
 }

@@ -3,7 +3,7 @@ resource "aws_codedeploy_deployment_group" "explorer" {
   app_name              = var.codedeploy_app 
   deployment_group_name = "${var.prefix}-${var.chain}-${var.type}-explorer-dg" 
   service_role_arn      = var.iam_deployer 
-  autoscaling_groups    = [aws_autoscaling_group.explorer.name] 
+  autoscaling_groups    = [aws_autoscaling_group.explorer[0].name] 
 
   deployment_style {
     deployment_option = "WITH_TRAFFIC_CONTROL"
@@ -12,7 +12,7 @@ resource "aws_codedeploy_deployment_group" "explorer" {
 
   load_balancer_info {
     target_group_info {
-      name = aws_lb_target_group.common.name
+      name = aws_lb_target_group.common[0].name
     }
   }
 

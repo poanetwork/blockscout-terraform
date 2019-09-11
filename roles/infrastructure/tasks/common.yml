@@ -1,6 +1,6 @@
 - name: Copy files
   copy:
-    src: "roles/main_infra/files/"
+    src: "roles/infrastructure/files/"
     dest: "/tmp/files-{{ group_names[0] }}/"
 
 - name: Generate remote state configuration file
@@ -19,3 +19,10 @@
   template:
     src: terraform.tfvars.j2
     dest: "/tmp/files-{{ group_names[0] }}/terraform.tfvars"
+
+# Workaround since TF does not support count for modules
+# This one should be fixed soon (https://www.hashicorp.com/resources/a-2nd-tour-of-terraform-0-12, section Future plans)
+- name: Generate modules file (workaround for Terraform issue 953)
+  template:
+    src: hosts.tf.j2
+    dest: "/tmp/files-{{ group_names[0] }}/hosts.tf"

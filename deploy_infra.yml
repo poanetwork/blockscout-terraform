@@ -2,14 +2,17 @@
   hosts: all
   tasks:
     - block:
-        - import_role:
-            name: "{{ item }}"
-            tasks_from: "{{ tasks | default('main.yml') }}"
-          with_items:
-            - { item: "check" }
-            - { item: "s3", when: "backend | bool" }
-            - { item: "dynamodb", when: "backend | bool" }
-            - { item: "infrastructure", tasks: "deploy.yml" }
+        - include_role:
+            name: "{{ role.name }}"
+            tasks_from: "{{ role.tasks | default('main.yml') }}"
+          when: role.when | default(true)
+          loop_control:
+            loop_var: role 
+          loop:
+            - { name: "check" }
+            - { name: "s3", when: "{{ backend | bool }}" }
+            - { name: "dynamodb", when: "{{ backend | bool }}" }
+            - { name: "infrastructure", tasks: "deploy.yml" }
       when: inventory_hostname == groups[group_names[0]][0]
       always:
       - import_role:

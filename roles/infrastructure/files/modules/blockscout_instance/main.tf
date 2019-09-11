@@ -14,11 +14,10 @@ data "aws_ami" "explorer" {
 }
 
 data "template_file" "init" {
-  template = file("templates/init.sh.tpl")
+  template = file("${path.module}/templates/init.sh.tpl")
 
   vars = {
     type = var.type 
-    loadbalancer = var.loadbalancer
   }
 }
 
@@ -31,6 +30,7 @@ resource "aws_launch_configuration" "explorer" {
   key_name                    = var.key_name
   iam_instance_profile        = var.iam_profile
   associate_public_ip_address = false
+  
 
   user_data = data.template_file.init.rendered
 
@@ -51,14 +51,13 @@ resource "aws_placement_group" "explorer" {
 
 resource "aws_autoscaling_group" "explorer" {
   count                = var.instance_number > 0 ? 1 : 0
-  name                 = "${var.prefix}-${var.chain}-asg"
+  name                 = "${var.prefix}-${var.chain}-${var.type}-asg"
   max_size             = var.instance_number + 1
   min_size             = "1"
   desired_capacity     = var.instance_number
-  launch_configuration = aws_launch_configuration.explorer.name
-  vpc_zone_identifier  = [var.aws_subnet]
-  availability_zones   = data.aws_availability_zones.available.names
-  target_group_arns    = [var.target_group_arn]
+  launch_configuration = aws_launch_configuration.explorer[0].name
+  vpc_zone_identifier  = [var.aws_subnet] 
+  target_group_arns    = [aws_lb_target_group.common[0].arn]
   placement_group      = var.use_placement_group == "True" ? "${var.prefix}-${var.chain}-${var.type}-explorer-pg" : null
 
   # Health checks are performed by CodeDeploy hooks
@@ -98,20 +97,23 @@ resource "aws_autoscaling_group" "explorer" {
     key                 = "type"
     value               = var.type
     propagate_at_launch = true
+  }
 }
 
 # TODO: These autoscaling policies are not currently wired up to any triggers
 resource "aws_autoscaling_policy" "explorer-up" {
+  count                  = var.instance_number > 0 ? 1 : 0
   name                   = "${var.prefix}-${var.chain}-{var.type}-explorer-asg-policy-up"
-  autoscaling_group_name = aws_autoscaling_group.explorer.name
+  autoscaling_group_name = aws_autoscaling_group.explorer[0].name
   adjustment_type        = "ChangeInCapacity"
   scaling_adjustment     = 1
   cooldown               = 300
 }
 
 resource "aws_autoscaling_policy" "explorer-down" {
+  count                  = var.instance_number > 0 ? 1 : 0
   name                   = "${var.prefix}-${var.chain}-{var.type}-explorer-asg-policy-down"
-  autoscaling_group_name = aws_autoscaling_group.explorer.name
+  autoscaling_group_name = aws_autoscaling_group.explorer[0].name
   adjustment_type        = "ChangeInCapacity"
   scaling_adjustment     = -1
   cooldown               = 300

@@ -62,6 +62,6 @@
     - import_role:
         name: s3
         tasks_from: delete.yml
-    - import_rol:
+    - import_role:
         name: dynamodb
         tasks_from: delete.yml

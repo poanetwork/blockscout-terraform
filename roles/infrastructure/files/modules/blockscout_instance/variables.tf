@@ -1,3 +1,8 @@
+variable "depends" { 
+  default = []
+  type = "list"
+}
+
 variable "prefix" {
 }
 
@@ -25,9 +30,6 @@ variable "root_block_size" {
 variable "use_placement_group" {
 }
 
-variable "target_group_arn" {
-}
-
 variable "alb_listener" {
 }
 
@@ -37,11 +39,11 @@ variable "security_app" {
 variable "codedeploy_app" {
 }
 
-variable "aws_subnet" {
-}
-
 variable "type" {
 }
 
 variable "aws_vpc" {
+}
+
+variable "aws_subnet" {
 }
