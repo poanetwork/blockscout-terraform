@@ -1,4 +1,36 @@
+- name: Fork hosts to API and WEB if necessary 
+  hosts: all
+  tags:
+    - build
+    - deploy
+  tasks: 
+   - add_host:
+       name: "{{ inventory_hostname }}{{ item }}"
+       role: "{{ 'api' if api_servers >= item+1 else 'web' }}"
+       instance: "{{ inventory_hostname }}"
+       groups:
+       - "{{ group_names[0] }}"
+       - "all"
+     loop: "{{ range(0, 2 if api_servers*web_servers != 0 else 1, 1) | list }}"
+     when: api_servers > 0 or web_servers > 0
+
+- name: Fetch variables for each host
+  gather_facts: false
+  hosts: all
+  tags:
+    - build
+    - deploy
+  tasks:
+    - include_vars: "{{ lookup('first_found', possible_files) }}"
+      delegate_to: localhost 
+      vars:
+        possible_files:
+          - "{{ playbook_dir }}/host_vars/{{ instance | default(inventory_hostname) }}.yaml"
+          - "{{ playbook_dir }}/host_vars/{{ instance | default(inventory_hostname) }}"
+          - "{{ playbook_dir }}/host_vars/{{ instance | default(inventory_hostname) }}.yml" 
+
 - name: Deploy BlockScout
+  gather_facts: false
   hosts: all
   tasks:
    - block:
@@ -23,6 +55,8 @@
      - name: Deploy the production BlockScout instance
        import_role:
          name: deploy
+       tags:
+         - deploy
      always:
      - import_role:
          name: s3

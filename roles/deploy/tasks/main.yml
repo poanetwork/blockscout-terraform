@@ -10,7 +10,7 @@
   when: inventory_hostname == groups['all'][0]
 
 - name: Upload Blockscout to S3
-  command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} aws deploy push --application-name={{ group_names[0] }}-explorer --s3-location s3://{{ group_names[0] }}-explorer-codedeploy-releases/blockscout-{{ group_names[0] }}-{{ chain }}.zip --source=/tmp/blockscout-{{ group_names[0] }}-{{ chain }} {{ '--profile='~aws_profile~' --region='~aws_region if aws_profile is defined else '' }}"
+  command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} aws deploy push --application-name={{ group_names[0] }}-explorer --s3-location s3://{{ group_names[0] }}-explorer-codedeploy-releases/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}.zip --source=/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }} {{ '--profile='~aws_profile~' --region='~aws_region if aws_profile is defined else '' }}"
   register: push_output
   when: hostvars[groups['all'][0]].user_answer.user_input == "" or hostvars[groups['all'][0]].user_answer.user_input | lower | bool
 
@@ -19,7 +19,6 @@
     msg: "If deployment will fail, you can try to deploy blockscout manually using the following commands: {{ 'AWS_ACCESS_KEY=XXXXXXXXXXXXXX AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXX AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines }} {{ '--profile='~aws_profile~' --region'~aws_region if aws_profile is defined else '' }}"
   when: hostvars[groups['all'][0]].user_answer.user_input == "" or hostvars[groups['all'][0]].user_answer.user_input | lower | bool
 
-
 - name: Deploy Blockscout
-  command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines[1] }} --deployment-group-name {{ group_names[0] }}-explorer-dg{{ groups[group_names[0]].index(inventory_hostname) }} --deployment-config-name CodeDeployDefault.OneAtATime {{ '--profile='~aws_profile~' --region='~aws_region if aws_profile is defined else '' }}"
+  command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines[1] }} --deployment-group-name {{ group_names[0] }}-{{ chain }}-{{ role }}-explorer-dg --deployment-config-name CodeDeployDefault.OneAtATime {{ '--profile='~aws_profile~' --region='~aws_region if aws_profile is defined else '' }}"
   when: hostvars[groups['all'][0]].user_answer.user_input == "" or hostvars[groups['all'][0]].user_answer.user_input | lower | bool

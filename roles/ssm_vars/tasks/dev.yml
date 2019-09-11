@@ -26,7 +26,15 @@
 - name: Override PORT and NETWORK_PATH variables for local build 
   set_fact:
     dev_env: "{{ upper_env | combine({'NETWORK_PATH':'/','PORT':server_port}) }}"
-    
+
+- name: Assign role-based environment variables
+  set_fact:
+    dev_env: "{{ dev_env | combine(item.role) }}"
+  when: item.condition
+  loop:
+    - { condition: "{{ true if role == 'web' else false }}", role: { DISABLE_READ_API: "true" } }
+    - { condition: "{{ true if role == 'api' else false }}", role: { DISABLE_WEBAPP: "true", DISABLE_WRITE_API: "true", DISABLE_INDEXER: "true" }}
+
 - name: Combine variables from config with AWS SSM variales. Override BUILD_ over regular variables for local build
   set_fact:
     dev_env: "{{ dev_env | combine({item.key|regex_replace('BUILD_'):item.value}) }}"

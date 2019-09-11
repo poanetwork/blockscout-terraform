@@ -1,7 +1,7 @@
 - name: Clone BlockScout
   git:
     repo: "{{ blockscout_repo }}"
-    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}"
+    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}"
     version: "{{ branch }}"
     force: true
   when: skip_fetch | bool != true
@@ -9,65 +9,66 @@
 - name: Git clean
   command: "git clean -fdx"
   args:
-    chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}"
+    chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}"
   when: skip_fetch | bool != true
 
 - name: Merge branches
   command: "git merge {{ merge_commit_item }}" 
   args:
-    chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}"
+    chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}"
   when: merge_commit_item and not skip_fetch | bool
   vars:
     merge_commit_item: "{{ merge_commit | default(false) }}"
 
 - name: Copy web config files
   copy:
-    src: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/config/dev.secret.exs.example"
-    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/config/dev.secret.exs" 
+    src: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/block_scout_web/config/dev.secret.exs.example"
+    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/block_scout_web/config/dev.secret.exs" 
 
 - name: Template explorer config files 
   template:
     src: dev.secret.exs.j2 
-    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs" 
-  when: ps_user is defined 
+    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/explorer/config/dev.secret.exs" 
+  when: ps_user is defined
 
 - name: Copy default explorer config files
   copy:
-    src: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs.example"
-    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs"
+    src: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/explorer/config/dev.secret.exs.example"
+    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/explorer/config/dev.secret.exs"
   when: ps_user is undefined or ps_user == ""
 
 - name: Remove static assets from previous deployment, if any
   file:
-    path: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/priv/static"
+    path: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/block_scout_web/priv/static"
     state: absent 
-
+    
 - name: Compile local(DEV) BlockScout
   environment: "{{ dev_env }}"
   block:
-    - command: "mix do {{ item }}"
+    - command: "mix do {{ item.action }}"
       args:
-        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}"
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}"
+      when: item.condition | default(true)
       with_items:
-        - deps.get
-        - local.rebar --force
-        - deps.compile
-        - compile
-        - ecto.drop
-        - ecto.create
-        - ecto.migrate
+        - { action: "deps.get" }
+        - { action: "local.rebar --force" }
+        - { action: "deps.compile" }
+        - { action: "compile" }
+        - { action: "ecto.drop", condition: "{{ false if instance is defined else true }}" }
+        - { action: "ecto.create", condition: "{{ false if instance is defined else true }}" }
+        - { action: "ecto.migrate", condition: "{{ false if instance is defined else true }}" }
     - command: npm install 
       args:
-        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/assets" 
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/block_scout_web/assets" 
     - command: node_modules/webpack/bin/webpack.js --mode production
       args:
-        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/assets"
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/block_scout_web/assets"
     - command: npm install
       args:
-        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer" 
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/explorer" 
     - command: mix phx.gen.cert blockscout blockscout.local
       args:
-        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web"
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/block_scout_web"
 
 - name: Start local(DEV) BlockScout server, then build static assets
   environment: "{{ dev_env }}"
@@ -75,7 +76,7 @@
     - name: Start server
       command: "mix phx.server"
       args:
-        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}" 
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}" 
       async: 10000
       poll: 0 
     - debug:
@@ -89,7 +90,7 @@
       register: prompt
     - command: mix phx.digest
       args:
-        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}"
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}"
   always:
     - name: Kill running local(DEV) BlockScout server
       command: "pkill -f {{ item }}"
@@ -113,27 +114,21 @@
   vars:
     conditional: ["",'yes','no','true','false']
   when: inventory_hostname == groups['all'][0]
-  tags:
-    - build
 
 - name: Remove dev dependencies
   file:
     state: absent
     path: "{{ item }}"
   with_items:
-    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/_build/"
-    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/deps/"
-    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/assets/node_modules/"
-    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/node_modules/"
-    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/logs/dev/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/_build/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/deps/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/block_scout_web/assets/node_modules/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/explorer/node_modules/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/logs/dev/"
   when: hostvars[groups['all'][0]].user_answer.user_input == "" or hostvars[groups['all'][0]].user_answer.user_input | lower | bool
-  tags:
-    - build
 
 - name: Fix bug with favicon 
   replace:
     regexp: '\"favicon\.ico\"\:\"favicon-[a-z0-9]+?\.ico\"'
     replace: '"images/favicon.ico":"favicon.ico"'
-    path: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/priv/static/cache_manifest.json"
-  tags:
-    - build
+    path: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}-{{ role }}/apps/block_scout_web/priv/static/cache_manifest.json"
