@@ -15,7 +15,7 @@ To deploy a new version of the application manually:
 "\n        - ",
 formatlist(
 "%s",
-concat({% for host in groups[group_names[0]] %}{% if not loop.first %},{% endif %}module.regular_{{ hostvars[host]['chain'] }}.deployment_group,module.api_{{ hostvars[host]['chain'] }}.deployment_group,module.web_{{ hostvars[host]['chain'] }}{% endfor %})
+list({% for host in groups[group_names[0]] %}{% if not loop.first %},{% endif %}module.regular_{{ hostvars[host]['chain'] }}.deployment_group,module.api_{{ hostvars[host]['chain'] }}.deployment_group,module.web_{{ hostvars[host]['chain'] }}.deployment_group{% endfor %})
 ),
 )}
 

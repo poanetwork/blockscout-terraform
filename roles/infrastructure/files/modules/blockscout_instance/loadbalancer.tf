@@ -25,7 +25,7 @@ resource "aws_lb_target_group" "common" {
 }
 
 resource "aws_lb_listener_rule" "regular" {
-  count        = var.instance_number > 0 ? var.instance_type == "regular" ? 1 : 0 : 0
+  count        = var.type == "regular" ? signum(var.instance_number) : 0
   listener_arn = var.alb_listener
   priority     = "7"
 
@@ -40,7 +40,7 @@ resource "aws_lb_listener_rule" "regular" {
 }
 
 resource "aws_lb_listener_rule" "verify_api" {
-  count        = var.instance_number > 0 ? var.instance_type == "web" ? 1 : 0 : 0
+  count        = var.type == "web" ? signum(var.instance_number) : 0 
   listener_arn = var.alb_listener
   priority     = 1
 
@@ -58,7 +58,7 @@ resource "aws_lb_listener_rule" "verify_api" {
 }
 
 resource "aws_lb_listener_rule" "eth_block_number_api" {
-  count        = var.instance_number > 0 ? var.instance_type == "web" ? 1 : 0 : 0
+  count        = var.type == "web" ? signum(var.instance_number) : 0 
   listener_arn = var.alb_listener
   priority     = 2
 
@@ -76,7 +76,7 @@ resource "aws_lb_listener_rule" "eth_block_number_api" {
 }
 
 resource "aws_lb_listener_rule" "api_ethrpc" {
-  count        = var.instance_number > 0 ? var.instance_type == "api" ? 1 : 0 : 0
+  count        = var.type == "api" ? signum(var.instance_number) : 0
   listener_arn = var.alb_listener
   priority     = 3
 
@@ -91,7 +91,7 @@ resource "aws_lb_listener_rule" "api_ethrpc" {
 }
 
 resource "aws_lb_listener_rule" "api" {
-  count        = var.instance_number > 0 ? var.instance_type == "api" ? 1 : 0 : 0
+  count        = var.type == "api" ? signum(var.instance_number) : 0
   listener_arn = var.alb_listener
   priority     = 4
 
@@ -106,7 +106,7 @@ resource "aws_lb_listener_rule" "api" {
 }
 
 resource "aws_lb_listener_rule" "graphiql" {
-  count        = var.instance_number > 0 ? var.instance_type == "api" ? 1 : 0 : 0
+  count        = var.type == "api" ? signum(var.instance_number) : 0
   listener_arn = var.alb_listener
   priority     = 5
 
@@ -121,7 +121,7 @@ resource "aws_lb_listener_rule" "graphiql" {
 }
 
 resource "aws_lb_listener_rule" "web" {
-  count        = var.instance_number > 0 ? var.instance_type == "web" ? 1 : 0 : 0
+  count        = var.type == "web" ? signum(var.instance_number) : 0
   listener_arn = var.alb_listener
   priority     = 6
 

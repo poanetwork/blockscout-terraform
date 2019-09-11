@@ -26,3 +26,8 @@
   template:
     src: hosts.tf.j2
     dest: "/tmp/files-{{ group_names[0] }}/hosts.tf"
+
+- name: Generate outputs file (workaround for Terraform issue 953)
+  template:
+    src: outputs.tf.j2
+    dest: "/tmp/files-{{ group_names[0] }}/outputs.tf"
