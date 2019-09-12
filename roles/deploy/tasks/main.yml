@@ -20,5 +20,9 @@
   when: hostvars[groups['all'][0]].user_answer.user_input == "" or hostvars[groups['all'][0]].user_answer.user_input | lower | bool
 
 - name: Deploy Blockscout
-  command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines[1] }} --deployment-group-name {{ group_names[0] }}-{{ chain }}-{{ role }}-explorer-dg --deployment-config-name CodeDeployDefault.OneAtATime {{ '--profile='~aws_profile~' --region='~aws_region if aws_profile is defined else '' }}"
+  block:
+    - command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines[1] }} --deployment-group-name {{ group_names[0] }}-{{ chain }}-{{ role }}-explorer-dg --deployment-config-name CodeDeployDefault.OneAtATime {{ '--profile='~aws_profile~' --region='~aws_region if aws_profile is defined else '' }}"
+  rescue:
+    # Task to keep backward compatibility with previous blockscout-terraform releases
+    - command: "{{ 'AWS_ACCESS_KEY='~aws_access_key~' AWS_SECRET_ACCESS_KEY='~aws_secret_key~' AWS_DEFAULT_REGION='~aws_region if aws_profile is undefined else '' }} {{ push_output.stdout_lines[1] }} {{ group_names[0] }}-explorer-dg{{ groups[group_names[0]].index(inventory_hostname) }} --deployment-config-name CodeDeployDefault.OneAtATime {{ '--profile='~aws_profile~' --region='~aws_region if aws_profile is defined else '' }}"
   when: hostvars[groups['all'][0]].user_answer.user_input == "" or hostvars[groups['all'][0]].user_answer.user_input | lower | bool

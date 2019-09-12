@@ -15,7 +15,7 @@
   when: outputs_stat.stat.exists
 
 - name: Terraform plan to destroy main infra
-  shell: "echo yes | {{ terraform_location }} {{ item }}"
+  shell: "echo yes | {{ terraform_location }} {{ item }} -refresh=true"
   args:
     chdir: "/tmp/files-{{ group_names[0] }}/"
   with_items:
@@ -40,7 +40,7 @@
   when: inventory_hostname == groups['all'][0]
 
 - name: Terraform destroy
-  shell: "{{ terraform_location }} destroy -auto-approve" 
+  shell: "{{ terraform_location }} destroy -auto-approve -refresh=true" 
   args:
     chdir: "/tmp/files-{{ group_names[0] }}"
   when: hostvars[groups['all'][0]].user_answer.user_input | bool
