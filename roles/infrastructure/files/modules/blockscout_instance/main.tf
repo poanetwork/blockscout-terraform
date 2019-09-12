@@ -17,7 +17,8 @@ data "template_file" "init" {
   template = file("${path.module}/templates/init.sh.tpl")
 
   vars = {
-    type = var.type 
+    type      = var.type 
+    inreaders = contains(var.chain_db_readers,var.chain)
   }
 }
 

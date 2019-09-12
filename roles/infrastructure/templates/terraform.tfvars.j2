@@ -105,26 +105,14 @@ chain_db_instance_class = {
 {% endfor %}
 }
 
-chain_db_storage = {
-{% for host in groups[group_names[0]] %}
-{{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_storage'] }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_db_storage_type = {
-{% for host in groups[group_names[0]] %}
-{{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_storage_type'] }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
-chain_db_iops = {
-{% for host in groups[group_names[0]] %}
-{{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_iops']|default('0') }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
-
 chain_db_version = {
 {% for host in groups[group_names[0]] %}
 {{ hostvars[host]['chain'] }} = "{{ hostvars[host]['db_version'] }}"{% if not loop.last %},{% endif %}
 {% endfor %}
 }
+
+chain_db_readers = [
+{% for host in groups[group_names[0]] %}
+{% for i in range(0,hostvars[host]['db_reader_count'],1)|list %}"{{ hostvars[host]['chain'] }}"{% if not loop.last %},{% endif %}{% endfor %}{% if not loop.last and hostvars[host]['db_reader_count'] > 0 %},{% endif %}
+{% endfor %}
+]

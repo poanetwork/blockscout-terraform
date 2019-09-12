@@ -16,16 +16,18 @@ module "regular_{{ hostvars[host]['chain'] }}" {
   codedeploy_app      = aws_codedeploy_app.explorer.name
   aws_vpc             = aws_vpc.vpc.id
   aws_subnet          = aws_subnet.default.id
+  chain_db_readers    = var.chain_db_readers
 
   type = "regular"
 
   depends = [
-    aws_db_instance.default[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_host[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_name[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_port[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_username[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_password[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_rds_cluster.postgresql.*.arn,
+    aws_ssm_parameter.db_host.*.arn,
+    aws_ssm_parameter.db_host_read.*.arn,
+    aws_ssm_parameter.db_name.*.arn,
+    aws_ssm_parameter.db_port.*.arn,
+    aws_ssm_parameter.db_username.*.arn,
+    aws_ssm_parameter.db_password.*.arn,
   ]
 }
 
@@ -46,17 +48,19 @@ module "api_{{ hostvars[host]['chain'] }}" {
   codedeploy_app      = aws_codedeploy_app.explorer.name
   aws_vpc             = aws_vpc.vpc.id
   aws_subnet          = aws_subnet.default.id
+  chain_db_readers    = var.chain_db_readers
 
   type = "api"
 
   depends = [
-    aws_db_instance.default[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_host[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_name[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_port[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_username[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_password[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-  ]
+    aws_rds_cluster.postgresql.*.arn,
+    aws_ssm_parameter.db_host.*.arn,
+    aws_ssm_parameter.db_host_read.*.arn,
+    aws_ssm_parameter.db_name.*.arn,
+    aws_ssm_parameter.db_port.*.arn,
+    aws_ssm_parameter.db_username.*.arn,
+    aws_ssm_parameter.db_password.*.arn,
+  ] 
 }
 
 module "web_{{ hostvars[host]['chain'] }}" {
@@ -76,16 +80,18 @@ module "web_{{ hostvars[host]['chain'] }}" {
   codedeploy_app      = aws_codedeploy_app.explorer.name
   aws_vpc             = aws_vpc.vpc.id
   aws_subnet          = aws_subnet.default.id
+  chain_db_readers    = var.chain_db_readers
 
   type = "web"
 
   depends = [
-    aws_db_instance.default[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_host[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_name[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_port[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_username[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
-    aws_ssm_parameter.db_password[index(var.chains,"{{ hostvars[host]['chain'] }}")].arn,
+    aws_rds_cluster.postgresql.*.arn,
+    aws_ssm_parameter.db_host.*.arn,
+    aws_ssm_parameter.db_host_read.*.arn,
+    aws_ssm_parameter.db_name.*.arn,
+    aws_ssm_parameter.db_port.*.arn,
+    aws_ssm_parameter.db_username.*.arn,
+    aws_ssm_parameter.db_password.*.arn,
   ]
 }
 {% endfor %}

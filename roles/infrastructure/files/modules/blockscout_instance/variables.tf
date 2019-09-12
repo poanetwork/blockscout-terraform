@@ -47,3 +47,7 @@ variable "aws_vpc" {
 
 variable "aws_subnet" {
 }
+
+variable "chain_db_readers" {
+  default = {}
+}

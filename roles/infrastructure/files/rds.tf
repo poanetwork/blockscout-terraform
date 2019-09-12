@@ -5,10 +5,17 @@ resource "aws_ssm_parameter" "db_host" {
   type  = "String"
 }
 
+resource "aws_ssm_parameter" "db_host_read" {
+  count = length(var.chains)
+  name  = "/${var.prefix}/${var.chains[count.index]}/db_host_read"
+  value = aws_route53_record.db_reader[count.index].fqdn
+  type  = "String"
+}
+
 resource "aws_ssm_parameter" "db_port" {
   count = length(var.chains)
   name  = "/${var.prefix}/${element(var.chains, count.index)}/db_port"
-  value = aws_db_instance.default[count.index].port
+  value = aws_rds_cluster.postgresql[count.index].port
   type  = "String"
 }
 
@@ -33,23 +40,20 @@ resource "aws_ssm_parameter" "db_password" {
   type  = "String"
 }
 
-resource "aws_db_instance" "default" {
-  count                  = length(var.chains)
-  name                   = var.chain_db_name[element(var.chains, count.index)]
-  identifier             = "${var.prefix}-${var.chain_db_id[element(var.chains, count.index)]}"
-  engine                 = "postgres"
-  engine_version         = var.chain_db_version[element(var.chains, count.index)]
-  instance_class         = var.chain_db_instance_class[element(var.chains, count.index)]
-  storage_type           = var.chain_db_storage_type[element(var.chains, count.index)]
-  allocated_storage      = var.chain_db_storage[element(var.chains, count.index)]
-  copy_tags_to_snapshot  = true
-  skip_final_snapshot    = true
-  username               = var.chain_db_username[element(var.chains, count.index)]
-  password               = var.chain_db_password[element(var.chains, count.index)]
-  vpc_security_group_ids = [aws_security_group.database.id]
-  db_subnet_group_name   = aws_db_subnet_group.database.id
-  apply_immediately      = true
-  iops                   = lookup(var.chain_db_iops, element(var.chains, count.index), "0")
+resource "aws_rds_cluster" "postgresql" {
+  count                   = length(var.chains)
+  cluster_identifier      = "${var.prefix}-${var.chain_db_id[element(var.chains, count.index)]}"
+  engine                  = "aurora-postgresql"
+  engine_version          = var.chain_db_version[element(var.chains, count.index)]
+  availability_zones      = data.aws_availability_zones.available.names
+  database_name           = var.chain_db_name[element(var.chains, count.index)]
+  master_username         = var.chain_db_username[element(var.chains, count.index)]
+  master_password         = var.chain_db_password[element(var.chains, count.index)]
+  vpc_security_group_ids  = [aws_security_group.database.id] 
+  copy_tags_to_snapshot   = true
+  skip_final_snapshot     = true
+  db_subnet_group_name    = aws_db_subnet_group.database.id
+  apply_immediately       = true
 
   depends_on = [aws_security_group.database]
 
@@ -59,3 +63,10 @@ resource "aws_db_instance" "default" {
   }
 }
 
+resource "aws_rds_cluster_instance" "instance" {
+  count                = length(var.chain_db_readers)
+  identifier           = "${var.prefix}-${var.chain_db_readers[count.index]}-${count.index}"
+  cluster_identifier   = "${var.prefix}-${var.chain_db_id[var.chain_db_readers[count.index]]}"
+  instance_class       = var.chain_db_instance_class[element(var.chains, count.index)]
+  db_subnet_group_name = aws_db_subnet_group.database.id
+}

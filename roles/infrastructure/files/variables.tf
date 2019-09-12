@@ -82,23 +82,15 @@ variable "chain_db_password" {
   default = {}
 }
 
-variable "chain_db_storage" {
-  default = {}
-}
-
-variable "chain_db_storage_type" {
-  default = {}
-}
-
-variable "chain_db_iops" {
-  default = {}
-}
-
 variable "chain_db_instance_class" {
   default = {}
 }
 
 variable "chain_db_version" {
+  default = {}
+}
+
+variable "chain_db_readers" {
   default = {}
 }
 

@@ -19,9 +19,21 @@ resource "aws_route53_record" "db" {
   count   = length(var.chains)
 
   alias {
-    name                   = aws_db_instance.default[count.index].address
-    zone_id                = aws_db_instance.default[count.index].hosted_zone_id
+    name                   = aws_rds_cluster.postgresql[count.index].endpoint
+    zone_id                = aws_rds_cluster.postgresql[count.index].hosted_zone_id
     evaluate_target_health = false
   }
 }
 
+resource "aws_route53_record" "db_reader" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "dbread${count.index}"
+  type    = "A"
+  count   = length(var.chains)
+
+  alias {
+    name                   = aws_rds_cluster.postgresql[count.index].reader_endpoint
+    zone_id                = aws_rds_cluster.postgresql[count.index].hosted_zone_id
+    evaluate_target_health = false
+  }
+}

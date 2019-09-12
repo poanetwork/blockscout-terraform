@@ -117,19 +117,6 @@ In order to deploy BlockScout, you will have to setup the following set of files
 - `skip_fetch` - if this variable is set to `true` , BlockScout repo will not be cloned and the process will start from building the dependencies. Use this variable to prevent playbooks from overriding manual changes in cloned repo;
 - `ps_*` variables represents a connection details to the test Postgres database. This one will not be installed automatically, so make sure `ps_*` credentials are valid before starting the deployment;
 
-## Database Storage Required
-
-The configuration variable `db_storage` can be used to define the amount of storage allocated to your RDS instance. The chart below shows an estimated amount of storage that is required to index individual chains. The `db_storage` can only be adjusted 1 time in a 24 hour period on AWS.
-
-| Chain            | Storage (GiB) |
-| ---------------- | ------------- |
-| POA Core         | 200           |
-| POA Sokol        | 400           |
-| Ethereum Classic | 1000          |
-| Ethereum Mainnet | 4000          |
-| Kovan Testnet    | 800           |
-| Ropsten Testnet  | 1500          |
-
 # Deploying the Infrastructure
 
 1. Ensure all the [infrastructure prerequisites](#Prerequisites-for-deploying-infrastructure) are installed and has the right version number;

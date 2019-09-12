@@ -171,7 +171,13 @@ log "Elixir installed successfully!"
 
 DB_USER="$(get_param 'db_username')"
 DB_PASS="$(get_param 'db_password')"
+%{ if type == "api" }
+%{ if inreaders == "true" } 
+DB_HOST="$(get_param 'db_host_read')"
+%{ endif }
+%{ else }
 DB_HOST="$(get_param 'db_host')"
+%{ endif }
 DB_PORT="$(get_param 'db_port')"
 DB_NAME="$(get_param 'db_name')"
 DATABASE_URL="postgresql://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT"
