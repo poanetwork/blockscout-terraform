@@ -45,7 +45,6 @@ resource "aws_rds_cluster" "postgresql" {
   cluster_identifier      = "${var.prefix}-${var.chain_db_id[element(var.chains, count.index)]}"
   engine                  = "aurora-postgresql"
   engine_version          = var.chain_db_version[element(var.chains, count.index)]
-  availability_zones      = data.aws_availability_zones.available.names
   database_name           = var.chain_db_name[element(var.chains, count.index)]
   master_username         = var.chain_db_username[element(var.chains, count.index)]
   master_password         = var.chain_db_password[element(var.chains, count.index)]
@@ -64,9 +63,13 @@ resource "aws_rds_cluster" "postgresql" {
 }
 
 resource "aws_rds_cluster_instance" "instance" {
-  count                = length(var.chain_db_readers)
-  identifier           = "${var.prefix}-${var.chain_db_readers[count.index]}-${count.index}"
-  cluster_identifier   = "${var.prefix}-${var.chain_db_id[var.chain_db_readers[count.index]]}"
-  instance_class       = var.chain_db_instance_class[element(var.chains, count.index)]
+  count                = length(var.chains) + length(var.chain_db_readers)
+  identifier           = "${var.prefix}-${concat(var.chain_db_readers,var.chains)[count.index]}-${count.index}"
+  cluster_identifier   = "${var.prefix}-${var.chain_db_id[concat(var.chain_db_readers,var.chains)[count.index]]}"
+  instance_class       = var.chain_db_instance_class[concat(var.chain_db_readers,var.chains)[count.index]]
+  engine               = "aurora-postgresql"
+  engine_version       = var.chain_db_version[concat(var.chain_db_readers,var.chains)[count.index]]
   db_subnet_group_name = aws_db_subnet_group.database.id
+
+  depends_on = [aws_rds_cluster.postgresql]
 }

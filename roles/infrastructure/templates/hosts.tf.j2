@@ -36,7 +36,7 @@ module "api_{{ hostvars[host]['chain'] }}" {
 
   prefix              = var.prefix
   chain               = "{{ hostvars[host]['chain'] }}"
-  instance_number     = var.regular_servers["{{ hostvars[host]['chain'] }}"]
+  instance_number     = var.api_servers["{{ hostvars[host]['chain'] }}"]
   instance_type       = var.instance_type
   key_name            = var.key_name
   iam_profile         = aws_iam_instance_profile.explorer.id
@@ -68,7 +68,7 @@ module "web_{{ hostvars[host]['chain'] }}" {
 
   prefix              = var.prefix
   chain               = "{{ hostvars[host]['chain'] }}"
-  instance_number     = var.regular_servers["{{ hostvars[host]['chain'] }}"]
+  instance_number     = var.web_servers["{{ hostvars[host]['chain'] }}"]
   instance_type       = var.instance_type
   key_name            = var.key_name
   iam_profile         = aws_iam_instance_profile.explorer.id

@@ -1,9 +1,13 @@
 - name: Fork hosts to API and WEB if necessary 
   hosts: all
+  serial: 1
   tags:
     - build
     - deploy
-  tasks: 
+  tasks:
+   - set_fact:
+       role: "web"
+     when: regular_servers == 0 
    - add_host:
        name: "{{ inventory_hostname }}{{ item }}"
        role: "{{ 'api' if api_servers >= item+1 else 'web' }}"
@@ -11,8 +15,8 @@
        groups:
        - "{{ group_names[0] }}"
        - "all"
-     loop: "{{ range(0, 2 if api_servers*web_servers != 0 else 1, 1) | list }}"
-     when: api_servers > 0 or web_servers > 0
+     loop: "{{ range(0, 1 if api_servers * web_servers != 0 else 0) | list }}"
+     when: api_servers > 0 or web_servers > 0 
 
 - name: Fetch variables for each host
   gather_facts: false
