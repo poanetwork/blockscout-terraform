@@ -8,12 +8,14 @@
 - name: Initialize Terraform
   shell: "echo yes | {{ terraform_location }} init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
   args:
-    chdir: "roles/infrastructure/files"
+    chdir: "/tmp/files-{{ group_names[0] }}"
 
-- name: Attach existing DB instances
-  shell: "echo yes | {{ terraform_location }} import aws_db_instance.default[{{ index }}] {{ prefix }}-{{ item.value }}"
+- name: Attach existing DB cluster
+  shell: "echo yes | {{ terraform_location }} import aws_rds_cluster.postgresql[{{ groups[group_names[0]].index(inventory_hostname) }}] {{ group_names[0] }}-{{ db_id }}"
   args:
-    chdir: "roles/infrastructure/files"
-  loop: "{{ chain_db_id|dict2items }}"
-  loop_control:
-    index_var: index
+    chdir: "/tmp/files-{{ group_names[0] }}" 
+
+- name: Attach existing DB writer instances
+  shell: "echo yes | {{ terraform_location }} import aws_rds_cluster_instance.writer_instance[{{ groups[group_names[0]].index(inventory_hostname) }}] {{ group_names[0] }}-{{ inventory_hostname }}-writer"
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}"

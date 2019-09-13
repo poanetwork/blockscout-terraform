@@ -18,7 +18,6 @@ data "template_file" "init" {
 
   vars = {
     type      = var.type 
-    inreaders = contains(var.chain_db_readers,var.chain)
   }
 }
 

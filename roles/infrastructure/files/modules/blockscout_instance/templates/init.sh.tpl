@@ -172,9 +172,7 @@ log "Elixir installed successfully!"
 DB_USER="$(get_param 'db_username')"
 DB_PASS="$(get_param 'db_password')"
 %{ if type == "api" }
-%{ if inreaders == "true" } 
 DB_HOST="$(get_param 'db_host_read')"
-%{ endif }
 %{ else }
 DB_HOST="$(get_param 'db_host')"
 %{ endif }

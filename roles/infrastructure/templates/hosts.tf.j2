@@ -16,7 +16,6 @@ module "regular_{{ hostvars[host]['chain'] }}" {
   codedeploy_app      = aws_codedeploy_app.explorer.name
   aws_vpc             = aws_vpc.vpc.id
   aws_subnet          = aws_subnet.default.id
-  chain_db_readers    = var.chain_db_readers
 
   type = "regular"
 
@@ -48,7 +47,6 @@ module "api_{{ hostvars[host]['chain'] }}" {
   codedeploy_app      = aws_codedeploy_app.explorer.name
   aws_vpc             = aws_vpc.vpc.id
   aws_subnet          = aws_subnet.default.id
-  chain_db_readers    = var.chain_db_readers
 
   type = "api"
 
@@ -80,7 +78,6 @@ module "web_{{ hostvars[host]['chain'] }}" {
   codedeploy_app      = aws_codedeploy_app.explorer.name
   aws_vpc             = aws_vpc.vpc.id
   aws_subnet          = aws_subnet.default.id
-  chain_db_readers    = var.chain_db_readers
 
   type = "web"
 

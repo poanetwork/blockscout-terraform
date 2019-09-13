@@ -62,13 +62,25 @@ resource "aws_rds_cluster" "postgresql" {
   }
 }
 
-resource "aws_rds_cluster_instance" "instance" {
-  count                = length(var.chains) + length(var.chain_db_readers)
-  identifier           = "${var.prefix}-${concat(var.chain_db_readers,var.chains)[count.index]}-${count.index}"
-  cluster_identifier   = "${var.prefix}-${var.chain_db_id[concat(var.chain_db_readers,var.chains)[count.index]]}"
-  instance_class       = var.chain_db_instance_class[concat(var.chain_db_readers,var.chains)[count.index]]
+resource "aws_rds_cluster_instance" "writer_instance" {
+  count                = length(var.chains) 
+  identifier           = "${var.prefix}-${var.chains[count.index]}-writer"
+  cluster_identifier   = "${var.prefix}-${var.chains[count.index]}"
+  instance_class       = var.chain_db_instance_class[var.chains[count.index]]
   engine               = "aurora-postgresql"
-  engine_version       = var.chain_db_version[concat(var.chain_db_readers,var.chains)[count.index]]
+  engine_version       = var.chain_db_version[var.chains[count.index]]
+  db_subnet_group_name = aws_db_subnet_group.database.id
+
+  depends_on = [aws_rds_cluster.postgresql]
+}
+
+resource "aws_rds_cluster_instance" "reader_instance" {
+  count                = length(var.chain_db_readers)
+  identifier           = "${var.prefix}-${keys(var.chain_db_readers)[count.index]}-reader-${values(var.chain_db_readers)[count.index]}"
+  cluster_identifier   = "${var.prefix}-${var.chain_db_id[keys(var.chain_db_readers)[count.index]]}"
+  instance_class       = var.chain_db_instance_class[keys(var.chain_db_readers)[count.index]]
+  engine               = "aurora-postgresql"
+  engine_version       = var.chain_db_version[keys(var.chain_db_readers)[count.index]]
   db_subnet_group_name = aws_db_subnet_group.database.id
 
   depends_on = [aws_rds_cluster.postgresql]

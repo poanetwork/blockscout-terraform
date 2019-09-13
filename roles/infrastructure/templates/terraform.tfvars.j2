@@ -111,8 +111,8 @@ chain_db_version = {
 {% endfor %}
 }
 
-chain_db_readers = [
+chain_db_readers = {
 {% for host in groups[group_names[0]] %}
-{% for i in range(0,hostvars[host]['db_reader_count'],1)|list %}"{{ hostvars[host]['chain'] }}"{% if not loop.last %},{% endif %}{% endfor %}{% if not loop.last and hostvars[host]['db_reader_count'] > 0 %},{% endif %}
+{% for i in range(0,hostvars[host]['db_reader_count'],1)|list %}{{ hostvars[host]['chain'] }}="{{ i }}"{% if not loop.last %},{% endif %}{% endfor %}{% if not loop.last and hostvars[host]['db_reader_count'] > 0 %},{% endif %}
 {% endfor %}
-]
+}

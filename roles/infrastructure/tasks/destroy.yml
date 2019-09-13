@@ -15,12 +15,12 @@
   when: outputs_stat.stat.exists
 
 - name: Terraform plan to destroy main infra
-  shell: "echo yes | {{ terraform_location }} {{ item }} -refresh=true"
+  shell: "echo yes | {{ terraform_location }} {{ item }}"
   args:
     chdir: "/tmp/files-{{ group_names[0] }}/"
   with_items:
     - "init {{ '-backend-config=backend.tfvars' if backend|bool else '' }}"
-    - plan -destroy -out terraform.tfplan
+    - plan -destroy -refresh=true -out terraform.tfplan
     - show -no-color terraform.tfplan
   register: tf_plan
 
@@ -40,7 +40,7 @@
   when: inventory_hostname == groups['all'][0]
 
 - name: Terraform destroy
-  shell: "{{ terraform_location }} destroy -auto-approve -refresh=true" 
+  shell: "{{ terraform_location }} destroy -auto-approve" 
   args:
     chdir: "/tmp/files-{{ group_names[0] }}"
   when: hostvars[groups['all'][0]].user_answer.user_input | bool
@@ -48,7 +48,8 @@
   register: destroy_output
 
 - name: "Check if the error message fits the hashicorp/terraform#21096 and hashicorp/terraform#21333 issues"
-  debug: "Recent task throw an error. However, it fits into description of hashicorp/terraform#21096 and hashicorp/terraform#21333 issues, so this task is considered as completed. However, we are strongly recommend to check that infrastructure is completely destroyed before proceeding to the S3 deletion task"
+  debug: 
+    msg: "Recent task throw an error. However, it fits into description of hashicorp/terraform#21096 and hashicorp/terraform#21333 issues, so this task is considered as completed. However, we are strongly recommend to check that infrastructure is completely destroyed before proceeding to the S3 deletion task"
   failed_when: destroy_ouput.msg.find("The given key does not identify an element in this collection value.") == -1
   when: destroy_output.rc != 0
 
