@@ -1,5 +1,5 @@
 - dynamodb_table:
-    name: "{{ prefix }}-{{ dynamodb_table }}"
+    name: "{{ group_names[0] }}-{{ dynamodb_table }}"
     state: absent
     profile: "{{ profile }}"
     aws_access_key: "{{ access_key }}"

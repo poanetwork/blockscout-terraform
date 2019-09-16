@@ -1,6 +1,6 @@
 - name: Destroy S3 bucket
   s3_bucket:
-    name: "{{ prefix }}-{{ bucket }}"
+    name: "{{ group_names[0] }}-{{ bucket }}"
     state: absent
     force: yes
     profile: "{{ profile }}"

@@ -49,28 +49,9 @@
 
 - name: "Check if the error message fits the hashicorp/terraform#21096 and hashicorp/terraform#21333 issues"
   debug: 
-    msg: "Recent task throw an error. However, it fits into description of hashicorp/terraform#21096 and hashicorp/terraform#21333 issues, so this task is considered as completed. However, we are strongly recommend to check that infrastructure is completely destroyed before proceeding to the S3 deletion task"
-  failed_when: destroy_ouput.msg.find("The given key does not identify an element in this collection value.") == -1
+    msg: "Recent task throw an error. However, it fits into description of hashicorp/terraform#21096 and hashicorp/terraform#21333 issues, so this task is considered as completed. We are strongly recommend to check that infrastructure is completely destroyed before proceeding to the S3 deletion task Details: {{ destroy_output.msg }}"
+  failed_when: destroy_output.stderr.find("The given key does not identify an element in this collection value.") == -1
   when: destroy_output.rc != 0
-
 
 - name: Delete vars from parameter store
   include: parameter_store.yml
-
-- name: S3 and DynamoDB cleanup
-  block:
-    - pause:
-        prompt: "Do you want to delete S3 bucket with state file and DynamoDB attached to it also? [Yes/No] Default: No"
-      register: user_answer
-      until: user_answer.user_input | lower in conditional 
-      retries: 10000
-      delay: 1
-      vars:
-        conditional: ['yes','no','true','false']
-      when: inventory_hostname == groups['all'][0]
-    - import_role:
-        name: s3
-        tasks_from: delete.yml
-    - import_role:
-        name: dynamodb
-        tasks_from: delete.yml
