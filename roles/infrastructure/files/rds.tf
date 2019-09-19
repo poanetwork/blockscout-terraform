@@ -65,7 +65,7 @@ resource "aws_rds_cluster" "postgresql" {
 resource "aws_rds_cluster_instance" "writer_instance" {
   count                = length(var.chains) 
   identifier           = "${var.prefix}-${var.chains[count.index]}-writer"
-  cluster_identifier   = "${var.prefix}-${var.chains[count.index]}"
+  cluster_identifier   = "${var.prefix}-${var.chain_db_id[element(var.chains, count.index)]}"
   instance_class       = var.chain_db_instance_class[var.chains[count.index]]
   engine               = "aurora-postgresql"
   engine_version       = var.chain_db_version[var.chains[count.index]]
