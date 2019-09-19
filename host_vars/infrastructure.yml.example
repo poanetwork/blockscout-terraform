@@ -8,7 +8,7 @@ db_username: "core"
 db_password: "fkowfjpoi309021"
 db_instance_class: "db.r5.large"
 db_version: "10.6" #Blockscout uses Postgres as the DB engine. This variable describes the Postgres version used in each particular chain.
-db_reader_count: "0" # A number of Postgres ReadReplicas to be created. Make sense to use only with API/WEB server splitting
+db_reader_count: 0 # A number of Postgres ReadReplicas to be created. Make sense to use only with API/WEB server splitting
 
 instance_type: "m5.large" # EC2 BlockScout Instance will have this type
 use_placement_group: false # Choose wheter or not to group BlockScout instances into group
