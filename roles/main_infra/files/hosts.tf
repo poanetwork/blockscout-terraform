@@ -49,7 +49,6 @@ resource "aws_autoscaling_group" "explorer" {
   desired_capacity     = "1"
   launch_configuration = aws_launch_configuration.explorer.name
   vpc_zone_identifier  = [aws_subnet.default.id]
-  availability_zones   = data.aws_availability_zones.available.names
   target_group_arns    = [aws_lb_target_group.explorer[0].arn]
   placement_group      = var.use_placement_group[var.chains[count.index]] == "True" ? "${var.prefix}-${var.chains[count.index]}-explorer-pg" : null
 
