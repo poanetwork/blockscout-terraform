@@ -1,6 +1,6 @@
 provider "aws" {
-  #Temporary removed version check for local testing
-  #version = "~> 2.17"
+  # 2.42 is required for advanced ALB support
+  version = "~> 2.42"
   profile = var.aws_profile
   access_key = var.aws_access_key
   secret_key = var.aws_secret_key
