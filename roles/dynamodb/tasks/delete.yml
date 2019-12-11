@@ -1,0 +1,13 @@
+- dynamodb_table:
+    name: "{{ group_names[0] }}-{{ dynamodb_table }}"
+    state: absent
+    profile: "{{ profile }}"
+    aws_access_key: "{{ access_key }}"
+    aws_secret_key: "{{ secret_key }}"
+    region: "{{ region }}"
+  vars:
+    access_key: "{{ aws_access_key|default(omit) }}"
+    secret_key: "{{ aws_secret_key|default(omit) }}"
+    profile: "{{ aws_profile|default(omit) }}"
+    region: "{{ aws_region|default(omit) }}"
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool 

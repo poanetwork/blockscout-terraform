@@ -5,8 +5,6 @@ log.txt
 *.tfstate
 *terraform.tfstate.d*
 *tfplan*
-roles/main_infra/files/backend.tfvars
-roles/main_infra/files/terraform.tfvars
 *.backup
 
 # Sensitive information
@@ -30,7 +28,6 @@ host_vars/*
 .*.swp
 
 blockscout-*/
-roles/main_infra/files-*
 
 hosts
 

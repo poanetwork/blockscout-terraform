@@ -1,0 +1,21 @@
+- name: Pre-Cleanup
+  import_tasks: cleanup.yml
+
+- name: Prepare Terraform for attaching DB
+  import_tasks: common.yml
+
+#Workaround since terraform module return unexpected error.
+- name: Initialize Terraform
+  shell: "echo yes | {{ terraform_location }} init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}"
+
+- name: Attach existing DB cluster
+  shell: "echo yes | {{ terraform_location }} import aws_rds_cluster.postgresql[{{ groups[group_names[0]].index(inventory_hostname) }}] {{ group_names[0] }}-{{ db_id }}"
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}" 
+
+- name: Attach existing DB writer instances
+  shell: "echo yes | {{ terraform_location }} import aws_rds_cluster_instance.writer_instance[{{ groups[group_names[0]].index(inventory_hostname) }}] {{ group_names[0] }}-{{ inventory_hostname }}-writer"
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}"

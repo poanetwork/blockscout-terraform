@@ -1,24 +1,19 @@
 - name: Attach existing RDS instance
-  hosts: localhost
+  serial: 1
+  hosts: all
   tasks:
     - block:
         - include_role:
-            name: check
-        - include_role:
-            name: "{{ item }}"
-          with_items:
-            - s3
-            - dynamodb
-          when: backend | bool
-        - include_role:
-            name: attach_existing_rds
-      always:
-        - include_role:
-            name: s3_config
-          when: backend|bool == true and upload_config_to_s3|bool == true
-        - include_role:
-            name: s3_debug
-          when: backend|bool == true and upload_debug_info_to_s3|bool == true
+            name: "{{ role.name }}"
+            tasks_from: "{{ role.tasks | default('main.yml') }}"
+          when: role.when | default(true)
+          loop_control:
+            loop_var: role          
+          loop:
+            - { name: "check" }
+            - { name: "s3", when: "{{ backend | bool }}" }
+            - { name: "dynamodb", when: "{{ backend | bool }}" }
+            - { name: "infrastructure", tasks: "attach_existing_rds.yml" }
   vars_prompt:
     - name: "confirmation"
       prompt: "Are you sure you want to attach the existing RDS? If backend variable is set to True, this action also includes creating the S3 and DynamoDB table for storing Terraform state files."

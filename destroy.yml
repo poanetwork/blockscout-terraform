@@ -1,8 +1,33 @@
 - name: Destroy infrastructure
+  tags:
+    - infra
   hosts: all
-  roles:
-    - { role: destroy, when: "confirmation|bool == True and inventory_hostname == groups[group_names[0]][0]" } 
+  tasks:
+    - import_role:
+        role: infrastructure
+        tasks_from: destroy.yml
+      when: "confirmation | bool and inventory_hostname == groups[group_names[0]][0]"
   vars_prompt:
     - name: "confirmation"
       prompt: "Are you sure you want to destroy all the infra?"
       default: False
+
+- name: Destroy S3 and DynamoDB
+  hosts: all
+  tags:
+    - s3
+    - dynamo
+  tasks:
+    - import_role:
+        name: s3
+        tasks_from: delete.yml
+      when: "s3confirmation | bool and inventory_hostname == groups[group_names[0]][0]"
+    - import_role:
+        name: dynamodb
+        tasks_from: delete.yml
+      when: "s3confirmation | bool and inventory_hostname == groups[group_names[0]][0]"
+  vars_promprt:
+    - name: s3confirmation
+      prompt: "Do you want to delete S3 bucket with state file and DynamoDB attached to it also?"
+      default: False
+

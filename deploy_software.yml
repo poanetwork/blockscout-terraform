@@ -1,21 +1,68 @@
+- name: Fork hosts to API and WEB if necessary 
+  hosts: all
+  serial: 1
+  tags:
+    - build
+    - deploy
+  tasks:
+   - set_fact:
+       role: "web"
+     when: regular_servers == 0 
+   - add_host:
+       name: "{{ inventory_hostname }}{{ item }}"
+       role: "{{ 'api' if api_servers >= item+1 else 'web' }}"
+       instance: "{{ inventory_hostname }}"
+       groups:
+       - "{{ group_names[0] }}"
+       - "all"
+     loop: "{{ range(0, 1 if api_servers * web_servers != 0 else 0) | list }}"
+     when: api_servers > 0 or web_servers > 0 
+
+- name: Fetch variables for each host
+  gather_facts: false
+  hosts: all
+  tags:
+    - build
+    - deploy
+  tasks:
+    - include_vars: "{{ lookup('first_found', possible_files) }}"
+      delegate_to: localhost 
+      vars:
+        possible_files:
+          - "{{ playbook_dir }}/host_vars/{{ instance | default(inventory_hostname) }}.yaml"
+          - "{{ playbook_dir }}/host_vars/{{ instance | default(inventory_hostname) }}"
+          - "{{ playbook_dir }}/host_vars/{{ instance | default(inventory_hostname) }}.yml" 
+
 - name: Deploy BlockScout
+  gather_facts: false
   hosts: all
   tasks:
    - block:
-       - name: Deploy
-         include_role:
-           name: main_software
-         tags:
-           - update_vars
-           - build
-           - deploy
+     - name: Generate local variables
+       import_role: 
+         name: ssm_vars
+         tasks_from: dev.yml
+       tags:
+         - build
+     - name: Build the local BlockScout instance first
+       import_role:
+         name: build
+       tags:
+         - build
+     - name: Update the production variables
+       import_role:
+         name: ssm_vars
+         tasks_from: prod.yml
+       when: env_vars is defined
+       tags:
+         - update_vars
+     - name: Deploy the production BlockScout instance
+       import_role:
+         name: deploy
+       tags:
+         - deploy
      always:
-       - include_role:
-           name: s3 
-         when: backend|bool and (upload_debug_info_to_s3|bool or upload_config_to_s3|bool)
-       - include_role:
-           name: s3_config
-         when: backend|bool and upload_config_to_s3|bool 
-       - include_role:
-           name: s3_debug
-         when: backend|bool and upload_debug_info_to_s3|bool 
+     - import_role:
+         name: s3
+         tasks_from: remote-files.yml
+       when: backend | bool

@@ -1,0 +1,11 @@
+- name: "Loop over config files"
+  include: remote-files-executor.yml file={{item.name}}
+  when: item.when
+  loop_var: item
+  loop:
+    - { name: "group_vars/all.yml", when: "{{ upload_config_to_s3 | bool }}" }
+    - { name: "group_vars/{{ group_names[0] }}", when: "{{ upload_config_to_s3 | bool }}" }
+    - { name: "group_vars/{{ group_names[0] }}.yml", when: "{{ upload_config_to_s3 | bool }}" }
+    - { name: "host_vars/{{ inventory_hostname }}.yml", when: "{{ upload_config_to_s3 | bool }}" }
+    - { name: "host_vars/{{ inventory_hostname }}", when: "{{ upload_config_to_s3 | bool }}" }
+    - { name: "log.txt", when: "{{ upload_debug_info_to_s3 | bool }}" }

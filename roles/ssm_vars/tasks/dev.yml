@@ -1,0 +1,46 @@
+- name: Fetch environment variables (via access key) from AWS SSM
+  set_fact:
+    fetched_vars: "{{ lookup('aws_ssm', path, aws_access_key=aws_access_key, aws_secret_key=aws_secret_key, region=aws_region|default('us-east-1'), shortnames=true, bypath=true, recursive=true  ) }}"
+  vars:
+    path: "/{{ group_names[0] }}/{{ chain }}"
+  when: aws_access_key is defined
+
+- name: Fetch environment variables (via profile) from AWS SSM
+  set_fact:
+    fetched_vars: "{{ lookup('aws_ssm', path, region=aws_region|default('us-east-1'), aws_profile=aws_profile, shortnames=true, bypath=true, recursive=true  ) }}"
+  vars:
+    path: "/{{ group_names[0] }}/{{ chain }}"
+  when: aws_access_key is undefined
+
+- name: Make fetched variables uppercase to set them as environment variables
+  set_fact:
+    upper_env: "{{ upper_env | combine ({item.key|upper : item.value})  }}"
+  with_dict: "{{ fetched_vars }}"
+  vars:
+    upper_env: {}
+ 
+- name: Generate random unique port for each BlockScout instance
+  set_fact:
+    server_port: "{{ 65535|random(seed=inventory_hostname,start=1024)  }}"
+
+- name: Override PORT and NETWORK_PATH variables for local build 
+  set_fact:
+    dev_env: "{{ upper_env | combine({'NETWORK_PATH':'/','PORT':server_port}) }}"
+
+- name: Assign role-based environment variables
+  set_fact:
+    dev_env: "{{ dev_env | combine(item.role) }}"
+  when: item.condition
+  loop:
+    - { condition: "{{ true if role == 'web' else false }}", role: { DISABLE_READ_API: "true" } }
+    - { condition: "{{ true if role == 'api' else false }}", role: { DISABLE_WEBAPP: "true", DISABLE_WRITE_API: "true", DISABLE_INDEXER: "true" }}
+
+- name: Combine variables from config with AWS SSM variales. Override BUILD_ over regular variables for local build
+  set_fact:
+    dev_env: "{{ dev_env | combine({item.key|regex_replace('BUILD_'):item.value}) }}"
+  with_dict: "{{ dev_env }}"
+
+- name: Display environment variables used for local build
+  debug:
+    var: dev_env
+    verbosity: 1

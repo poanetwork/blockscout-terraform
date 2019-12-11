@@ -1,0 +1,56 @@
+- name: Pre-Cleanup
+  import_tasks: cleanup.yml
+
+- name: Prepare Terraform for deployment
+  import_tasks: common.yml
+
+#Workaround since terraform module return unexpected error.
+- name: Terraform plan construct
+  shell: "echo yes | {{ terraform_location }} {{ item }}"
+  register: tf_plan
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}"
+  with_items:
+    - "init{{ ' -backend-config=backend.tfvars' if backend|bool else '' }}"
+    - plan -refresh=true -out terraform.tfplan
+    - show -no-color terraform.tfplan
+
+- name: Show Terraform plan
+  debug:
+    var: tf_plan.results[2].stdout_lines
+
+- name: User prompt
+  pause:
+    prompt: "Are you absolutely sure you want to execute the deployment plan shown above? [False]"
+  register: user_answer
+  until: user_answer.user_input | lower in conditional 
+  retries: 10000
+  delay: 1
+  vars:
+    conditional: ['yes','no','true','false']
+  when: inventory_hostname == groups['all'][0]
+
+- name: Terraform provisioning
+  shell: "echo yes | {{ terraform_location }} apply -refresh=true" 
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}"
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
+  retries: 1
+  delay: 3
+  register: result
+  until: result.rc == 0
+
+- name: Terraform output info into variable
+  shell: "{{ terraform_location }} output -json"
+  register: output
+  args:
+    chdir: "/tmp/files-{{ group_names[0] }}"
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
+
+- name: Output info from Terraform
+  debug:
+    var: (output.stdout|from_json).instructions.value
+  when: hostvars[groups['all'][0]].user_answer.user_input | bool
+
+- name: Post-cleanup
+  import_tasks: cleanup.yml

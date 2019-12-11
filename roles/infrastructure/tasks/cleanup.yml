@@ -1,0 +1,12 @@
+- name: Search files for cleanup
+  find:
+    paths: /tmp
+    file_type: directory
+    patterns: "files-{{ group_names[0] }}"
+  register: files_to_delete
+
+- name: Perform cleanup
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ files_to_delete.files }}"

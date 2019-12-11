@@ -6,11 +6,9 @@ db_name: "core" # Each network should have it's own DB. This variable maps chain
 ## The following variables describes the DB configurations for each network including usernames, password, instance class, etc.
 db_username: "core"
 db_password: "fkowfjpoi309021"
-db_instance_class: "db.t3.medium"
-db_storage: "100" # in GiB
-db_storage_type: "gp2" # see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html for details
-#db_iops: "1000" # This should be set only if chain_db_storage is set to `io1`
+db_instance_class: "db.r5.large"
 db_version: "10.6" #Blockscout uses Postgres as the DB engine. This variable describes the Postgres version used in each particular chain.
+db_reader_count: 0 # A number of Postgres ReadReplicas to be created. Make sense to use only with API/WEB server splitting
 
 instance_type: "m5.large" # EC2 BlockScout Instance will have this type
 use_placement_group: false # Choose wheter or not to group BlockScout instances into group

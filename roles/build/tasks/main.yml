@@ -1,0 +1,134 @@
+- name: Clone BlockScout
+  git:
+    repo: "{{ blockscout_repo }}"
+    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}"
+    version: "{{ branch }}"
+    force: true
+  when: skip_fetch | bool != true
+
+- name: Git clean
+  command: "git clean -fdx"
+  args:
+    chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}"
+  when: skip_fetch | bool != true
+
+- name: Merge branches
+  command: "git merge {{ merge_commit_item }}" 
+  args:
+    chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}"
+  when: merge_commit_item and not skip_fetch | bool
+  vars:
+    merge_commit_item: "{{ merge_commit | default(false) }}"
+
+- name: Copy web config files
+  copy:
+    src: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/block_scout_web/config/dev.secret.exs.example"
+    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/block_scout_web/config/dev.secret.exs" 
+
+- name: Template explorer config files 
+  template:
+    src: dev.secret.exs.j2 
+    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/explorer/config/dev.secret.exs" 
+  when: ps_user is defined
+
+- name: Copy default explorer config files
+  copy:
+    src: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/explorer/config/dev.secret.exs.example"
+    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/explorer/config/dev.secret.exs"
+  when: ps_user is undefined or ps_user == ""
+
+- name: Remove static assets from previous deployment, if any
+  file:
+    path: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/block_scout_web/priv/static"
+    state: absent 
+    
+- name: Compile local(DEV) BlockScout
+  environment: "{{ dev_env }}"
+  block:
+    - command: "mix do {{ item.action }}"
+      args:
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}"
+      when: item.condition | default(true)
+      with_items:
+        - { action: "deps.get" }
+        - { action: "local.rebar --force" }
+        - { action: "deps.compile" }
+        - { action: "compile" }
+        - { action: "ecto.drop", condition: "{{ false if instance is defined else true }}" }
+        - { action: "ecto.create", condition: "{{ false if instance is defined else true }}" }
+        - { action: "ecto.migrate", condition: "{{ false if instance is defined else true }}" }
+    - command: npm install 
+      args:
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/block_scout_web/assets" 
+    - command: node_modules/webpack/bin/webpack.js --mode production
+      args:
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/block_scout_web/assets"
+    - command: npm install
+      args:
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/explorer" 
+    - command: mix phx.gen.cert blockscout blockscout.local
+      args:
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/block_scout_web"
+
+- name: Start local(DEV) BlockScout server, then build static assets
+  environment: "{{ dev_env }}"
+  block:
+    - name: Start server
+      command: "mix phx.server"
+      args:
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}" 
+      async: 10000
+      poll: 0 
+    - debug:
+        msg: "Please, open your browser at following addresses:"
+      run_once: true
+    - debug:
+        msg: "{{ ansible_host }}:{{ server_port }}"
+    - pause:
+        prompt: "BlockScout should appear. Ensure that there is no visual artifacts and then press Enter to continue. Press Ctrl+C and then A if you face any issues to cancel the deployment. Note: Localhost stands for the machine were Ansible is currently run."
+      run_once: true
+      register: prompt
+    - command: mix phx.digest
+      args:
+        chdir: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}"
+  always:
+    - name: Kill running local(DEV) BlockScout server
+      command: "pkill -f {{ item }}"
+      with_items:
+        - beam.smp
+        - webpack.js
+      failed_when: false
+
+- name: Check for execution interrupt
+  fail:
+    msg: "Execution aborted"
+  when: prompt is failed
+ 
+- name: User prompt
+  pause:
+    prompt: "Would you like to remove staging dependencies? [Yes[Enter]/No]"
+  register: user_answer
+  until: user_answer.user_input | lower in conditional
+  retries: 10000
+  delay: 1
+  vars:
+    conditional: ["",'yes','no','true','false']
+  when: inventory_hostname == groups['all'][0]
+
+- name: Remove dev dependencies
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/_build/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/deps/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/block_scout_web/assets/node_modules/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/explorer/node_modules/"
+    - "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/logs/dev/"
+  when: hostvars[groups['all'][0]].user_answer.user_input == "" or hostvars[groups['all'][0]].user_answer.user_input | lower | bool
+
+- name: Fix bug with favicon 
+  replace:
+    regexp: '\"favicon\.ico\"\:\"favicon-[a-z0-9]+?\.ico\"'
+    replace: '"images/favicon.ico":"favicon.ico"'
+    path: "/tmp/blockscout-{{ group_names[0] }}-{{ inventory_hostname }}-{{ role }}/apps/block_scout_web/priv/static/cache_manifest.json"
