@@ -6,8 +6,7 @@
 - name: Check chain names
   fail:
     msg: "The chain '{{ item }}' is invalid. It must consist only of the lowercase characters a-z and digits 0-9, and must not more than 5 characters long."
-  when: (item.key | length > 5 or item.key is not match("^[a-z0-9]+$")) and item.key != "all" and item.key != "ungrouped"
-  with_dict: "{{ groups }}"
+    when: chain | length > 5 or chain is not match("^[a-z0-9]+$")
 
 - name: Check if terraform is installed
   command: "{{ terraform_location }} --version"
