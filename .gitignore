@@ -37,3 +37,4 @@ blockscout-*/
 roles/main_infra/files-*
 
 hosts
+.DS_Store
