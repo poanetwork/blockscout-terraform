@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    {% if aws_access_key is undefined %}
+    {% if aws_access_key is undefined or aws_access_key == '' %}
       profile    = "{{ aws_profile|default("default") }}"
     {% else %}
       access_key = "{{ aws_access_key }}"

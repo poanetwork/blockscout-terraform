@@ -1,7 +1,9 @@
 # Internal DNS Zone
 resource "aws_route53_zone" "main" {
   name   = "${var.prefix}.${var.dns_zone_name}"
-  vpc_id = "${aws_vpc.vpc.id}"
+  vpc {
+    vpc_id = "${aws_vpc.vpc.id}"
+  }
 
   tags {
     prefix = "${var.prefix}"

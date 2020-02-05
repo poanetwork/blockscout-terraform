@@ -1,3 +1,11 @@
+{% if aws_access_key is undefined or aws_access_key == '' %}
+aws_profile        = "{{ aws_profile|default('default') }}"
+{% else %}
+aws_access_key     = "{{ aws_access_key | default('null') }}"
+aws_secret_key     = "{{ aws_secret_key | default('null') }}"
+{% endif %}
+aws_region         = "{{ aws_region | default('us-east-1') }}"
+
 prefix             = "{{ group_names[0] }}"
 key_name           = "{{ ec2_ssh_key_name }}"
 key_content        = "{{ ec2_ssh_key_content }}"

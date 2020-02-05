@@ -64,9 +64,9 @@
   args:
     chdir: "/tmp/files-{{ group_names[0] }}"
   with_items:
-    - "init{{ ' -backend-config=backend.tfvars' if backend|bool == true else '' }}"
+    - "init{{ ' -backend-config=backend.tfvars' if backend|bool else '' }}"
     - plan -out terraform.tfplan
-    - show terraform.tfplan -no-color
+    - show -no-color terraform.tfplan
 
 - name: Show Terraform plan
   debug:
@@ -92,13 +92,10 @@
   args:
     chdir: "/tmp/files-{{ group_names[0] }}"
   when: hostvars[groups['all'][0]].user_answer.user_input | bool
-  ignore_errors: True
-
-- name: Ensure Terraform resources has been provisioned
-  shell: "echo yes | {{ terraform_location }} apply"
-  args:
-    chdir: "/tmp/files-{{ group_names[0] }}"
-  when: hostvars[groups['all'][0]].user_answer.user_input | bool
+  retries: 1
+  delay: 3
+  register: result
+  until: result.rc == 0
 
 - name: Terraform output info into variable
   shell: "{{ terraform_location }} output -json"
@@ -109,7 +106,7 @@
 
 - name: Output info from Terraform
   debug:
-    var: output.stdout_lines
+    var: (output.stdout|from_json).instructions.value
   when: hostvars[groups['all'][0]].user_answer.user_input | bool
 
 - name: Ansible delete file glob
