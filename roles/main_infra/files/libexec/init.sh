@@ -66,6 +66,7 @@ if ! which libtool >/dev/null; then
 fi
 if ! which node >/dev/null; then
     log "Installing nodejs.."
+    curl -sL https://rpm.nodesource.com/setup_12.x | sudo bash -
     yum --enablerepo=epel install -y nodejs >"$LOG"
 fi
 if ! which gcc >/dev/null; then
