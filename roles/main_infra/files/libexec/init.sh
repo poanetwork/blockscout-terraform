@@ -66,6 +66,7 @@ if ! which libtool >/dev/null; then
 fi
 if ! which node >/dev/null; then
     log "Installing nodejs.."
+    curl -sL https://rpm.nodesource.com/setup_12.x | sudo bash -
     yum --enablerepo=epel install -y nodejs >"$LOG"
 fi
 if ! which gcc >/dev/null; then
@@ -147,9 +148,10 @@ EOF
 
 log "Installing Erlang.."
 
-wget https://packages.erlang-solutions.com/erlang/rpm/centos/7/x86_64/esl-erlang_21.1-1~centos~7_amd64.rpm
+erlang_version="esl-erlang_22.0-1~centos~7_amd64.rpm"
+wget https://packages.erlang-solutions.com/erlang/rpm/centos/7/x86_64/${erlang_version}
 yum localinstall -y wxGTK-devel unixODBC-devel >"$LOG"
-yum localinstall -y esl-erlang_21.1-1~centos~7_amd64.rpm >"$LOG"
+yum localinstall -y ${erlang_version} >"$LOG"
 
 log "Fetching configuration from Parameter Store..."
 fetch_ssm_with_token
