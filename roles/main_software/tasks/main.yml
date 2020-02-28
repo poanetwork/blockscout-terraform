@@ -26,29 +26,6 @@
   tags:
     - build
 
-- name: Copy web config files
-  copy:
-    src: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/config/dev.secret.exs.example"
-    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/config/dev.secret.exs" 
-  tags:
-    - build
-
-- name: Template explorer config files 
-  template:
-    src: dev.secret.exs.j2 
-    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs" 
-  when: ps_user is defined 
-  tags:
-    - build
-
-- name: Copy default explorer config files
-  copy:
-    src: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs.example"
-    dest: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/explorer/config/dev.secret.exs"
-  when: ps_user is undefined or ps_user == ""
-  tags:
-    - build
-
 - name: Remove static assets from previous deployment, if any
   file:
     path: "/tmp/blockscout-{{ group_names[0] }}-{{ chain }}/apps/block_scout_web/priv/static"
