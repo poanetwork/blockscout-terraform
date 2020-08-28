@@ -70,7 +70,7 @@
     "ami_name": "blockscout-packer",
     "ami_base": "ami-0c6b1d09930fac512",
     "ami_sha":  "{{env `SHA`}}",
-	"elixir_version": "v1.8.1",
-	"bs_release": "v2.0.0-beta"
+	"elixir_version": "v1.10.3",
+	"bs_release": "v3.3.2-beta"
   }
 }
