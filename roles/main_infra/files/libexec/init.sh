@@ -66,7 +66,7 @@ if ! which libtool >/dev/null; then
 fi
 if ! which node >/dev/null; then
     log "Installing nodejs.."
-    curl -sL https://rpm.nodesource.com/setup_12.x | sudo bash -
+    curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
     yum --enablerepo=epel install -y nodejs >"$LOG"
 fi
 if ! which gcc >/dev/null; then
@@ -148,7 +148,7 @@ EOF
 
 log "Installing Erlang.."
 
-erlang_version="esl-erlang_22.0-1~centos~7_amd64.rpm"
+erlang_version="esl-erlang_23.0.3-1~centos~7_amd64.rpm"
 wget https://packages.erlang-solutions.com/erlang/rpm/centos/7/x86_64/${erlang_version}
 yum localinstall -y wxGTK-devel unixODBC-devel >"$LOG"
 yum localinstall -y ${erlang_version} >"$LOG"
@@ -209,6 +209,12 @@ fi
 if ! which g++ >/dev/null; then
     log "Installing gcc-c++.."
     yum install -y gcc-c++ >"$LOG"
+fi
+
+if ! which rustc >/dev/null; then
+    log "Installing Rustc.."
+    sudo yum install -y rust >"$LOG"
+    sudo yum install -y cargo >"$LOG"
 fi
 
 function has_db() {
