@@ -1,0 +1,47 @@
+# Infrastructure related group variables
+
+## Exact path to the TF binary on your local machine
+terraform_location: "/usr/local/bin/terraform"
+
+## Name of the DynamoDB table where current lease of TF state file will be stored
+dynamodb_table: "poa-terraform-lock"
+
+## If ec2_ssh_key_content is empty all the virtual machines will be created with ec2_ssh_key_name key. Otherwise, playbooks will upload ec2_ssh_key_content with the name of ec2_ssh_key_name and launch virtual machines with that key
+ec2_ssh_key_name: "sokol-test"
+ec2_ssh_key_content: ""
+
+## VPC containing Blockscout resources will be created as following:
+vpc_cidr: "10.0.0.0/16"
+public_subnet_cidr: "10.0.0.0/24"
+# This variable should be interpreted as following:
+# Variable: 10.0.1.0/16 
+# Real networks: 10.0.1+{{ number of chain starting with 0 }}.0/24
+db_subnet_cidr: "10.0.1.0/16"
+
+## Internal DNS zone will looks like:
+dns_zone_name: "poa.internal"
+
+## Size of the EC2 instance EBS root volume
+root_block_size: 120
+
+# System variables
+ansible_python_interpreter: "/usr/bin/python3"
+
+# Common variables
+
+## Credentials to connect to AWS. Either keypair or CLI profile name should be specified. If nothing is specified, the default AWS keypair is used. Region must be specified in all the cases.
+#aws_access_key: ""
+#aws_secret_key: ""
+#aws_profile: ""
+aws_region: "eu-west-3"
+
+## If set to true backend will be uploaded and stored at S3 bucket, so you can easily manage your deployment from any machine. It is highly recommended to do not change this variable
+backend: true
+## If this is set to true along with backend variable, this config file/the log output will be saved to s3 bucket. Please, make sure to name the config file "all.yml". Otherwise, no upload will be performed
+upload_config_to_s3: true
+upload_debug_info_to_s3: true
+
+## The bucket and dynamodb_table variables will be used only when backend variable is set to true
+## Name of the bucket where TF state files will be stored
+bucket: "poa-terraform-state"
+

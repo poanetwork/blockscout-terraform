@@ -8,9 +8,9 @@ env_vars:
   #SUBNETWORK: "Core Network" # Actual name of the particular network
   #NETWORK_ICON: "_network_icon.html" # Either _test_network_icon.html or _network_icon.html, depending on the type of the network (prod/test).
   #LOGO: "/images/blockscout_logo.svg" # Chain logo
-  #ETHEREUM_JSONRPC_VARIANT: "parity" # Chain client installed at ETHEREUM_JSONRPC_HTTP_URL
-  #ETHEREUM_JSONRPC_HTTP_URL: "http://localhost:8545" # Network RPC endpoint
-  #ETHEREUM_JSONRPC_TRACE_URL: "http://localhost:8545" # Network RPC endpoint in trace mode. Can be the same as the previous variable
+  ETHEREUM_JSONRPC_VARIANT: "parity" # Chain client installed at ETHEREUM_JSONRPC_HTTP_URL
+  ETHEREUM_JSONRPC_HTTP_URL: "https://cube1.eusko.in/rpc" # Network RPC endpoint
+  ETHEREUM_JSONRPC_TRACE_URL: "https://cube1.eusko.in/rpc" # Network RPC endpoint in trace mode. Can be the same as the previous variable
   #ETHEREUM_JSONRPC_WS_URL: "ws://localhost:8546" # Network RPC endpoint in websocket mode
   #NETWORK_PATH: "/poa/core" # relative URL path, for example: blockscout.com/$NETWORK_PATH
   #SECRET_KEY_BASE: "TPGMvGK0iIwlXBQuQDA5KRqk77VETbEBlG4gAWeb93TvBsYAjvoAvdODMd6ZeguPwf2YTRY3n7uvxXzQP4WayQ==" # Secret key for production assets protection. Use `mix phx.gen.secret` or `openssl rand -base64 64 | tr -d '\n'` to generate
