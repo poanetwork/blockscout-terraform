@@ -10,6 +10,7 @@ dynamodb_table: "poa-terraform-lock"
 ec2_ssh_key_name: "sokol-test"
 ec2_ssh_key_content: ""
 
+
 ## VPC containing Blockscout resources will be created as following:
 vpc_cidr: "10.0.0.0/16"
 public_subnet_cidr: "10.0.0.0/24"
