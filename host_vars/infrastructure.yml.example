@@ -1,4 +1,4 @@
-terraform_location: "/usr/local/bin/terraform"
+terraform_location: "terraform"
 
 db_id: "core" # This value represents the name of the DB that will be created/attached. Must be unique. Will be prefixed with `prefix` variable.
 db_name: "core" # Each network should have it's own DB. This variable maps chain to DB name. Should not be messed with db_id variable, which represents the RDS instance ID.
