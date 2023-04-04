@@ -1,0 +1,4 @@
+# Each group and host name must be unique
+
+[eth]
+goerli
