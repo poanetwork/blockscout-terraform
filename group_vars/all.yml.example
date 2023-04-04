@@ -17,5 +17,5 @@ upload_debug_info_to_s3: true
 
 ## The bucket and dynamodb_table variables will be used only when backend variable is set to true
 ## Name of the bucket where TF state files will be stored
-bucket: "poa-terraform-state"
+bucket: "goerli-terraform-state"
 
