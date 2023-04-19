@@ -4,7 +4,7 @@
 blockscout_repo: https://github.com/poanetwork/blockscout
 
 # Please, specify the credentials for the test Postgres installation
-ps_host: localhost
-ps_user: myuser
-ps_password: mypass
+ps_host: blockscout-test.hogehoge.us-east-1.rds.amazonaws.com
+ps_user: postgres
+ps_password: hugahuga
 

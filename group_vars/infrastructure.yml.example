@@ -4,7 +4,7 @@
 terraform_location: "/usr/local/bin/terraform"
 
 ## Name of the DynamoDB table where current lease of TF state file will be stored
-dynamodb_table: "poa-terraform-lock"
+dynamodb_table: "goerli-terraform-lock"
 
 ## If ec2_ssh_key_content is empty all the virtual machines will be created with ec2_ssh_key_name key. Otherwise, playbooks will upload ec2_ssh_key_content with the name of ec2_ssh_key_name and launch virtual machines with that key
 ec2_ssh_key_name: "sokol-test"
@@ -19,7 +19,7 @@ public_subnet_cidr: "10.0.0.0/24"
 db_subnet_cidr: "10.0.1.0/16"
 
 ## Internal DNS zone will looks like:
-dns_zone_name: "poa.internal"
+dns_zone_name: "goerli.internal"
 
 ## Size of the EC2 instance EBS root volume
 root_block_size: 120

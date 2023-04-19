@@ -32,7 +32,5 @@ host_vars/*
 blockscout-*/
 roles/main_infra/files-*
 
-hosts
-
 # osx 
 .DS_Store

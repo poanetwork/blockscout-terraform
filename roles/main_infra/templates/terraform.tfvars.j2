@@ -34,11 +34,7 @@ secret_key_base = {
 {% endfor %}
 }
 
-use_ssl = {
-{% for host in groups[group_names[0]] %}
-{{ hostvars[host]['chain'] }}="{{ hostvars[host]['env_vars']['ECTO_USE_SSL']|default('false') }}"{% if not loop.last %},{% endif %}
-{% endfor %}
-}
+use_ssl = "false"
 
 
 alb_ssl_policy = {
